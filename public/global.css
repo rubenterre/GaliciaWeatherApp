@@ -1,0 +1,210 @@
+/* Estilos generales */
+
+/*font*/
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+/*general*/
+
+body {
+    font-family: 'Roboto', sans-serif;
+    color: #fafafa;
+    font-size: 13px;
+    background: #333;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+       /* Fondos tiempo */
+
+    .fondo_soleado {
+        background: url("/images/fondos/fondo_santiago_soleado.png") #333;
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 100%;
+    }
+
+    .fondo_noite_clara {
+        background: url("/images/fondos/fondo_santiago_noite_clara.png") #333;
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 100%;
+
+    }
+
+    .fondo_soleado_poucas_nubes {
+        background: url("/images/fondos/fondo_santiago_soleado_poucas_nubes.png") #333;
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 100%;
+
+    }
+
+    .fondo_noite_poucas_nubes {
+        background: url("/images/fondos/fondo_santiago_noite_poucas_nubes.png") #333;
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 100%;
+
+    }
+
+    .fondo_dia_nublado {
+        background: url("/images/fondos/fondo_santiago_soleado_moitas_nubes.png") #333;
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 100%;
+
+    }
+
+    .fondo_noite_nublado {
+        background: url("/images/fondos/fondo_santiago_noite_moitas_nubes.png") #333;
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 100%;
+
+    }
+
+    .fondo_nublado {
+        background: url("/images/fondos/fondo_santiago_nublado.png") #333;
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 100%;
+
+    }
+
+    .fondo_moita_choiva {
+        background: url("/images/fondos/fondo_santiago_moita_choiva.png") #333;
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 100%;
+
+    }
+
+    .fondo_pouca_choiva {
+        background: url("/images/fondos/fondo_santiago_pouca_choiva.png") #333;
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 100%;
+
+    }
+
+    .fondo_tormenta {
+        background: url("/images/fondos/fondo_santiago_tormenta.png") #333;
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 100%;
+
+    }
+
+    .fondo_neve {
+        background: url("/images/fondos/fondo_santiago_neve.png") #333;
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 100%;
+
+    }
+
+    .fondo_neboa {
+        background: url("/images/fondos/fondo_santiago_neboa.png") #333;
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 100%;
+
+    }
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    line-height: 110%;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 100;
+    color: #fff;
+}
+
+h1 {
+    font-size: 30px;
+}
+
+h2 {
+    font-size: 26px;
+}
+
+h3 {
+    font-size: 18px;
+}
+
+h4 {
+    font-size: 18px;
+}
+
+h5 {
+    font-size: 16px;
+}
+
+h6 {
+    font-size: 14px;
+}
+
+p {
+    margin: 8px 0;
+}
+
+a {
+    color: #fff;
+}
+
+a:hover {
+    color: #fff;
+}
+
+a:focus {
+    outline: 0;
+}
+
+a.link-color {
+    color: #FF4D27;
+}
+
+a.link-color:hover {
+    color: #FF4D27;
+}
+
+input, button, select, textarea {
+	font-family: inherit;
+	font-size: inherit;
+	padding: 0.4em;
+	margin: 0 0 0.5em 0;
+	box-sizing: border-box;
+	border: 1px solid #ccc;
+	border-radius: 2px;
+}
+
+input:disabled {
+	color: #ccc;
+}
+
+input[type="range"] {
+	height: 0;
+}
+
+button {
+	color: #333;
+	background-color: #f4f4f4;
+	outline: none;
+}
+
+button:disabled {
+	color: #999;
+}
+
+button:not(:disabled):active {
+	background-color: #ddd;
+}
+
+button:focus {
+	border-color: #666;
+}
