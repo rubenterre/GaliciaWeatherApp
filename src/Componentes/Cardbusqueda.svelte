@@ -4,11 +4,6 @@
         createEventDispatcher
     } from 'svelte';
 
-    import DraggableDraw from 'svelte-draggable-draw';
-    let visible = true;
-    let maxVH = 90;
-    let minVH = 85;
-
 
     export let id;
     export let name;
@@ -24,10 +19,7 @@
         })
     }
 
-    function switchVisible(){
-		visible = !visible;
-		}
-
+        
 </script>
 <li class="data">
         <div class="ulwrpper">
@@ -49,15 +41,6 @@
         </div>
     </div>
 </li>
-<DraggableDraw bind:visible {maxVH} {minVH}>
-    <span slot="left" on:click={switchVisible} class="black-text">Cancel</span>
-    <span slot="right" on:click={switchVisible} class="black-text">Pechar</span>
-
-    <div>
-        <h1>Content</h1>
-        <p>Can be injected here</p>
-    </div>
-</DraggableDraw>
 <style>
     .card {
         border-radius: 20px;
