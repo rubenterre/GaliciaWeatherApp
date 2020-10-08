@@ -1,8 +1,18 @@
 <script>
-
     import {
         createEventDispatcher
     } from 'svelte';
+
+    import DraggableDraw from '../Componentes/Draggabledraw.svelte';
+    import Cardtiempo from '../Componentes/Cardtiempo.svelte';
+
+    let visible = true;
+    let maxVH = 90;
+    let minVH = 85;
+
+    function switchVisible() {
+        visible = !visible;
+    }
 
 
     export let id;
@@ -19,20 +29,20 @@
         })
     }
 
-        
 </script>
+
 <li class="data">
-        <div class="ulwrpper">
+    <div class="ulwrpper">
         <div class="row">
             <div class="col s12 m6">
                 <div class="card">
                     <div class="card-image">
-                        <img src="/images/tarxetas/{icon}.gif" alt="icono do tempo" class="fondo_card" >
+                        <img src="/images/tarxetas/{icon}.gif" alt="icono do tempo" class="fondo_card">
                         <span class="card-title city-temp">{Math.round(temp)}°C <br>
                             <p class="city-name">{name}</p>
                         </span>
-                        <a on:click={()=> switchVisible()}  class="btn-floating halfway-fab waves-effect waves-light
-                        black verTiempo"><i class="material-icons">visibility</i></a>
+                        <a on:click={()=> switchVisible()} class="btn modal-trigger btn-floating halfway-fab waves-effect waves-light
+                            black verTiempo"><i class="material-icons">visibility</i></a>
                         <a on:click={()=> removeTiempo(id)} class="btn-floating halfway-fab waves-effect waves-light
                             black"><i class="material-icons">delete</i></a>
                     </div>
@@ -41,15 +51,25 @@
         </div>
     </div>
 </li>
+
+
+<DraggableDraw bind:visible {maxVH} {minVH}>
+    <span slot="right" on:click={switchVisible}>Pechar</span>
+
+    <Cardtiempo name={name}/>
+
+</DraggableDraw>
+
 <style>
+
+
     .card {
         border-radius: 20px;
         border: 2px solid black;
         background: #222;
-
     }
 
-    .verTiempo{
+    .verTiempo {
         right: 80px;
     }
 

@@ -12339,6 +12339,13 @@ var app = (function () {
   });
 
   function noop() { }
+  const identity = x => x;
+  function assign(tar, src) {
+      // @ts-ignore
+      for (const k in src)
+          tar[k] = src[k];
+      return tar;
+  }
   function add_location(element, file, line, column, char) {
       element.__svelte_meta = {
           loc: { file, line, column, char }
@@ -12377,8 +12384,79 @@ var app = (function () {
   function component_subscribe(component, store, callback) {
       component.$$.on_destroy.push(subscribe(store, callback));
   }
+  function create_slot(definition, ctx, $$scope, fn) {
+      if (definition) {
+          const slot_ctx = get_slot_context(definition, ctx, $$scope, fn);
+          return definition[0](slot_ctx);
+      }
+  }
+  function get_slot_context(definition, ctx, $$scope, fn) {
+      return definition[1] && fn
+          ? assign($$scope.ctx.slice(), definition[1](fn(ctx)))
+          : $$scope.ctx;
+  }
+  function get_slot_changes(definition, $$scope, dirty, fn) {
+      if (definition[2] && fn) {
+          const lets = definition[2](fn(dirty));
+          if ($$scope.dirty === undefined) {
+              return lets;
+          }
+          if (typeof lets === 'object') {
+              const merged = [];
+              const len = Math.max($$scope.dirty.length, lets.length);
+              for (let i = 0; i < len; i += 1) {
+                  merged[i] = $$scope.dirty[i] | lets[i];
+              }
+              return merged;
+          }
+          return $$scope.dirty | lets;
+      }
+      return $$scope.dirty;
+  }
+  function update_slot(slot, slot_definition, ctx, $$scope, dirty, get_slot_changes_fn, get_slot_context_fn) {
+      const slot_changes = get_slot_changes(slot_definition, $$scope, dirty, get_slot_changes_fn);
+      if (slot_changes) {
+          const slot_context = get_slot_context(slot_definition, ctx, $$scope, get_slot_context_fn);
+          slot.p(slot_context, slot_changes);
+      }
+  }
   function action_destroyer(action_result) {
       return action_result && is_function(action_result.destroy) ? action_result.destroy : noop;
+  }
+
+  const is_client = typeof window !== 'undefined';
+  let now = is_client
+      ? () => window.performance.now()
+      : () => Date.now();
+  let raf = is_client ? cb => requestAnimationFrame(cb) : noop;
+
+  const tasks = new Set();
+  function run_tasks(now) {
+      tasks.forEach(task => {
+          if (!task.c(now)) {
+              tasks.delete(task);
+              task.f();
+          }
+      });
+      if (tasks.size !== 0)
+          raf(run_tasks);
+  }
+  /**
+   * Creates a new task that runs on each raf frame
+   * until it returns a falsy value or is aborted
+   */
+  function loop(callback) {
+      let task;
+      if (tasks.size === 0)
+          raf(run_tasks);
+      return {
+          promise: new Promise(fulfill => {
+              tasks.add(task = { c: callback, f: fulfill });
+          }),
+          abort() {
+              tasks.delete(task);
+          }
+      };
   }
 
   function append(target, node) {
@@ -12446,6 +12524,67 @@ var app = (function () {
       return e;
   }
 
+  const active_docs = new Set();
+  let active = 0;
+  // https://github.com/darkskyapp/string-hash/blob/master/index.js
+  function hash(str) {
+      let hash = 5381;
+      let i = str.length;
+      while (i--)
+          hash = ((hash << 5) - hash) ^ str.charCodeAt(i);
+      return hash >>> 0;
+  }
+  function create_rule(node, a, b, duration, delay, ease, fn, uid = 0) {
+      const step = 16.666 / duration;
+      let keyframes = '{\n';
+      for (let p = 0; p <= 1; p += step) {
+          const t = a + (b - a) * ease(p);
+          keyframes += p * 100 + `%{${fn(t, 1 - t)}}\n`;
+      }
+      const rule = keyframes + `100% {${fn(b, 1 - b)}}\n}`;
+      const name = `__svelte_${hash(rule)}_${uid}`;
+      const doc = node.ownerDocument;
+      active_docs.add(doc);
+      const stylesheet = doc.__svelte_stylesheet || (doc.__svelte_stylesheet = doc.head.appendChild(element('style')).sheet);
+      const current_rules = doc.__svelte_rules || (doc.__svelte_rules = {});
+      if (!current_rules[name]) {
+          current_rules[name] = true;
+          stylesheet.insertRule(`@keyframes ${name} ${rule}`, stylesheet.cssRules.length);
+      }
+      const animation = node.style.animation || '';
+      node.style.animation = `${animation ? `${animation}, ` : ``}${name} ${duration}ms linear ${delay}ms 1 both`;
+      active += 1;
+      return name;
+  }
+  function delete_rule(node, name) {
+      const previous = (node.style.animation || '').split(', ');
+      const next = previous.filter(name
+          ? anim => anim.indexOf(name) < 0 // remove specific animation
+          : anim => anim.indexOf('__svelte') === -1 // remove all Svelte animations
+      );
+      const deleted = previous.length - next.length;
+      if (deleted) {
+          node.style.animation = next.join(', ');
+          active -= deleted;
+          if (!active)
+              clear_rules();
+      }
+  }
+  function clear_rules() {
+      raf(() => {
+          if (active)
+              return;
+          active_docs.forEach(doc => {
+              const stylesheet = doc.__svelte_stylesheet;
+              let i = stylesheet.cssRules.length;
+              while (i--)
+                  stylesheet.deleteRule(i);
+              doc.__svelte_rules = {};
+          });
+          active_docs.clear();
+      });
+  }
+
   let current_component;
   function set_current_component(component) {
       current_component = component;
@@ -12457,6 +12596,12 @@ var app = (function () {
   }
   function onMount(fn) {
       get_current_component().$$.on_mount.push(fn);
+  }
+  function afterUpdate(fn) {
+      get_current_component().$$.after_update.push(fn);
+  }
+  function onDestroy(fn) {
+      get_current_component().$$.on_destroy.push(fn);
   }
   function createEventDispatcher() {
       const component = get_current_component();
@@ -12500,6 +12645,9 @@ var app = (function () {
   }
   function add_render_callback(fn) {
       render_callbacks.push(fn);
+  }
+  function add_flush_callback(fn) {
+      flush_callbacks.push(fn);
   }
   let flushing = false;
   const seen_callbacks = new Set();
@@ -12549,6 +12697,20 @@ var app = (function () {
           $$.after_update.forEach(add_render_callback);
       }
   }
+
+  let promise;
+  function wait() {
+      if (!promise) {
+          promise = Promise.resolve();
+          promise.then(() => {
+              promise = null;
+          });
+      }
+      return promise;
+  }
+  function dispatch(node, direction, kind) {
+      node.dispatchEvent(custom_event(`${direction ? 'intro' : 'outro'}${kind}`));
+  }
   const outroing = new Set();
   let outros;
   function group_outros() {
@@ -12585,6 +12747,125 @@ var app = (function () {
           });
           block.o(local);
       }
+  }
+  const null_transition = { duration: 0 };
+  function create_in_transition(node, fn, params) {
+      let config = fn(node, params);
+      let running = false;
+      let animation_name;
+      let task;
+      let uid = 0;
+      function cleanup() {
+          if (animation_name)
+              delete_rule(node, animation_name);
+      }
+      function go() {
+          const { delay = 0, duration = 300, easing = identity, tick = noop, css } = config || null_transition;
+          if (css)
+              animation_name = create_rule(node, 0, 1, duration, delay, easing, css, uid++);
+          tick(0, 1);
+          const start_time = now() + delay;
+          const end_time = start_time + duration;
+          if (task)
+              task.abort();
+          running = true;
+          add_render_callback(() => dispatch(node, true, 'start'));
+          task = loop(now => {
+              if (running) {
+                  if (now >= end_time) {
+                      tick(1, 0);
+                      dispatch(node, true, 'end');
+                      cleanup();
+                      return running = false;
+                  }
+                  if (now >= start_time) {
+                      const t = easing((now - start_time) / duration);
+                      tick(t, 1 - t);
+                  }
+              }
+              return running;
+          });
+      }
+      let started = false;
+      return {
+          start() {
+              if (started)
+                  return;
+              delete_rule(node);
+              if (is_function(config)) {
+                  config = config();
+                  wait().then(go);
+              }
+              else {
+                  go();
+              }
+          },
+          invalidate() {
+              started = false;
+          },
+          end() {
+              if (running) {
+                  cleanup();
+                  running = false;
+              }
+          }
+      };
+  }
+  function create_out_transition(node, fn, params) {
+      let config = fn(node, params);
+      let running = true;
+      let animation_name;
+      const group = outros;
+      group.r += 1;
+      function go() {
+          const { delay = 0, duration = 300, easing = identity, tick = noop, css } = config || null_transition;
+          if (css)
+              animation_name = create_rule(node, 1, 0, duration, delay, easing, css);
+          const start_time = now() + delay;
+          const end_time = start_time + duration;
+          add_render_callback(() => dispatch(node, false, 'start'));
+          loop(now => {
+              if (running) {
+                  if (now >= end_time) {
+                      tick(0, 1);
+                      dispatch(node, false, 'end');
+                      if (!--group.r) {
+                          // this will result in `end()` being called,
+                          // so we don't need to clean up here
+                          run_all(group.c);
+                      }
+                      return false;
+                  }
+                  if (now >= start_time) {
+                      const t = easing((now - start_time) / duration);
+                      tick(1 - t, t);
+                  }
+              }
+              return running;
+          });
+      }
+      if (is_function(config)) {
+          wait().then(() => {
+              // @ts-ignore
+              config = config();
+              go();
+          });
+      }
+      else {
+          go();
+      }
+      return {
+          end(reset) {
+              if (reset && config.tick) {
+                  config.tick(1, 0);
+              }
+              if (running) {
+                  if (animation_name)
+                      delete_rule(node, animation_name);
+                  running = false;
+              }
+          }
+      };
   }
 
   const globals = (typeof window !== 'undefined'
@@ -12680,6 +12961,14 @@ var app = (function () {
               throw new Error(`Cannot have duplicate keys in a keyed each`);
           }
           keys.add(key);
+      }
+  }
+
+  function bind(component, name, callback) {
+      const index = component.$$.props[name];
+      if (index !== undefined) {
+          component.$$.bound[index] = callback;
+          callback(component.$$.ctx[index]);
       }
   }
   function create_component(block) {
@@ -13704,7 +13993,7 @@ var app = (function () {
   	}
   }
 
-  var bind = function bind(fn, thisArg) {
+  var bind$1 = function bind(fn, thisArg) {
     return function wrap() {
       var args = new Array(arguments.length);
       for (var i = 0; i < args.length; i++) {
@@ -14016,7 +14305,7 @@ var app = (function () {
   function extend(a, b, thisArg) {
     forEach(b, function assignValue(val, key) {
       if (thisArg && typeof val === 'function') {
-        a[key] = bind(val, thisArg);
+        a[key] = bind$1(val, thisArg);
       } else {
         a[key] = val;
       }
@@ -15113,7 +15402,7 @@ var app = (function () {
    */
   function createInstance(defaultConfig) {
     var context = new Axios_1(defaultConfig);
-    var instance = bind(Axios_1.prototype.request, context);
+    var instance = bind$1(Axios_1.prototype.request, context);
 
     // Copy axios.prototype to instance
     utils.extend(instance, Axios_1.prototype, context);
@@ -19894,271 +20183,443 @@ var app = (function () {
   const file$8 = "src/Paginas/Taboleiro.svelte";
 
   function create_fragment$9(ctx) {
-  	let div10;
-  	let div0;
-  	let svg;
-  	let path0;
-  	let path1;
-  	let path2;
-  	let t0;
+  	let div34;
+  	let div5;
   	let div4;
   	let div3;
   	let div2;
-  	let div1;
-  	let h1;
-  	let t2;
+  	let div0;
+  	let h10;
+  	let t1;
   	let p0;
-  	let t4;
-  	let div5;
-  	let img0;
-  	let img0_src_value;
+  	let t3;
+  	let div1;
+  	let a;
+  	let i;
   	let t5;
-  	let section;
-  	let div9;
-  	let div8;
+  	let t6;
   	let div7;
-  	let h4;
-  	let t7;
+  	let div6;
+  	let h11;
+  	let t8;
   	let p1;
   	let t9;
-  	let p2;
+  	let br0;
+  	let t10;
   	let t11;
-  	let div6;
-  	let a0;
+  	let div24;
+  	let div11;
+  	let div10;
+  	let div8;
+  	let p2;
+  	let t12;
+  	let br1;
+  	let t13;
+  	let t14;
+  	let div9;
+  	let img0;
+  	let img0_src_value;
+  	let t15;
+  	let div15;
+  	let div14;
+  	let div12;
+  	let p3;
+  	let t16;
+  	let br2;
+  	let t17;
+  	let t18;
+  	let div13;
   	let img1;
   	let img1_src_value;
-  	let t12;
-  	let br;
-  	let t13;
-  	let a1;
-  	let t15;
-  	let t16;
-  	let p3;
-  	let strong;
-  	let t18;
-  	let ul;
-  	let li0;
+  	let t19;
+  	let div19;
+  	let div18;
+  	let div16;
+  	let p4;
   	let t20;
-  	let li1;
+  	let br3;
+  	let t21;
   	let t22;
-  	let li2;
+  	let div17;
+  	let img2;
+  	let img2_src_value;
+  	let t23;
+  	let div23;
+  	let div22;
+  	let div20;
+  	let p5;
   	let t24;
-  	let li3;
+  	let br4;
+  	let t25;
   	let t26;
-  	let li4;
-  	let t28;
-  	let li5;
-  	let t30;
+  	let div21;
+  	let img3;
+  	let img3_src_value;
+  	let t27;
+  	let div26;
+  	let div25;
+  	let h12;
+  	let t29;
+  	let p6;
+  	let t31;
+  	let div33;
+  	let div27;
+  	let p7;
+  	let t33;
+  	let div28;
+  	let p8;
+  	let t35;
+  	let div29;
+  	let p9;
+  	let t37;
+  	let div30;
+  	let p10;
+  	let t39;
+  	let div31;
+  	let p11;
+  	let t41;
+  	let div32;
+  	let p12;
+  	let t43;
   	let footer;
   	let current;
   	footer = new Footer({ $$inline: true });
 
   	const block = {
   		c: function create() {
-  			div10 = element("div");
-  			div0 = element("div");
-  			svg = svg_element("svg");
-  			path0 = svg_element("path");
-  			path1 = svg_element("path");
-  			path2 = svg_element("path");
-  			t0 = space();
+  			div34 = element("div");
+  			div5 = element("div");
   			div4 = element("div");
   			div3 = element("div");
   			div2 = element("div");
-  			div1 = element("div");
-  			h1 = element("h1");
-  			h1.textContent = "Bos días,";
-  			t2 = space();
+  			div0 = element("div");
+  			h10 = element("h1");
+  			h10.textContent = "Bos días,";
+  			t1 = space();
   			p0 = element("p");
   			p0.textContent = "Benvido a GaliciaWeather";
-  			t4 = space();
-  			div5 = element("div");
-  			img0 = element("img");
-  			t5 = space();
-  			section = element("section");
-  			div9 = element("div");
-  			div8 = element("div");
+  			t3 = space();
+  			div1 = element("div");
+  			a = element("a");
+  			i = element("i");
+  			i.textContent = "info_outline\n                            ";
+  			t5 = text("Info");
+  			t6 = space();
   			div7 = element("div");
-  			h4 = element("h4");
-  			h4.textContent = "GaliciaWeather";
-  			t7 = space();
-  			p1 = element("p");
-  			p1.textContent = "Versión 1.2.1.";
-  			t9 = space();
-  			p2 = element("p");
-  			p2.textContent = "Esta aplicación está susentada pola base de datos de Openweathermaps.";
-  			t11 = space();
   			div6 = element("div");
-  			a0 = element("a");
-  			img1 = element("img");
-  			t12 = space();
-  			br = element("br");
-  			t13 = text("Esta obra está baixo unha ");
-  			a1 = element("a");
-  			a1.textContent = "Licenza Creative Commons\n                            Atribución-NonComercial-CompartirIgual 4.0 Internacional";
-  			t15 = text(".");
-  			t16 = space();
+  			h11 = element("h1");
+  			h11.textContent = "Escolle a túa cidade favorita";
+  			t8 = space();
+  			p1 = element("p");
+  			t9 = text("Podes elexir as ilustracións das cidades ");
+  			br0 = element("br");
+  			t10 = text("para poñer no muro principal.");
+  			t11 = space();
+  			div24 = element("div");
+  			div11 = element("div");
+  			div10 = element("div");
+  			div8 = element("div");
+  			p2 = element("p");
+  			t12 = text("Santiago de Compostela");
+  			br1 = element("br");
+  			t13 = text("A Coruña");
+  			t14 = space();
+  			div9 = element("div");
+  			img0 = element("img");
+  			t15 = space();
+  			div15 = element("div");
+  			div14 = element("div");
+  			div12 = element("div");
   			p3 = element("p");
-  			strong = element("strong");
-  			strong.textContent = "Actualizacións nas que estamos\n                            traballando";
+  			t16 = text("Santiago de Compostela");
+  			br2 = element("br");
+  			t17 = text("A Coruña");
   			t18 = space();
-  			ul = element("ul");
-  			li0 = element("li");
-  			li0.textContent = "1- Sistema de temas do tempo para escoller ilustracións da túa cidade para o pronostico do\n                            tempo.";
-  			t20 = space();
-  			li1 = element("li");
-  			li1.textContent = "2- Engadir un widget";
+  			div13 = element("div");
+  			img1 = element("img");
+  			t19 = space();
+  			div19 = element("div");
+  			div18 = element("div");
+  			div16 = element("div");
+  			p4 = element("p");
+  			t20 = text("Santiago de Compostela");
+  			br3 = element("br");
+  			t21 = text("A Coruña");
   			t22 = space();
-  			li2 = element("li");
-  			li2.textContent = "3- Melloras de rendimento xeral da aplicación";
-  			t24 = space();
-  			li3 = element("li");
-  			li3.textContent = "4- Sistema de alertas meterolóxicas";
+  			div17 = element("div");
+  			img2 = element("img");
+  			t23 = space();
+  			div23 = element("div");
+  			div22 = element("div");
+  			div20 = element("div");
+  			p5 = element("p");
+  			t24 = text("Santiago de Compostela");
+  			br4 = element("br");
+  			t25 = text("A Coruña");
   			t26 = space();
-  			li4 = element("li");
-  			li4.textContent = "5- Notificacións Push";
-  			t28 = space();
-  			li5 = element("li");
-  			li5.textContent = "6- Melloras no diseño";
-  			t30 = space();
+  			div21 = element("div");
+  			img3 = element("img");
+  			t27 = space();
+  			div26 = element("div");
+  			div25 = element("div");
+  			h12 = element("h1");
+  			h12.textContent = "Oportunidades";
+  			t29 = space();
+  			p6 = element("p");
+  			p6.textContent = "Pack de ilustracións de cidades para o pronóstico do tempo";
+  			t31 = space();
+  			div33 = element("div");
+  			div27 = element("div");
+  			p7 = element("p");
+  			p7.textContent = "Santiago de Compostela";
+  			t33 = space();
+  			div28 = element("div");
+  			p8 = element("p");
+  			p8.textContent = "Vigo";
+  			t35 = space();
+  			div29 = element("div");
+  			p9 = element("p");
+  			p9.textContent = "Ribadeo";
+  			t37 = space();
+  			div30 = element("div");
+  			p10 = element("p");
+  			p10.textContent = "Santiago de Compostela";
+  			t39 = space();
+  			div31 = element("div");
+  			p11 = element("p");
+  			p11.textContent = "Vigo";
+  			t41 = space();
+  			div32 = element("div");
+  			p12 = element("p");
+  			p12.textContent = "Ribadeo";
+  			t43 = space();
   			create_component(footer.$$.fragment);
-  			attr_dev(path0, "class", "elementor-shape-fill");
-  			attr_dev(path0, "opacity", "0.33");
-  			attr_dev(path0, "d", "M473,67.3c-203.9,88.3-263.1-34-320.3,0C66,119.1,0,59.7,0,59.7V0h1000v59.7 c0,0-62.1,26.1-94.9,29.3c-32.8,3.3-62.8-12.3-75.8-22.1C806,49.6,745.3,8.7,694.9,4.7S492.4,59,473,67.3z");
-  			add_location(path0, file$8, 7, 12, 271);
-  			attr_dev(path1, "class", "elementor-shape-fill");
-  			attr_dev(path1, "opacity", "0.66");
-  			attr_dev(path1, "d", "M734,67.3c-45.5,0-77.2-23.2-129.1-39.1c-28.6-8.7-150.3-10.1-254,39.1 s-91.7-34.4-149.2,0C115.7,118.3,0,39.8,0,39.8V0h1000v36.5c0,0-28.2-18.5-92.1-18.5C810.2,18.1,775.7,67.3,734,67.3z");
-  			add_location(path1, file$8, 10, 12, 551);
-  			attr_dev(path2, "class", "elementor-shape-fill");
-  			attr_dev(path2, "d", "M766.1,28.9c-200-57.5-266,65.5-395.1,19.5C242,1.8,242,5.4,184.8,20.6C128,35.8,132.3,44.9,89.9,52.5C28.6,63.7,0,0,0,0 h1000c0,0-9.9,40.9-83.6,48.1S829.6,47,766.1,28.9z");
-  			add_location(path2, file$8, 13, 12, 837);
-  			attr_dev(svg, "xmlns", "http://www.w3.org/2000/svg");
-  			attr_dev(svg, "viewBox", "0 0 1000 100");
-  			attr_dev(svg, "preserveAspectRatio", "none");
-  			attr_dev(svg, "class", "shape-fill svelte-7qfs5q");
-  			add_location(svg, file$8, 6, 8, 149);
-  			attr_dev(div0, "class", "shape svelte-7qfs5q");
-  			attr_dev(div0, "data-negative", "false");
-  			add_location(div0, file$8, 5, 4, 99);
-  			attr_dev(h1, "class", "saudo svelte-7qfs5q");
-  			add_location(h1, file$8, 22, 20, 1272);
-  			add_location(p0, file$8, 23, 20, 1325);
-  			attr_dev(div1, "class", "benvida col s6 svelte-7qfs5q");
-  			add_location(div1, file$8, 21, 16, 1223);
-  			attr_dev(div2, "class", "caja_benvida col s12 svelte-7qfs5q");
-  			add_location(div2, file$8, 20, 12, 1172);
+  			attr_dev(h10, "class", "saudo svelte-1d3rx3i");
+  			add_location(h10, file$8, 11, 24, 307);
+  			add_location(p0, file$8, 12, 24, 364);
+  			attr_dev(div0, "class", "benvida col s6 svelte-1d3rx3i");
+  			add_location(div0, file$8, 10, 20, 254);
+  			attr_dev(i, "class", "material-icons left");
+  			add_location(i, file$8, 15, 88, 550);
+  			attr_dev(a, "class", "right waves-effect waves-light transparent btn-small");
+  			add_location(a, file$8, 15, 24, 486);
+  			attr_dev(div1, "class", "info");
+  			add_location(div1, file$8, 14, 20, 443);
+  			attr_dev(div2, "class", "caja_benvida col s12 svelte-1d3rx3i");
+  			add_location(div2, file$8, 9, 16, 199);
   			attr_dev(div3, "class", "row");
-  			add_location(div3, file$8, 19, 8, 1142);
+  			add_location(div3, file$8, 8, 12, 165);
   			attr_dev(div4, "class", "container");
-  			add_location(div4, file$8, 18, 4, 1110);
-  			attr_dev(img0, "class", "center svelte-7qfs5q");
-  			if (img0.src !== (img0_src_value = "/images/Banner_ilustracions.png")) attr_dev(img0, "src", img0_src_value);
+  			add_location(div4, file$8, 7, 8, 129);
+  			attr_dev(div5, "class", "header svelte-1d3rx3i");
+  			add_location(div5, file$8, 6, 4, 100);
+  			attr_dev(h11, "class", "taboleiro_titulo svelte-1d3rx3i");
+  			add_location(h11, file$8, 26, 12, 839);
+  			add_location(br0, file$8, 27, 79, 982);
+  			attr_dev(p1, "class", "taboleiro_text svelte-1d3rx3i");
+  			add_location(p1, file$8, 27, 12, 915);
+  			attr_dev(div6, "class", "favoritos_tit");
+  			add_location(div6, file$8, 25, 8, 799);
+  			attr_dev(div7, "class", "container");
+  			add_location(div7, file$8, 24, 4, 767);
+  			add_location(br1, file$8, 36, 69, 1267);
+  			attr_dev(p2, "class", "nome_cidade_Big svelte-1d3rx3i");
+  			add_location(p2, file$8, 36, 20, 1218);
+  			attr_dev(div8, "class", "col s10");
+  			add_location(div8, file$8, 35, 16, 1176);
+  			attr_dev(img0, "class", "nome_cidade_Big svelte-1d3rx3i");
+  			if (img0.src !== (img0_src_value = "/images/descargar/btn_descargar.png")) attr_dev(img0, "src", img0_src_value);
   			attr_dev(img0, "alt", "");
-  			add_location(img0, file$8, 33, 8, 1686);
-  			attr_dev(div5, "class", "banner svelte-7qfs5q");
-  			add_location(div5, file$8, 32, 4, 1657);
-  			attr_dev(h4, "class", "about-tit svelte-7qfs5q");
-  			add_location(h4, file$8, 87, 20, 3593);
-  			attr_dev(p1, "class", "about-version svelte-7qfs5q");
-  			add_location(p1, file$8, 88, 20, 3655);
-  			attr_dev(p2, "class", "about-txt svelte-7qfs5q");
-  			add_location(p2, file$8, 89, 20, 3719);
-  			attr_dev(img1, "alt", "Licenza Creative Commons");
-  			set_style(img1, "border-width", "0");
-  			if (img1.src !== (img1_src_value = "https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png")) attr_dev(img1, "src", img1_src_value);
-  			add_location(img1, file$8, 94, 28, 4022);
-  			attr_dev(a0, "class", "about-txt center svelte-7qfs5q");
-  			attr_dev(a0, "rel", "license");
-  			attr_dev(a0, "href", "http://creativecommons.org/licenses/by-nc-sa/4.0/");
-  			add_location(a0, file$8, 92, 50, 3866);
-  			add_location(br, file$8, 96, 28, 4205);
-  			attr_dev(a1, "class", "about-txt center svelte-7qfs5q");
-  			attr_dev(a1, "rel", "license");
-  			attr_dev(a1, "href", "http://creativecommons.org/licenses/by-nc-sa/4.0/");
-  			add_location(a1, file$8, 96, 60, 4237);
-  			attr_dev(div6, "class", "about-txt center svelte-7qfs5q");
-  			add_location(div6, file$8, 92, 20, 3836);
-  			attr_dev(strong, "class", "white-text");
-  			add_location(strong, file$8, 100, 46, 4532);
-  			attr_dev(p3, "class", "about-textoDos svelte-7qfs5q");
-  			add_location(p3, file$8, 100, 20, 4506);
-  			add_location(li0, file$8, 103, 24, 4722);
-  			add_location(li1, file$8, 105, 24, 4882);
-  			add_location(li2, file$8, 106, 24, 4936);
-  			add_location(li3, file$8, 107, 24, 5016);
-  			add_location(li4, file$8, 108, 24, 5086);
-  			add_location(li5, file$8, 109, 24, 5142);
-  			attr_dev(ul, "class", "white-text left-align");
-  			add_location(ul, file$8, 102, 20, 4663);
-  			attr_dev(div7, "class", "col s12 center-align");
-  			add_location(div7, file$8, 86, 16, 3538);
-  			attr_dev(div8, "class", "row");
-  			add_location(div8, file$8, 85, 12, 3504);
-  			attr_dev(div9, "class", "container");
-  			add_location(div9, file$8, 84, 8, 3468);
-  			add_location(section, file$8, 83, 4, 3450);
-  			attr_dev(div10, "class", "fondo svelte-7qfs5q");
-  			add_location(div10, file$8, 4, 0, 75);
+  			add_location(img0, file$8, 39, 20, 1364);
+  			attr_dev(div9, "class", "col s2");
+  			add_location(div9, file$8, 38, 16, 1323);
+  			attr_dev(div10, "class", "row svelte-1d3rx3i");
+  			add_location(div10, file$8, 34, 12, 1142);
+  			attr_dev(div11, "class", "cidadeBig santiagoCompostelaBig svelte-1d3rx3i");
+  			add_location(div11, file$8, 33, 8, 1084);
+  			add_location(br2, file$8, 46, 69, 1691);
+  			attr_dev(p3, "class", "nome_cidade_Big svelte-1d3rx3i");
+  			add_location(p3, file$8, 46, 20, 1642);
+  			attr_dev(div12, "class", "col s10");
+  			add_location(div12, file$8, 45, 16, 1600);
+  			attr_dev(img1, "class", "nome_cidade_Big svelte-1d3rx3i");
+  			if (img1.src !== (img1_src_value = "/images/descargar/btn_descargar.png")) attr_dev(img1, "src", img1_src_value);
+  			attr_dev(img1, "alt", "");
+  			add_location(img1, file$8, 49, 20, 1788);
+  			attr_dev(div13, "class", "col s2");
+  			add_location(div13, file$8, 48, 16, 1747);
+  			attr_dev(div14, "class", "row svelte-1d3rx3i");
+  			add_location(div14, file$8, 44, 12, 1566);
+  			attr_dev(div15, "class", "cidadeBig santiagoCompostelaBig svelte-1d3rx3i");
+  			add_location(div15, file$8, 43, 8, 1508);
+  			add_location(br3, file$8, 56, 69, 2115);
+  			attr_dev(p4, "class", "nome_cidade_Big svelte-1d3rx3i");
+  			add_location(p4, file$8, 56, 20, 2066);
+  			attr_dev(div16, "class", "col s10");
+  			add_location(div16, file$8, 55, 16, 2024);
+  			attr_dev(img2, "class", "nome_cidade_Big svelte-1d3rx3i");
+  			if (img2.src !== (img2_src_value = "/images/descargar/btn_descargar.png")) attr_dev(img2, "src", img2_src_value);
+  			attr_dev(img2, "alt", "");
+  			add_location(img2, file$8, 59, 20, 2212);
+  			attr_dev(div17, "class", "col s2");
+  			add_location(div17, file$8, 58, 16, 2171);
+  			attr_dev(div18, "class", "row svelte-1d3rx3i");
+  			add_location(div18, file$8, 54, 12, 1990);
+  			attr_dev(div19, "class", "cidadeBig santiagoCompostelaBig svelte-1d3rx3i");
+  			add_location(div19, file$8, 53, 8, 1932);
+  			add_location(br4, file$8, 66, 69, 2539);
+  			attr_dev(p5, "class", "nome_cidade_Big svelte-1d3rx3i");
+  			add_location(p5, file$8, 66, 20, 2490);
+  			attr_dev(div20, "class", "col s10");
+  			add_location(div20, file$8, 65, 16, 2448);
+  			attr_dev(img3, "class", "nome_cidade_Big svelte-1d3rx3i");
+  			if (img3.src !== (img3_src_value = "/images/descargar/btn_descargar.png")) attr_dev(img3, "src", img3_src_value);
+  			attr_dev(img3, "alt", "");
+  			add_location(img3, file$8, 69, 20, 2636);
+  			attr_dev(div21, "class", "col s2");
+  			add_location(div21, file$8, 68, 16, 2595);
+  			attr_dev(div22, "class", "row svelte-1d3rx3i");
+  			add_location(div22, file$8, 64, 12, 2414);
+  			attr_dev(div23, "class", "cidadeBig santiagoCompostelaBig svelte-1d3rx3i");
+  			add_location(div23, file$8, 63, 8, 2356);
+  			attr_dev(div24, "class", "favoritos svelte-1d3rx3i");
+  			add_location(div24, file$8, 32, 4, 1052);
+  			attr_dev(h12, "class", "taboleiro_titulo svelte-1d3rx3i");
+  			add_location(h12, file$8, 77, 12, 2860);
+  			attr_dev(p6, "class", "taboleiro_text svelte-1d3rx3i");
+  			add_location(p6, file$8, 78, 12, 2920);
+  			attr_dev(div25, "class", "favoritos_tit");
+  			add_location(div25, file$8, 76, 8, 2820);
+  			attr_dev(div26, "class", "container");
+  			add_location(div26, file$8, 75, 4, 2788);
+  			attr_dev(p7, "class", "nome_cidade svelte-1d3rx3i");
+  			add_location(p7, file$8, 84, 12, 3124);
+  			attr_dev(div27, "class", "cidade santiagoCompostela svelte-1d3rx3i");
+  			add_location(div27, file$8, 83, 8, 3072);
+  			attr_dev(p8, "class", "nome_cidade svelte-1d3rx3i");
+  			add_location(p8, file$8, 87, 12, 3235);
+  			attr_dev(div28, "class", "cidade vigo svelte-1d3rx3i");
+  			add_location(div28, file$8, 86, 8, 3197);
+  			attr_dev(p9, "class", "nome_cidade svelte-1d3rx3i");
+  			add_location(p9, file$8, 90, 12, 3331);
+  			attr_dev(div29, "class", "cidade ribadeo svelte-1d3rx3i");
+  			add_location(div29, file$8, 89, 8, 3290);
+  			attr_dev(p10, "class", "nome_cidade svelte-1d3rx3i");
+  			add_location(p10, file$8, 93, 12, 3441);
+  			attr_dev(div30, "class", "cidade santiagoCompostela svelte-1d3rx3i");
+  			add_location(div30, file$8, 92, 8, 3389);
+  			attr_dev(p11, "class", "nome_cidade svelte-1d3rx3i");
+  			add_location(p11, file$8, 96, 12, 3552);
+  			attr_dev(div31, "class", "cidade vigo svelte-1d3rx3i");
+  			add_location(div31, file$8, 95, 8, 3514);
+  			attr_dev(p12, "class", "nome_cidade svelte-1d3rx3i");
+  			add_location(p12, file$8, 99, 12, 3648);
+  			attr_dev(div32, "class", "cidade ribadeo svelte-1d3rx3i");
+  			add_location(div32, file$8, 98, 8, 3607);
+  			attr_dev(div33, "class", "favoritos svelte-1d3rx3i");
+  			add_location(div33, file$8, 82, 4, 3040);
+  			attr_dev(div34, "class", "fondo svelte-1d3rx3i");
+  			add_location(div34, file$8, 4, 0, 75);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
   		},
   		m: function mount(target, anchor) {
-  			insert_dev(target, div10, anchor);
-  			append_dev(div10, div0);
-  			append_dev(div0, svg);
-  			append_dev(svg, path0);
-  			append_dev(svg, path1);
-  			append_dev(svg, path2);
-  			append_dev(div10, t0);
-  			append_dev(div10, div4);
+  			insert_dev(target, div34, anchor);
+  			append_dev(div34, div5);
+  			append_dev(div5, div4);
   			append_dev(div4, div3);
   			append_dev(div3, div2);
+  			append_dev(div2, div0);
+  			append_dev(div0, h10);
+  			append_dev(div0, t1);
+  			append_dev(div0, p0);
+  			append_dev(div2, t3);
   			append_dev(div2, div1);
-  			append_dev(div1, h1);
-  			append_dev(div1, t2);
-  			append_dev(div1, p0);
-  			append_dev(div10, t4);
-  			append_dev(div10, div5);
-  			append_dev(div5, img0);
-  			append_dev(div10, t5);
-  			append_dev(div10, section);
-  			append_dev(section, div9);
-  			append_dev(div9, div8);
-  			append_dev(div8, div7);
-  			append_dev(div7, h4);
-  			append_dev(div7, t7);
-  			append_dev(div7, p1);
-  			append_dev(div7, t9);
-  			append_dev(div7, p2);
-  			append_dev(div7, t11);
+  			append_dev(div1, a);
+  			append_dev(a, i);
+  			append_dev(a, t5);
+  			append_dev(div34, t6);
+  			append_dev(div34, div7);
   			append_dev(div7, div6);
-  			append_dev(div6, a0);
-  			append_dev(a0, img1);
-  			append_dev(a0, t12);
-  			append_dev(div6, br);
-  			append_dev(div6, t13);
-  			append_dev(div6, a1);
-  			append_dev(div6, t15);
-  			append_dev(div7, t16);
-  			append_dev(div7, p3);
-  			append_dev(p3, strong);
-  			append_dev(div7, t18);
-  			append_dev(div7, ul);
-  			append_dev(ul, li0);
-  			append_dev(ul, t20);
-  			append_dev(ul, li1);
-  			append_dev(ul, t22);
-  			append_dev(ul, li2);
-  			append_dev(ul, t24);
-  			append_dev(ul, li3);
-  			append_dev(ul, t26);
-  			append_dev(ul, li4);
-  			append_dev(ul, t28);
-  			append_dev(ul, li5);
-  			append_dev(div10, t30);
-  			mount_component(footer, div10, null);
+  			append_dev(div6, h11);
+  			append_dev(div6, t8);
+  			append_dev(div6, p1);
+  			append_dev(p1, t9);
+  			append_dev(p1, br0);
+  			append_dev(p1, t10);
+  			append_dev(div34, t11);
+  			append_dev(div34, div24);
+  			append_dev(div24, div11);
+  			append_dev(div11, div10);
+  			append_dev(div10, div8);
+  			append_dev(div8, p2);
+  			append_dev(p2, t12);
+  			append_dev(p2, br1);
+  			append_dev(p2, t13);
+  			append_dev(div10, t14);
+  			append_dev(div10, div9);
+  			append_dev(div9, img0);
+  			append_dev(div24, t15);
+  			append_dev(div24, div15);
+  			append_dev(div15, div14);
+  			append_dev(div14, div12);
+  			append_dev(div12, p3);
+  			append_dev(p3, t16);
+  			append_dev(p3, br2);
+  			append_dev(p3, t17);
+  			append_dev(div14, t18);
+  			append_dev(div14, div13);
+  			append_dev(div13, img1);
+  			append_dev(div24, t19);
+  			append_dev(div24, div19);
+  			append_dev(div19, div18);
+  			append_dev(div18, div16);
+  			append_dev(div16, p4);
+  			append_dev(p4, t20);
+  			append_dev(p4, br3);
+  			append_dev(p4, t21);
+  			append_dev(div18, t22);
+  			append_dev(div18, div17);
+  			append_dev(div17, img2);
+  			append_dev(div24, t23);
+  			append_dev(div24, div23);
+  			append_dev(div23, div22);
+  			append_dev(div22, div20);
+  			append_dev(div20, p5);
+  			append_dev(p5, t24);
+  			append_dev(p5, br4);
+  			append_dev(p5, t25);
+  			append_dev(div22, t26);
+  			append_dev(div22, div21);
+  			append_dev(div21, img3);
+  			append_dev(div34, t27);
+  			append_dev(div34, div26);
+  			append_dev(div26, div25);
+  			append_dev(div25, h12);
+  			append_dev(div25, t29);
+  			append_dev(div25, p6);
+  			append_dev(div34, t31);
+  			append_dev(div34, div33);
+  			append_dev(div33, div27);
+  			append_dev(div27, p7);
+  			append_dev(div33, t33);
+  			append_dev(div33, div28);
+  			append_dev(div28, p8);
+  			append_dev(div33, t35);
+  			append_dev(div33, div29);
+  			append_dev(div29, p9);
+  			append_dev(div33, t37);
+  			append_dev(div33, div30);
+  			append_dev(div30, p10);
+  			append_dev(div33, t39);
+  			append_dev(div33, div31);
+  			append_dev(div31, p11);
+  			append_dev(div33, t41);
+  			append_dev(div33, div32);
+  			append_dev(div32, p12);
+  			append_dev(div34, t43);
+  			mount_component(footer, div34, null);
   			current = true;
   		},
   		p: noop,
@@ -20172,7 +20633,7 @@ var app = (function () {
   			current = false;
   		},
   		d: function destroy(detaching) {
-  			if (detaching) detach_dev(div10);
+  			if (detaching) detach_dev(div34);
   			destroy_component(footer);
   		}
   	};
@@ -20215,10 +20676,2343 @@ var app = (function () {
   	}
   }
 
-  /* src/Componentes/Cardbusqueda.svelte generated by Svelte v3.25.0 */
-  const file$9 = "src/Componentes/Cardbusqueda.svelte";
+  function cubicOut(t) {
+      const f = t - 1.0;
+      return f * f * f + 1.0;
+  }
+
+  function fade(node, { delay = 0, duration = 400, easing = identity }) {
+      const o = +getComputedStyle(node).opacity;
+      return {
+          delay,
+          duration,
+          easing,
+          css: t => `opacity: ${t * o}`
+      };
+  }
+  function fly(node, { delay = 0, duration = 400, easing = cubicOut, x = 0, y = 0, opacity = 0 }) {
+      const style = getComputedStyle(node);
+      const target_opacity = +style.opacity;
+      const transform = style.transform === 'none' ? '' : style.transform;
+      const od = target_opacity * (1 - opacity);
+      return {
+          delay,
+          duration,
+          easing,
+          css: (t, u) => `
+			transform: ${transform} translate(${(1 - t) * x}px, ${(1 - t) * y}px);
+			opacity: ${target_opacity - (od * u)}`
+      };
+  }
+
+  /* src/Componentes/Draggabledraw.svelte generated by Svelte v3.25.0 */
+
+  const { Object: Object_1$1 } = globals;
+  const file$9 = "src/Componentes/Draggabledraw.svelte";
+  const get_right_slot_changes = dirty => ({});
+  const get_right_slot_context = ctx => ({});
+  const get_left_slot_changes = dirty => ({});
+  const get_left_slot_context = ctx => ({});
+
+  // (318:0) {#if visible}
+  function create_if_block$3(ctx) {
+  	let div6;
+  	let div2;
+  	let div1;
+  	let div0;
+  	let div2_intro;
+  	let div2_outro;
+  	let t0;
+  	let div5;
+  	let div4;
+  	let t1;
+  	let div3;
+  	let t2;
+  	let div5_intro;
+  	let div5_outro;
+  	let div6_intro;
+  	let div6_outro;
+  	let current;
+  	const default_slot_template = /*#slots*/ ctx[11].default;
+  	const default_slot = create_slot(default_slot_template, ctx, /*$$scope*/ ctx[10], null);
+
+  	function select_block_type(ctx, dirty) {
+  		if (/*undraggeble*/ ctx[3]) return create_if_block_1$1;
+  		return create_else_block$2;
+  	}
+
+  	let current_block_type = select_block_type(ctx);
+  	let if_block = current_block_type(ctx);
+  	const left_slot_template = /*#slots*/ ctx[11].left;
+  	const left_slot = create_slot(left_slot_template, ctx, /*$$scope*/ ctx[10], get_left_slot_context);
+  	const right_slot_template = /*#slots*/ ctx[11].right;
+  	const right_slot = create_slot(right_slot_template, ctx, /*$$scope*/ ctx[10], get_right_slot_context);
+
+  	const block = {
+  		c: function create() {
+  			div6 = element("div");
+  			div2 = element("div");
+  			div1 = element("div");
+  			div0 = element("div");
+  			if (default_slot) default_slot.c();
+  			t0 = space();
+  			div5 = element("div");
+  			div4 = element("div");
+  			if_block.c();
+  			t1 = space();
+  			div3 = element("div");
+  			if (left_slot) left_slot.c();
+  			t2 = space();
+  			if (right_slot) right_slot.c();
+  			attr_dev(div0, "class", "content svelte-7p4yd0");
+  			add_location(div0, file$9, 330, 8, 9205);
+  			attr_dev(div1, "class", "innercontent svelte-7p4yd0");
+  			add_location(div1, file$9, 329, 6, 9169);
+  			set_style(div2, "overflow-y", /*overflow*/ ctx[9]);
+  			set_style(div2, "min-height", /*minVH*/ ctx[2] + "vh");
+  			set_style(div2, "max-height", /*maxVH*/ ctx[1] + "vh");
+  			attr_dev(div2, "class", "inner svelte-7p4yd0");
+  			add_location(div2, file$9, 323, 4, 8944);
+  			attr_dev(div3, "class", "actionsDiv svelte-7p4yd0");
+  			add_location(div3, file$9, 354, 8, 9813);
+  			add_location(div4, file$9, 342, 6, 9478);
+  			attr_dev(div5, "class", "linewrapper svelte-7p4yd0");
+  			attr_dev(div5, "draggable", "true");
+  			add_location(div5, file$9, 336, 4, 9296);
+  			attr_dev(div6, "class", "wrapper svelte-7p4yd0");
+  			add_location(div6, file$9, 318, 2, 8820);
+  		},
+  		m: function mount(target, anchor) {
+  			insert_dev(target, div6, anchor);
+  			append_dev(div6, div2);
+  			append_dev(div2, div1);
+  			append_dev(div1, div0);
+
+  			if (default_slot) {
+  				default_slot.m(div0, null);
+  			}
+
+  			/*div2_binding*/ ctx[12](div2);
+  			append_dev(div6, t0);
+  			append_dev(div6, div5);
+  			append_dev(div5, div4);
+  			if_block.m(div4, null);
+  			append_dev(div4, t1);
+  			append_dev(div4, div3);
+
+  			if (left_slot) {
+  				left_slot.m(div3, null);
+  			}
+
+  			append_dev(div3, t2);
+
+  			if (right_slot) {
+  				right_slot.m(div3, null);
+  			}
+
+  			/*div3_binding*/ ctx[15](div3);
+  			/*div5_binding*/ ctx[16](div5);
+  			/*div6_binding*/ ctx[17](div6);
+  			current = true;
+  		},
+  		p: function update(ctx, dirty) {
+  			if (default_slot) {
+  				if (default_slot.p && dirty[0] & /*$$scope*/ 1024) {
+  					update_slot(default_slot, default_slot_template, ctx, /*$$scope*/ ctx[10], dirty, null, null);
+  				}
+  			}
+
+  			if (!current || dirty[0] & /*overflow*/ 512) {
+  				set_style(div2, "overflow-y", /*overflow*/ ctx[9]);
+  			}
+
+  			if (!current || dirty[0] & /*minVH*/ 4) {
+  				set_style(div2, "min-height", /*minVH*/ ctx[2] + "vh");
+  			}
+
+  			if (!current || dirty[0] & /*maxVH*/ 2) {
+  				set_style(div2, "max-height", /*maxVH*/ ctx[1] + "vh");
+  			}
+
+  			if (current_block_type === (current_block_type = select_block_type(ctx)) && if_block) {
+  				if_block.p(ctx, dirty);
+  			} else {
+  				if_block.d(1);
+  				if_block = current_block_type(ctx);
+
+  				if (if_block) {
+  					if_block.c();
+  					if_block.m(div4, t1);
+  				}
+  			}
+
+  			if (left_slot) {
+  				if (left_slot.p && dirty[0] & /*$$scope*/ 1024) {
+  					update_slot(left_slot, left_slot_template, ctx, /*$$scope*/ ctx[10], dirty, get_left_slot_changes, get_left_slot_context);
+  				}
+  			}
+
+  			if (right_slot) {
+  				if (right_slot.p && dirty[0] & /*$$scope*/ 1024) {
+  					update_slot(right_slot, right_slot_template, ctx, /*$$scope*/ ctx[10], dirty, get_right_slot_changes, get_right_slot_context);
+  				}
+  			}
+  		},
+  		i: function intro(local) {
+  			if (current) return;
+  			transition_in(default_slot, local);
+
+  			add_render_callback(() => {
+  				if (div2_outro) div2_outro.end(1);
+  				if (!div2_intro) div2_intro = create_in_transition(div2, fly, { y: 2000, duration: 250 });
+  				div2_intro.start();
+  			});
+
+  			transition_in(left_slot, local);
+  			transition_in(right_slot, local);
+
+  			add_render_callback(() => {
+  				if (div5_outro) div5_outro.end(1);
+  				if (!div5_intro) div5_intro = create_in_transition(div5, fly, { y: 2000, duration: 250 });
+  				div5_intro.start();
+  			});
+
+  			add_render_callback(() => {
+  				if (div6_outro) div6_outro.end(1);
+  				if (!div6_intro) div6_intro = create_in_transition(div6, fade, { duration: 250 });
+  				div6_intro.start();
+  			});
+
+  			current = true;
+  		},
+  		o: function outro(local) {
+  			transition_out(default_slot, local);
+  			if (div2_intro) div2_intro.invalidate();
+  			div2_outro = create_out_transition(div2, fly, { y: 1000, duration: 750 });
+  			transition_out(left_slot, local);
+  			transition_out(right_slot, local);
+  			if (div5_intro) div5_intro.invalidate();
+  			div5_outro = create_out_transition(div5, fly, { y: 1000, duration: 750 });
+  			if (div6_intro) div6_intro.invalidate();
+  			div6_outro = create_out_transition(div6, fade, { duration: 350 });
+  			current = false;
+  		},
+  		d: function destroy(detaching) {
+  			if (detaching) detach_dev(div6);
+  			if (default_slot) default_slot.d(detaching);
+  			/*div2_binding*/ ctx[12](null);
+  			if (detaching && div2_outro) div2_outro.end();
+  			if_block.d();
+  			if (left_slot) left_slot.d(detaching);
+  			if (right_slot) right_slot.d(detaching);
+  			/*div3_binding*/ ctx[15](null);
+  			/*div5_binding*/ ctx[16](null);
+  			if (detaching && div5_outro) div5_outro.end();
+  			/*div6_binding*/ ctx[17](null);
+  			if (detaching && div6_outro) div6_outro.end();
+  		}
+  	};
+
+  	dispatch_dev("SvelteRegisterBlock", {
+  		block,
+  		id: create_if_block$3.name,
+  		type: "if",
+  		source: "(318:0) {#if visible}",
+  		ctx
+  	});
+
+  	return block;
+  }
+
+  // (351:8) {:else}
+  function create_else_block$2(ctx) {
+  	let div;
+
+  	const block = {
+  		c: function create() {
+  			div = element("div");
+  			attr_dev(div, "class", "line svelte-7p4yd0");
+  			add_location(div, file$9, 351, 10, 9749);
+  		},
+  		m: function mount(target, anchor) {
+  			insert_dev(target, div, anchor);
+  			/*div_binding*/ ctx[14](div);
+  		},
+  		p: noop,
+  		d: function destroy(detaching) {
+  			if (detaching) detach_dev(div);
+  			/*div_binding*/ ctx[14](null);
+  		}
+  	};
+
+  	dispatch_dev("SvelteRegisterBlock", {
+  		block,
+  		id: create_else_block$2.name,
+  		type: "else",
+  		source: "(351:8) {:else}",
+  		ctx
+  	});
+
+  	return block;
+  }
+
+  // (344:8) {#if undraggeble}
+  function create_if_block_1$1(ctx) {
+  	let img;
+  	let img_src_value;
+
+  	const block = {
+  		c: function create() {
+  			img = element("img");
+  			if (img.src !== (img_src_value = "/assets/cross_primary.svg")) attr_dev(img, "src", img_src_value);
+  			attr_dev(img, "alt", "X");
+  			attr_dev(img, "class", "crossimg svelte-7p4yd0");
+  			set_style(img, "cursor", /*undraggeble*/ ctx[3] ? "pointer" : "move");
+  			add_location(img, file$9, 344, 10, 9522);
+  		},
+  		m: function mount(target, anchor) {
+  			insert_dev(target, img, anchor);
+  			/*img_binding*/ ctx[13](img);
+  		},
+  		p: function update(ctx, dirty) {
+  			if (dirty[0] & /*undraggeble*/ 8) {
+  				set_style(img, "cursor", /*undraggeble*/ ctx[3] ? "pointer" : "move");
+  			}
+  		},
+  		d: function destroy(detaching) {
+  			if (detaching) detach_dev(img);
+  			/*img_binding*/ ctx[13](null);
+  		}
+  	};
+
+  	dispatch_dev("SvelteRegisterBlock", {
+  		block,
+  		id: create_if_block_1$1.name,
+  		type: "if",
+  		source: "(344:8) {#if undraggeble}",
+  		ctx
+  	});
+
+  	return block;
+  }
 
   function create_fragment$a(ctx) {
+  	let if_block_anchor;
+  	let current;
+  	let if_block = /*visible*/ ctx[0] && create_if_block$3(ctx);
+
+  	const block = {
+  		c: function create() {
+  			if (if_block) if_block.c();
+  			if_block_anchor = empty();
+  		},
+  		l: function claim(nodes) {
+  			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+  		},
+  		m: function mount(target, anchor) {
+  			if (if_block) if_block.m(target, anchor);
+  			insert_dev(target, if_block_anchor, anchor);
+  			current = true;
+  		},
+  		p: function update(ctx, dirty) {
+  			if (/*visible*/ ctx[0]) {
+  				if (if_block) {
+  					if_block.p(ctx, dirty);
+
+  					if (dirty[0] & /*visible*/ 1) {
+  						transition_in(if_block, 1);
+  					}
+  				} else {
+  					if_block = create_if_block$3(ctx);
+  					if_block.c();
+  					transition_in(if_block, 1);
+  					if_block.m(if_block_anchor.parentNode, if_block_anchor);
+  				}
+  			} else if (if_block) {
+  				group_outros();
+
+  				transition_out(if_block, 1, 1, () => {
+  					if_block = null;
+  				});
+
+  				check_outros();
+  			}
+  		},
+  		i: function intro(local) {
+  			if (current) return;
+  			transition_in(if_block);
+  			current = true;
+  		},
+  		o: function outro(local) {
+  			transition_out(if_block);
+  			current = false;
+  		},
+  		d: function destroy(detaching) {
+  			if (if_block) if_block.d(detaching);
+  			if (detaching) detach_dev(if_block_anchor);
+  		}
+  	};
+
+  	dispatch_dev("SvelteRegisterBlock", {
+  		block,
+  		id: create_fragment$a.name,
+  		type: "component",
+  		source: "",
+  		ctx
+  	});
+
+  	return block;
+  }
+
+  function getOffset(element) {
+  	let xPosition = 0;
+  	let yPosition = 0;
+
+  	while (element) {
+  		yPosition += element.offsetTop - element.scrollTop + element.clientTop;
+  		xPosition += element.offsetLeft - element.scrollLeft + element.clientLeft;
+  		element = element.offsetParent;
+  	}
+
+  	return { xPosition, yPosition };
+  }
+
+  function instance$a($$self, $$props, $$invalidate) {
+  	let { $$slots: slots = {}, $$scope } = $$props;
+  	validate_slots("Draggabledraw", slots, ['default','left','right']);
+  	let { visible = true } = $$props;
+  	let { maxVH = 90 } = $$props;
+  	let { minVH = 85 } = $$props;
+  	let stopExpand, initialized = false;
+  	let undraggeble = true;
+  	let inner, lineWrapper, wrapper, line, actionsDiv, overflow;
+  	let origHeight, origBottom, maxWidth, lastPageY, value, per_viewportHeight = 0;
+  	let touchStartHandler, touchMoveHandler, touchPoint;
+
+  	window.addEventListener("resize", () => {
+  		if (visible) {
+  			maxWidth = getComputedStyle(inner).width;
+  			$$invalidate(5, lineWrapper.style.width = maxWidth, lineWrapper);
+  		}
+  	});
+
+  	afterUpdate(() => {
+  		if (visible && !initialized) {
+  			origHeight = parseInt(getComputedStyle(inner).maxHeight.split("px")[0]);
+  			maxWidth = getComputedStyle(inner).width;
+  			$$invalidate(5, lineWrapper.style.width = maxWidth, lineWrapper);
+  			initialize();
+  			initialized = true;
+  			blockDrag();
+  		} else if (!visible) {
+  			lastPageY = undefined;
+  			initialized = false;
+  			stopExpand = false;
+  		}
+
+  		if (visible) {
+  			// updated the linewrapper position
+  			let innerOffset = getOffset(inner);
+
+  			$$invalidate(5, lineWrapper.style.top = innerOffset.yPosition + "px", lineWrapper);
+  			$$invalidate(5, lineWrapper.style.left = innerOffset.xPosition + "px", lineWrapper);
+  			$$invalidate(8, actionsDiv.style.width = lineWrapper.style.width, actionsDiv);
+  		}
+  	});
+
+  	onMount(() => {
+  		let vh = getComputedStyle(wrapper).height.split("px")[0] / 100;
+
+  		if (getComputedStyle(inner).height.split("px")[0] > vh * 85) {
+  			$$invalidate(9, overflow = "scroll");
+  		} else {
+  			$$invalidate(9, overflow = "inherit");
+  		}
+
+  		initialize();
+  		$$invalidate(3, undraggeble = document.ontouchmove === undefined && typeof window.orientation !== "undefined");
+  		origBottom = getComputedStyle(inner).bottom;
+
+  		setTimeout(
+  			() => {
+  				maxWidth = getComputedStyle(inner).width;
+  				$$invalidate(5, lineWrapper.style.width = maxWidth, lineWrapper);
+  			},
+  			500
+  		);
+  	});
+
+  	function initialize() {
+  		per_viewportHeight = parseInt(getComputedStyle(inner).minHeight.split("px")[0]) / minVH;
+
+  		if (document.ontouchmove === null) {
+  			// touch move supported
+  			// passive event listener: checkout https://www.chromestatus.com/feature/5745543795965952
+  			var supportsPassive = false;
+
+  			try {
+  				var opts = Object.defineProperty({}, "passive", {
+  					get() {
+  						supportsPassive = true;
+  					}
+  				});
+
+  				window.addEventListener("testPassive", null, opts);
+  				window.removeEventListener("testPassive", null, opts);
+  			} catch(e) {
+  				
+  			}
+
+  			// add event listener
+  			lineWrapper.addEventListener("touchmove", moveElement, supportsPassive ? { passive: true } : false);
+
+  			lineWrapper.addEventListener("touchend", closeElement, supportsPassive ? { passive: true } : false);
+  			return;
+  		} else if (undraggeble) {
+  			// touch move not supported and is mobile version
+  			line.addEventListener("click", () => {
+  				closeElement(1);
+  			});
+  		}
+
+  		// desktop version
+  		lineWrapper.addEventListener("dragstart", e => {
+  			e = e || window.event;
+  			e.preventDefault();
+  			document.addEventListener("mousemove", moveElement);
+  			document.addEventListener("mouseup", closeElement);
+  		});
+  	}
+
+  	function moveElement(e) {
+  		if (!inner) {
+  			return;
+  		}
+
+  		let touchLocation = document.ontouchmove === null
+  		? e.targetTouches[0].pageY
+  		: e.clientY;
+
+  		let minBottomExpo = 1.5;
+
+  		if (lastPageY === undefined) {
+  			lastPageY = touchLocation;
+  		}
+
+  		if (lastPageY <= touchLocation) {
+  			// user is dragging down the lineWrapper
+  			let botton = getComputedStyle(inner).bottom;
+
+  			value = parseInt(botton.split("px")[0]);
+  			$$invalidate(4, inner.style.bottom = value - Math.abs(touchLocation - lastPageY) + "px", inner);
+  			lastPageY = touchLocation;
+
+  			if (Math.abs(value * minBottomExpo) > origHeight) {
+  				closeElement(1);
+  			}
+  		} else {
+  			// user is dragging up the lineWrapper
+  			innerHeight = parseInt(inner.style.maxHeight.split("px")[0]);
+
+  			innerHeight = isNaN(innerHeight) ? 0 : innerHeight;
+
+  			if (innerHeight <= maxVH * per_viewportHeight) {
+  				let maxHeight = getComputedStyle(inner).maxHeight;
+  				value = parseInt(maxHeight.split("px")[0]);
+  				$$invalidate(4, inner.style.maxHeight = value + Math.abs(touchLocation - lastPageY) + "px", inner);
+  				lastPageY = touchLocation;
+  			} else {
+  				stopExpand = true;
+  			}
+  		}
+  	}
+
+  	function closeElement(e) {
+  		unblockDrag();
+  		value = 0;
+  		lastPageY = undefined;
+  		document.removeEventListener("mousemove", moveElement);
+
+  		if (Math.abs(value * 5) > origHeight || e === 1) {
+  			$$invalidate(0, visible = false);
+  		} else if (inner && visible) {
+  			$$invalidate(4, inner.style.bottom = origBottom, inner);
+  		}
+  	}
+
+  	function blockDrag() {
+  		(function () {
+  			// Only needed for touch events on chrome.
+  			if ((window.chrome || navigator.userAgent.match("CriOS")) && "ontouchstart" in document.documentElement) {
+  				touchStartHandler = function () {
+  					// Only need to handle single-touch cases
+  					touchPoint = event.touches.length === 1
+  					? event.touches[0].clientY
+  					: null;
+  				};
+
+  				touchMoveHandler = function (event) {
+  					var newTouchPoint;
+
+  					// Only need to handle single-touch cases
+  					if (event.touches.length !== 1) {
+  						touchPoint = null;
+  						return;
+  					}
+
+  					// We only need to defaultPrevent when scrolling up
+  					newTouchPoint = event.touches[0].clientY;
+
+  					if (newTouchPoint > touchPoint) {
+  						event.preventDefault();
+  					}
+
+  					touchPoint = newTouchPoint;
+  				};
+
+  				document.addEventListener("touchstart", touchStartHandler, { passive: false });
+  				document.addEventListener("touchmove", touchMoveHandler, { passive: false });
+  			}
+  		})();
+  	}
+
+  	function unblockDrag() {
+  		if ((window.chrome || navigator.userAgent.match("CriOS")) && "ontouchstart" in document.documentElement) {
+  			document.removeEventListener("touchstart", touchStartHandler);
+  			document.removeEventListener("touchmove", touchMoveHandler);
+  		}
+  	}
+
+  	const writable_props = ["visible", "maxVH", "minVH"];
+
+  	Object_1$1.keys($$props).forEach(key => {
+  		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<Draggabledraw> was created with unknown prop '${key}'`);
+  	});
+
+  	function div2_binding($$value) {
+  		binding_callbacks[$$value ? "unshift" : "push"](() => {
+  			inner = $$value;
+  			$$invalidate(4, inner);
+  		});
+  	}
+
+  	function img_binding($$value) {
+  		binding_callbacks[$$value ? "unshift" : "push"](() => {
+  			line = $$value;
+  			$$invalidate(7, line);
+  		});
+  	}
+
+  	function div_binding($$value) {
+  		binding_callbacks[$$value ? "unshift" : "push"](() => {
+  			line = $$value;
+  			$$invalidate(7, line);
+  		});
+  	}
+
+  	function div3_binding($$value) {
+  		binding_callbacks[$$value ? "unshift" : "push"](() => {
+  			actionsDiv = $$value;
+  			$$invalidate(8, actionsDiv);
+  		});
+  	}
+
+  	function div5_binding($$value) {
+  		binding_callbacks[$$value ? "unshift" : "push"](() => {
+  			lineWrapper = $$value;
+  			$$invalidate(5, lineWrapper);
+  		});
+  	}
+
+  	function div6_binding($$value) {
+  		binding_callbacks[$$value ? "unshift" : "push"](() => {
+  			wrapper = $$value;
+  			$$invalidate(6, wrapper);
+  		});
+  	}
+
+  	$$self.$$set = $$props => {
+  		if ("visible" in $$props) $$invalidate(0, visible = $$props.visible);
+  		if ("maxVH" in $$props) $$invalidate(1, maxVH = $$props.maxVH);
+  		if ("minVH" in $$props) $$invalidate(2, minVH = $$props.minVH);
+  		if ("$$scope" in $$props) $$invalidate(10, $$scope = $$props.$$scope);
+  	};
+
+  	$$self.$capture_state = () => ({
+  		afterUpdate,
+  		tick,
+  		onMount,
+  		onDestroy,
+  		fly,
+  		fade,
+  		visible,
+  		maxVH,
+  		minVH,
+  		stopExpand,
+  		initialized,
+  		undraggeble,
+  		inner,
+  		lineWrapper,
+  		wrapper,
+  		line,
+  		actionsDiv,
+  		overflow,
+  		origHeight,
+  		origBottom,
+  		maxWidth,
+  		lastPageY,
+  		value,
+  		per_viewportHeight,
+  		touchStartHandler,
+  		touchMoveHandler,
+  		touchPoint,
+  		initialize,
+  		moveElement,
+  		closeElement,
+  		blockDrag,
+  		unblockDrag,
+  		getOffset
+  	});
+
+  	$$self.$inject_state = $$props => {
+  		if ("visible" in $$props) $$invalidate(0, visible = $$props.visible);
+  		if ("maxVH" in $$props) $$invalidate(1, maxVH = $$props.maxVH);
+  		if ("minVH" in $$props) $$invalidate(2, minVH = $$props.minVH);
+  		if ("stopExpand" in $$props) stopExpand = $$props.stopExpand;
+  		if ("initialized" in $$props) initialized = $$props.initialized;
+  		if ("undraggeble" in $$props) $$invalidate(3, undraggeble = $$props.undraggeble);
+  		if ("inner" in $$props) $$invalidate(4, inner = $$props.inner);
+  		if ("lineWrapper" in $$props) $$invalidate(5, lineWrapper = $$props.lineWrapper);
+  		if ("wrapper" in $$props) $$invalidate(6, wrapper = $$props.wrapper);
+  		if ("line" in $$props) $$invalidate(7, line = $$props.line);
+  		if ("actionsDiv" in $$props) $$invalidate(8, actionsDiv = $$props.actionsDiv);
+  		if ("overflow" in $$props) $$invalidate(9, overflow = $$props.overflow);
+  		if ("origHeight" in $$props) origHeight = $$props.origHeight;
+  		if ("origBottom" in $$props) origBottom = $$props.origBottom;
+  		if ("maxWidth" in $$props) maxWidth = $$props.maxWidth;
+  		if ("lastPageY" in $$props) lastPageY = $$props.lastPageY;
+  		if ("value" in $$props) value = $$props.value;
+  		if ("per_viewportHeight" in $$props) per_viewportHeight = $$props.per_viewportHeight;
+  		if ("touchStartHandler" in $$props) touchStartHandler = $$props.touchStartHandler;
+  		if ("touchMoveHandler" in $$props) touchMoveHandler = $$props.touchMoveHandler;
+  		if ("touchPoint" in $$props) touchPoint = $$props.touchPoint;
+  	};
+
+  	if ($$props && "$$inject" in $$props) {
+  		$$self.$inject_state($$props.$$inject);
+  	}
+
+  	return [
+  		visible,
+  		maxVH,
+  		minVH,
+  		undraggeble,
+  		inner,
+  		lineWrapper,
+  		wrapper,
+  		line,
+  		actionsDiv,
+  		overflow,
+  		$$scope,
+  		slots,
+  		div2_binding,
+  		img_binding,
+  		div_binding,
+  		div3_binding,
+  		div5_binding,
+  		div6_binding
+  	];
+  }
+
+  class Draggabledraw extends SvelteComponentDev {
+  	constructor(options) {
+  		super(options);
+  		init(this, options, instance$a, create_fragment$a, safe_not_equal, { visible: 0, maxVH: 1, minVH: 2 }, [-1, -1]);
+
+  		dispatch_dev("SvelteRegisterComponent", {
+  			component: this,
+  			tagName: "Draggabledraw",
+  			options,
+  			id: create_fragment$a.name
+  		});
+  	}
+
+  	get visible() {
+  		throw new Error("<Draggabledraw>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+  	}
+
+  	set visible(value) {
+  		throw new Error("<Draggabledraw>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+  	}
+
+  	get maxVH() {
+  		throw new Error("<Draggabledraw>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+  	}
+
+  	set maxVH(value) {
+  		throw new Error("<Draggabledraw>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+  	}
+
+  	get minVH() {
+  		throw new Error("<Draggabledraw>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+  	}
+
+  	set minVH(value) {
+  		throw new Error("<Draggabledraw>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+  	}
+  }
+
+  /* src/Componentes/Carddias.svelte generated by Svelte v3.25.0 */
+
+  const { console: console_1$5 } = globals;
+  const file$a = "src/Componentes/Carddias.svelte";
+
+  function create_fragment$b(ctx) {
+  	let div45;
+  	let div44;
+  	let div43;
+  	let div42;
+  	let div6;
+  	let div1;
+  	let p0;
+  	let t1;
+  	let div0;
+  	let p1;
+  	let t2;
+  	let t3;
+  	let t4;
+  	let t5;
+  	let div2;
+  	let img0;
+  	let img0_src_value;
+  	let t6;
+  	let div3;
+  	let p2;
+  	let span0;
+  	let t7;
+  	let t8;
+  	let div4;
+  	let p3;
+  	let t9_value = Math.round(/*DtempmaxM*/ ctx[0]) + "";
+  	let t9;
+  	let t10;
+  	let t11;
+  	let div5;
+  	let p4;
+  	let t12_value = Math.round(/*DtempminM*/ ctx[1]) + "";
+  	let t12;
+  	let t13;
+  	let t14;
+  	let div13;
+  	let div8;
+  	let p5;
+  	let t15;
+  	let t16;
+  	let div7;
+  	let p6;
+  	let t17;
+  	let t18;
+  	let t19;
+  	let t20;
+  	let div9;
+  	let img1;
+  	let img1_src_value;
+  	let t21;
+  	let div10;
+  	let p7;
+  	let span1;
+  	let t22;
+  	let t23;
+  	let div11;
+  	let p8;
+  	let t24_value = Math.round(/*DtempmaxP*/ ctx[3]) + "";
+  	let t24;
+  	let t25;
+  	let t26;
+  	let div12;
+  	let p9;
+  	let t27_value = Math.round(/*DtempminP*/ ctx[4]) + "";
+  	let t27;
+  	let t28;
+  	let t29;
+  	let div20;
+  	let div15;
+  	let p10;
+  	let t30;
+  	let t31;
+  	let div14;
+  	let p11;
+  	let t32;
+  	let t33;
+  	let t34;
+  	let t35;
+  	let div16;
+  	let img2;
+  	let img2_src_value;
+  	let t36;
+  	let div17;
+  	let p12;
+  	let span2;
+  	let t37;
+  	let t38;
+  	let div18;
+  	let p13;
+  	let t39_value = Math.round(/*DtempmaxEnDosDias*/ ctx[6]) + "";
+  	let t39;
+  	let t40;
+  	let t41;
+  	let div19;
+  	let p14;
+  	let t42_value = Math.round(/*DtempminEnDosDias*/ ctx[7]) + "";
+  	let t42;
+  	let t43;
+  	let t44;
+  	let div27;
+  	let div22;
+  	let p15;
+  	let t45;
+  	let t46;
+  	let div21;
+  	let p16;
+  	let t47;
+  	let t48;
+  	let t49;
+  	let t50;
+  	let div23;
+  	let img3;
+  	let img3_src_value;
+  	let t51;
+  	let div24;
+  	let p17;
+  	let span3;
+  	let t52;
+  	let t53;
+  	let div25;
+  	let p18;
+  	let t54_value = Math.round(/*DtempmaxEnTresDias*/ ctx[9]) + "";
+  	let t54;
+  	let t55;
+  	let t56;
+  	let div26;
+  	let p19;
+  	let t57_value = Math.round(/*DtempminEnTresDias*/ ctx[10]) + "";
+  	let t57;
+  	let t58;
+  	let t59;
+  	let div34;
+  	let div29;
+  	let p20;
+  	let t60;
+  	let t61;
+  	let div28;
+  	let p21;
+  	let t62;
+  	let t63;
+  	let t64;
+  	let t65;
+  	let div30;
+  	let img4;
+  	let img4_src_value;
+  	let t66;
+  	let div31;
+  	let p22;
+  	let span4;
+  	let t67;
+  	let t68;
+  	let div32;
+  	let p23;
+  	let t69_value = Math.round(/*DtempmaxEnCuatroDias*/ ctx[12]) + "";
+  	let t69;
+  	let t70;
+  	let t71;
+  	let div33;
+  	let p24;
+  	let t72_value = Math.round(/*DtempminEnCuatroDias*/ ctx[13]) + "";
+  	let t72;
+  	let t73;
+  	let t74;
+  	let div41;
+  	let div36;
+  	let p25;
+  	let t75;
+  	let t76;
+  	let div35;
+  	let p26;
+  	let t77;
+  	let t78;
+  	let t79;
+  	let t80;
+  	let div37;
+  	let img5;
+  	let img5_src_value;
+  	let t81;
+  	let div38;
+  	let p27;
+  	let span5;
+  	let t82;
+  	let t83;
+  	let div39;
+  	let p28;
+  	let t84_value = Math.round(/*DtempmaxEnCincoDias*/ ctx[15]) + "";
+  	let t84;
+  	let t85;
+  	let t86;
+  	let div40;
+  	let p29;
+  	let t87_value = Math.round(/*DtempminEnCincoDias*/ ctx[16]) + "";
+  	let t87;
+  	let t88;
+
+  	const block = {
+  		c: function create() {
+  			div45 = element("div");
+  			div44 = element("div");
+  			div43 = element("div");
+  			div42 = element("div");
+  			div6 = element("div");
+  			div1 = element("div");
+  			p0 = element("p");
+  			p0.textContent = "Mañá";
+  			t1 = space();
+  			div0 = element("div");
+  			p1 = element("p");
+  			t2 = text(/*diatimesdiaManana*/ ctx[24]);
+  			t3 = text(" de ");
+  			t4 = text(/*mestimesdiaManana*/ ctx[25]);
+  			t5 = space();
+  			div2 = element("div");
+  			img0 = element("img");
+  			t6 = space();
+  			div3 = element("div");
+  			p2 = element("p");
+  			span0 = element("span");
+  			t7 = text(/*DdescripcionManana*/ ctx[18]);
+  			t8 = space();
+  			div4 = element("div");
+  			p3 = element("p");
+  			t9 = text(t9_value);
+  			t10 = text("°C");
+  			t11 = space();
+  			div5 = element("div");
+  			p4 = element("p");
+  			t12 = text(t12_value);
+  			t13 = text("°C");
+  			t14 = space();
+  			div13 = element("div");
+  			div8 = element("div");
+  			p5 = element("p");
+  			t15 = text(/*nombresemanadiadosPasado*/ ctx[26]);
+  			t16 = space();
+  			div7 = element("div");
+  			p6 = element("p");
+  			t17 = text(/*diatimesdiadosPasado*/ ctx[27]);
+  			t18 = text(" de ");
+  			t19 = text(/*mestimesdiadosPasado*/ ctx[28]);
+  			t20 = space();
+  			div9 = element("div");
+  			img1 = element("img");
+  			t21 = space();
+  			div10 = element("div");
+  			p7 = element("p");
+  			span1 = element("span");
+  			t22 = text(/*DdescripcionPasado*/ ctx[19]);
+  			t23 = space();
+  			div11 = element("div");
+  			p8 = element("p");
+  			t24 = text(t24_value);
+  			t25 = text("°C");
+  			t26 = space();
+  			div12 = element("div");
+  			p9 = element("p");
+  			t27 = text(t27_value);
+  			t28 = text("°C");
+  			t29 = space();
+  			div20 = element("div");
+  			div15 = element("div");
+  			p10 = element("p");
+  			t30 = text(/*nombresemanadiados*/ ctx[29]);
+  			t31 = space();
+  			div14 = element("div");
+  			p11 = element("p");
+  			t32 = text(/*diatimesdiados*/ ctx[30]);
+  			t33 = text(" de ");
+  			t34 = text(/*mestimesdiados*/ ctx[31]);
+  			t35 = space();
+  			div16 = element("div");
+  			img2 = element("img");
+  			t36 = space();
+  			div17 = element("div");
+  			p12 = element("p");
+  			span2 = element("span");
+  			t37 = text(/*DdescripcionEnDosDias*/ ctx[20]);
+  			t38 = space();
+  			div18 = element("div");
+  			p13 = element("p");
+  			t39 = text(t39_value);
+  			t40 = text("°C");
+  			t41 = space();
+  			div19 = element("div");
+  			p14 = element("p");
+  			t42 = text(t42_value);
+  			t43 = text("°C");
+  			t44 = space();
+  			div27 = element("div");
+  			div22 = element("div");
+  			p15 = element("p");
+  			t45 = text(/*nombresemanadiatres*/ ctx[32]);
+  			t46 = space();
+  			div21 = element("div");
+  			p16 = element("p");
+  			t47 = text(/*diatimesdiatres*/ ctx[33]);
+  			t48 = text(" de ");
+  			t49 = text(/*mestimesdiatres*/ ctx[34]);
+  			t50 = space();
+  			div23 = element("div");
+  			img3 = element("img");
+  			t51 = space();
+  			div24 = element("div");
+  			p17 = element("p");
+  			span3 = element("span");
+  			t52 = text(/*DdescripcionEnTresDias*/ ctx[21]);
+  			t53 = space();
+  			div25 = element("div");
+  			p18 = element("p");
+  			t54 = text(t54_value);
+  			t55 = text("°C");
+  			t56 = space();
+  			div26 = element("div");
+  			p19 = element("p");
+  			t57 = text(t57_value);
+  			t58 = text("°C");
+  			t59 = space();
+  			div34 = element("div");
+  			div29 = element("div");
+  			p20 = element("p");
+  			t60 = text(/*nombresemanadiacuatro*/ ctx[35]);
+  			t61 = space();
+  			div28 = element("div");
+  			p21 = element("p");
+  			t62 = text(/*diatimesdiacuatro*/ ctx[36]);
+  			t63 = text(" de ");
+  			t64 = text(/*mestimesdiacuatro*/ ctx[37]);
+  			t65 = space();
+  			div30 = element("div");
+  			img4 = element("img");
+  			t66 = space();
+  			div31 = element("div");
+  			p22 = element("p");
+  			span4 = element("span");
+  			t67 = text(/*DdescripcionEnCuatroDias*/ ctx[22]);
+  			t68 = space();
+  			div32 = element("div");
+  			p23 = element("p");
+  			t69 = text(t69_value);
+  			t70 = text("°C");
+  			t71 = space();
+  			div33 = element("div");
+  			p24 = element("p");
+  			t72 = text(t72_value);
+  			t73 = text("°C");
+  			t74 = space();
+  			div41 = element("div");
+  			div36 = element("div");
+  			p25 = element("p");
+  			t75 = text(/*nombresemanadiacinco*/ ctx[38]);
+  			t76 = space();
+  			div35 = element("div");
+  			p26 = element("p");
+  			t77 = text(/*diatimesdiacinco*/ ctx[39]);
+  			t78 = text(" de ");
+  			t79 = text(/*mestimesdiacinco*/ ctx[40]);
+  			t80 = space();
+  			div37 = element("div");
+  			img5 = element("img");
+  			t81 = space();
+  			div38 = element("div");
+  			p27 = element("p");
+  			span5 = element("span");
+  			t82 = text(/*DdescripcionEnCincoDias*/ ctx[23]);
+  			t83 = space();
+  			div39 = element("div");
+  			p28 = element("p");
+  			t84 = text(t84_value);
+  			t85 = text("°C");
+  			t86 = space();
+  			div40 = element("div");
+  			p29 = element("p");
+  			t87 = text(t87_value);
+  			t88 = text("°C");
+  			add_location(p0, file$a, 178, 24, 7220);
+  			add_location(p1, file$a, 181, 28, 7316);
+  			attr_dev(div0, "class", "tit-mes font-mes svelte-4rfikz");
+  			add_location(div0, file$a, 180, 24, 7257);
+  			attr_dev(div1, "class", "col s3 tit-diario");
+  			add_location(div1, file$a, 177, 20, 7164);
+  			if (img0.src !== (img0_src_value = "images/icons/" + /*DiconElementManana*/ ctx[2] + ".gif")) attr_dev(img0, "src", img0_src_value);
+  			attr_dev(img0, "alt", "");
+  			attr_dev(img0, "class", "svelte-4rfikz");
+  			add_location(img0, file$a, 185, 24, 7530);
+  			attr_dev(div2, "class", "col s2 weather-icon-manana  weather-icon center svelte-4rfikz");
+  			add_location(div2, file$a, 184, 20, 7444);
+  			attr_dev(span0, "class", "svelte-4rfikz");
+  			add_location(span0, file$a, 189, 28, 7757);
+  			attr_dev(p2, "class", "descripcionManana descripcion svelte-4rfikz");
+  			add_location(p2, file$a, 188, 24, 7687);
+  			attr_dev(div3, "class", "col s3 wrapper svelte-4rfikz");
+  			add_location(div3, file$a, 187, 20, 7634);
+  			add_location(p3, file$a, 193, 24, 7946);
+  			attr_dev(div4, "class", "col s2 tempmaxD tempmax-manana temp_font svelte-4rfikz");
+  			add_location(div4, file$a, 192, 20, 7867);
+  			add_location(p4, file$a, 196, 24, 8105);
+  			attr_dev(div5, "class", "col s2 tempminD tempmin-manana temp_font svelte-4rfikz");
+  			add_location(div5, file$a, 195, 20, 8026);
+  			attr_dev(div6, "class", "col s12 mas_una prox_dias centrarItems svelte-4rfikz");
+  			add_location(div6, file$a, 176, 16, 7091);
+  			add_location(p5, file$a, 202, 24, 8334);
+  			add_location(p6, file$a, 204, 28, 8458);
+  			attr_dev(div7, "class", "tit-mes_pasado font-mes svelte-4rfikz");
+  			add_location(div7, file$a, 203, 24, 8392);
+  			attr_dev(div8, "class", "col s3 tit-pasado");
+  			add_location(div8, file$a, 201, 20, 8278);
+  			if (img1.src !== (img1_src_value = "images/icons/" + /*DiconElementPasado*/ ctx[5] + ".gif")) attr_dev(img1, "src", img1_src_value);
+  			attr_dev(img1, "alt", "");
+  			attr_dev(img1, "class", "svelte-4rfikz");
+  			add_location(img1, file$a, 208, 24, 8677);
+  			attr_dev(div9, "class", "col s2 weather-icon-pasado weather-icon center svelte-4rfikz");
+  			add_location(div9, file$a, 207, 20, 8592);
+  			attr_dev(span1, "class", "svelte-4rfikz");
+  			add_location(span1, file$a, 212, 28, 8904);
+  			attr_dev(p7, "class", "descripcionPasado descripcion svelte-4rfikz");
+  			add_location(p7, file$a, 211, 24, 8834);
+  			attr_dev(div10, "class", "col s3 wrapper svelte-4rfikz");
+  			add_location(div10, file$a, 210, 20, 8781);
+  			add_location(p8, file$a, 216, 24, 9093);
+  			attr_dev(div11, "class", "col s2 tempmaxD tempmax-pasado temp_font svelte-4rfikz");
+  			add_location(div11, file$a, 215, 20, 9014);
+  			add_location(p9, file$a, 219, 24, 9252);
+  			attr_dev(div12, "class", "col s2 tempminD tempmin-pasado temp_font svelte-4rfikz");
+  			add_location(div12, file$a, 218, 20, 9173);
+  			attr_dev(div13, "class", "col s12 mas_dos prox_dias centrarItems svelte-4rfikz");
+  			add_location(div13, file$a, 200, 16, 8205);
+  			add_location(p10, file$a, 224, 24, 9486);
+  			add_location(p11, file$a, 226, 28, 9609);
+  			attr_dev(div14, "class", "tit-mes_en_dos_dias font-mes svelte-4rfikz");
+  			add_location(div14, file$a, 225, 24, 9538);
+  			attr_dev(div15, "class", "col s3 tit-en_dos_dias");
+  			add_location(div15, file$a, 223, 20, 9425);
+  			if (img2.src !== (img2_src_value = "images/icons/" + /*DiconElementEnDosDias*/ ctx[8] + ".gif")) attr_dev(img2, "src", img2_src_value);
+  			attr_dev(img2, "alt", "");
+  			attr_dev(img2, "class", "svelte-4rfikz");
+  			add_location(img2, file$a, 230, 24, 9821);
+  			attr_dev(div16, "class", "col s2 weather-icon-en_dos_dias weather-icon center svelte-4rfikz");
+  			add_location(div16, file$a, 229, 20, 9731);
+  			attr_dev(span2, "class", "svelte-4rfikz");
+  			add_location(span2, file$a, 234, 28, 10057);
+  			attr_dev(p12, "class", "descripcion-en_dos_dias descripcion svelte-4rfikz");
+  			add_location(p12, file$a, 233, 24, 9981);
+  			attr_dev(div17, "class", "col s3 wrapper svelte-4rfikz");
+  			add_location(div17, file$a, 232, 20, 9928);
+  			add_location(p13, file$a, 239, 24, 10255);
+  			attr_dev(div18, "class", "col s2 tempmaxD tempmax-en_dos_dias temp_font svelte-4rfikz");
+  			add_location(div18, file$a, 238, 20, 10171);
+  			add_location(p14, file$a, 242, 24, 10427);
+  			attr_dev(div19, "class", "col s2 tempminD tempmin-en_dos_dias temp_font svelte-4rfikz");
+  			add_location(div19, file$a, 241, 20, 10343);
+  			attr_dev(div20, "class", "col s12 mas_tres prox_dias centrarItems svelte-4rfikz");
+  			add_location(div20, file$a, 222, 16, 9351);
+  			add_location(p15, file$a, 247, 24, 10672);
+  			add_location(p16, file$a, 249, 28, 10797);
+  			attr_dev(div21, "class", "tit-mes_en_tres_dias font-mes svelte-4rfikz");
+  			add_location(div21, file$a, 248, 24, 10725);
+  			attr_dev(div22, "class", "col s3 tit-en_tres_dias");
+  			add_location(div22, file$a, 246, 20, 10610);
+  			if (img3.src !== (img3_src_value = "images/icons/" + /*DiconElementEnTresDias*/ ctx[11] + ".gif")) attr_dev(img3, "src", img3_src_value);
+  			attr_dev(img3, "alt", "");
+  			attr_dev(img3, "class", "svelte-4rfikz");
+  			add_location(img3, file$a, 253, 24, 11012);
+  			attr_dev(div23, "class", "col s2 weather-icon-en_tres_dias weather-icon center svelte-4rfikz");
+  			add_location(div23, file$a, 252, 20, 10921);
+  			attr_dev(span3, "class", "svelte-4rfikz");
+  			add_location(span3, file$a, 257, 28, 11250);
+  			attr_dev(p17, "class", "descripcion-en_tres_dias descripcion svelte-4rfikz");
+  			add_location(p17, file$a, 256, 24, 11173);
+  			attr_dev(div24, "class", "col s3 wrapper svelte-4rfikz");
+  			add_location(div24, file$a, 255, 20, 11120);
+  			add_location(p18, file$a, 261, 24, 11449);
+  			attr_dev(div25, "class", "col s2 tempmaxD tempmax-en_tres_dias temp_font svelte-4rfikz");
+  			add_location(div25, file$a, 260, 20, 11364);
+  			add_location(p19, file$a, 264, 24, 11623);
+  			attr_dev(div26, "class", "col s2 tempminD tempmin-en_tres_dias temp_font svelte-4rfikz");
+  			add_location(div26, file$a, 263, 20, 11538);
+  			attr_dev(div27, "class", "col s12 mas_cuatro prox_dias centrarItems svelte-4rfikz");
+  			add_location(div27, file$a, 245, 16, 10534);
+  			add_location(p20, file$a, 269, 24, 11870);
+  			add_location(p21, file$a, 271, 28, 11999);
+  			attr_dev(div28, "class", "tit-mes_en_cuatro_dias font-mes svelte-4rfikz");
+  			add_location(div28, file$a, 270, 24, 11925);
+  			attr_dev(div29, "class", "col s3 tit-en_cuatro_dias");
+  			add_location(div29, file$a, 268, 20, 11806);
+  			if (img4.src !== (img4_src_value = "images/icons/" + /*DiconElementEnCuatroDias*/ ctx[14] + ".gif")) attr_dev(img4, "src", img4_src_value);
+  			attr_dev(img4, "alt", "");
+  			attr_dev(img4, "class", "svelte-4rfikz");
+  			add_location(img4, file$a, 275, 24, 12220);
+  			attr_dev(div30, "class", "col s2 weather-icon-en_cuatro_dias weather-icon center svelte-4rfikz");
+  			add_location(div30, file$a, 274, 20, 12127);
+  			attr_dev(span4, "class", "svelte-4rfikz");
+  			add_location(span4, file$a, 279, 28, 12462);
+  			attr_dev(p22, "class", "descripcion-en_cuatro_dias descripcion svelte-4rfikz");
+  			add_location(p22, file$a, 278, 24, 12383);
+  			attr_dev(div31, "class", "col s3 wrapper svelte-4rfikz");
+  			add_location(div31, file$a, 277, 20, 12330);
+  			add_location(p23, file$a, 283, 24, 12665);
+  			attr_dev(div32, "class", "col s2 tempmaxD tempmax-en_cuatro_dias temp_font svelte-4rfikz");
+  			add_location(div32, file$a, 282, 20, 12578);
+  			add_location(p24, file$a, 286, 24, 12843);
+  			attr_dev(div33, "class", "col s2 tempminD tempmin-en_cuatro_dias temp_font svelte-4rfikz");
+  			add_location(div33, file$a, 285, 20, 12756);
+  			attr_dev(div34, "class", "col s12 mas_cinco prox_dias centrarItems svelte-4rfikz");
+  			add_location(div34, file$a, 267, 16, 11731);
+  			add_location(p25, file$a, 291, 24, 13090);
+  			add_location(p26, file$a, 293, 28, 13217);
+  			attr_dev(div35, "class", "tit-mes_en_cinco_dias font-mes svelte-4rfikz");
+  			add_location(div35, file$a, 292, 24, 13144);
+  			attr_dev(div36, "class", "col s3 tit-en_cinco_dias");
+  			add_location(div36, file$a, 290, 20, 13027);
+  			if (img5.src !== (img5_src_value = "images/icons/" + /*DiconElementEnCincoDias*/ ctx[17] + ".gif")) attr_dev(img5, "src", img5_src_value);
+  			attr_dev(img5, "alt", "");
+  			attr_dev(img5, "class", "svelte-4rfikz");
+  			add_location(img5, file$a, 297, 24, 13435);
+  			attr_dev(div37, "class", "col s2 weather-icon-en_cinco_dias weather-icon center svelte-4rfikz");
+  			add_location(div37, file$a, 296, 20, 13343);
+  			attr_dev(span5, "class", "svelte-4rfikz");
+  			add_location(span5, file$a, 301, 28, 13675);
+  			attr_dev(p27, "class", "descripcion-en_cinco_dias descripcion svelte-4rfikz");
+  			add_location(p27, file$a, 300, 24, 13597);
+  			attr_dev(div38, "class", "col s3 wrapper svelte-4rfikz");
+  			add_location(div38, file$a, 299, 20, 13544);
+  			add_location(p28, file$a, 305, 24, 13876);
+  			attr_dev(div39, "class", "col s2 tempmaxD tempmax-en_cinco_dias temp_font svelte-4rfikz");
+  			add_location(div39, file$a, 304, 20, 13790);
+  			add_location(p29, file$a, 308, 24, 14052);
+  			attr_dev(div40, "class", "col s2 tempminD tempmin-en_cinco_dias temp_font svelte-4rfikz");
+  			add_location(div40, file$a, 307, 20, 13966);
+  			attr_dev(div41, "class", "col s12 mas_seis prox_dias centrarItems svelte-4rfikz");
+  			add_location(div41, file$a, 289, 16, 12953);
+  			attr_dev(div42, "class", "row");
+  			add_location(div42, file$a, 174, 12, 7056);
+  			attr_dev(div43, "class", "pronos_dias svelte-4rfikz");
+  			add_location(div43, file$a, 173, 8, 7018);
+  			attr_dev(div44, "class", "container");
+  			add_location(div44, file$a, 172, 4, 6986);
+  			attr_dev(div45, "class", "col s12 datosTecnicosCard svelte-4rfikz");
+  			add_location(div45, file$a, 170, 0, 6941);
+  		},
+  		l: function claim(nodes) {
+  			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+  		},
+  		m: function mount(target, anchor) {
+  			insert_dev(target, div45, anchor);
+  			append_dev(div45, div44);
+  			append_dev(div44, div43);
+  			append_dev(div43, div42);
+  			append_dev(div42, div6);
+  			append_dev(div6, div1);
+  			append_dev(div1, p0);
+  			append_dev(div1, t1);
+  			append_dev(div1, div0);
+  			append_dev(div0, p1);
+  			append_dev(p1, t2);
+  			append_dev(p1, t3);
+  			append_dev(p1, t4);
+  			append_dev(div6, t5);
+  			append_dev(div6, div2);
+  			append_dev(div2, img0);
+  			append_dev(div6, t6);
+  			append_dev(div6, div3);
+  			append_dev(div3, p2);
+  			append_dev(p2, span0);
+  			append_dev(span0, t7);
+  			append_dev(div6, t8);
+  			append_dev(div6, div4);
+  			append_dev(div4, p3);
+  			append_dev(p3, t9);
+  			append_dev(p3, t10);
+  			append_dev(div6, t11);
+  			append_dev(div6, div5);
+  			append_dev(div5, p4);
+  			append_dev(p4, t12);
+  			append_dev(p4, t13);
+  			append_dev(div42, t14);
+  			append_dev(div42, div13);
+  			append_dev(div13, div8);
+  			append_dev(div8, p5);
+  			append_dev(p5, t15);
+  			append_dev(div8, t16);
+  			append_dev(div8, div7);
+  			append_dev(div7, p6);
+  			append_dev(p6, t17);
+  			append_dev(p6, t18);
+  			append_dev(p6, t19);
+  			append_dev(div13, t20);
+  			append_dev(div13, div9);
+  			append_dev(div9, img1);
+  			append_dev(div13, t21);
+  			append_dev(div13, div10);
+  			append_dev(div10, p7);
+  			append_dev(p7, span1);
+  			append_dev(span1, t22);
+  			append_dev(div13, t23);
+  			append_dev(div13, div11);
+  			append_dev(div11, p8);
+  			append_dev(p8, t24);
+  			append_dev(p8, t25);
+  			append_dev(div13, t26);
+  			append_dev(div13, div12);
+  			append_dev(div12, p9);
+  			append_dev(p9, t27);
+  			append_dev(p9, t28);
+  			append_dev(div42, t29);
+  			append_dev(div42, div20);
+  			append_dev(div20, div15);
+  			append_dev(div15, p10);
+  			append_dev(p10, t30);
+  			append_dev(div15, t31);
+  			append_dev(div15, div14);
+  			append_dev(div14, p11);
+  			append_dev(p11, t32);
+  			append_dev(p11, t33);
+  			append_dev(p11, t34);
+  			append_dev(div20, t35);
+  			append_dev(div20, div16);
+  			append_dev(div16, img2);
+  			append_dev(div20, t36);
+  			append_dev(div20, div17);
+  			append_dev(div17, p12);
+  			append_dev(p12, span2);
+  			append_dev(span2, t37);
+  			append_dev(div20, t38);
+  			append_dev(div20, div18);
+  			append_dev(div18, p13);
+  			append_dev(p13, t39);
+  			append_dev(p13, t40);
+  			append_dev(div20, t41);
+  			append_dev(div20, div19);
+  			append_dev(div19, p14);
+  			append_dev(p14, t42);
+  			append_dev(p14, t43);
+  			append_dev(div42, t44);
+  			append_dev(div42, div27);
+  			append_dev(div27, div22);
+  			append_dev(div22, p15);
+  			append_dev(p15, t45);
+  			append_dev(div22, t46);
+  			append_dev(div22, div21);
+  			append_dev(div21, p16);
+  			append_dev(p16, t47);
+  			append_dev(p16, t48);
+  			append_dev(p16, t49);
+  			append_dev(div27, t50);
+  			append_dev(div27, div23);
+  			append_dev(div23, img3);
+  			append_dev(div27, t51);
+  			append_dev(div27, div24);
+  			append_dev(div24, p17);
+  			append_dev(p17, span3);
+  			append_dev(span3, t52);
+  			append_dev(div27, t53);
+  			append_dev(div27, div25);
+  			append_dev(div25, p18);
+  			append_dev(p18, t54);
+  			append_dev(p18, t55);
+  			append_dev(div27, t56);
+  			append_dev(div27, div26);
+  			append_dev(div26, p19);
+  			append_dev(p19, t57);
+  			append_dev(p19, t58);
+  			append_dev(div42, t59);
+  			append_dev(div42, div34);
+  			append_dev(div34, div29);
+  			append_dev(div29, p20);
+  			append_dev(p20, t60);
+  			append_dev(div29, t61);
+  			append_dev(div29, div28);
+  			append_dev(div28, p21);
+  			append_dev(p21, t62);
+  			append_dev(p21, t63);
+  			append_dev(p21, t64);
+  			append_dev(div34, t65);
+  			append_dev(div34, div30);
+  			append_dev(div30, img4);
+  			append_dev(div34, t66);
+  			append_dev(div34, div31);
+  			append_dev(div31, p22);
+  			append_dev(p22, span4);
+  			append_dev(span4, t67);
+  			append_dev(div34, t68);
+  			append_dev(div34, div32);
+  			append_dev(div32, p23);
+  			append_dev(p23, t69);
+  			append_dev(p23, t70);
+  			append_dev(div34, t71);
+  			append_dev(div34, div33);
+  			append_dev(div33, p24);
+  			append_dev(p24, t72);
+  			append_dev(p24, t73);
+  			append_dev(div42, t74);
+  			append_dev(div42, div41);
+  			append_dev(div41, div36);
+  			append_dev(div36, p25);
+  			append_dev(p25, t75);
+  			append_dev(div36, t76);
+  			append_dev(div36, div35);
+  			append_dev(div35, p26);
+  			append_dev(p26, t77);
+  			append_dev(p26, t78);
+  			append_dev(p26, t79);
+  			append_dev(div41, t80);
+  			append_dev(div41, div37);
+  			append_dev(div37, img5);
+  			append_dev(div41, t81);
+  			append_dev(div41, div38);
+  			append_dev(div38, p27);
+  			append_dev(p27, span5);
+  			append_dev(span5, t82);
+  			append_dev(div41, t83);
+  			append_dev(div41, div39);
+  			append_dev(div39, p28);
+  			append_dev(p28, t84);
+  			append_dev(p28, t85);
+  			append_dev(div41, t86);
+  			append_dev(div41, div40);
+  			append_dev(div40, p29);
+  			append_dev(p29, t87);
+  			append_dev(p29, t88);
+  		},
+  		p: function update(ctx, dirty) {
+  			if (dirty[0] & /*diatimesdiaManana*/ 16777216) set_data_dev(t2, /*diatimesdiaManana*/ ctx[24]);
+  			if (dirty[0] & /*mestimesdiaManana*/ 33554432) set_data_dev(t4, /*mestimesdiaManana*/ ctx[25]);
+
+  			if (dirty[0] & /*DiconElementManana*/ 4 && img0.src !== (img0_src_value = "images/icons/" + /*DiconElementManana*/ ctx[2] + ".gif")) {
+  				attr_dev(img0, "src", img0_src_value);
+  			}
+
+  			if (dirty[0] & /*DdescripcionManana*/ 262144) set_data_dev(t7, /*DdescripcionManana*/ ctx[18]);
+  			if (dirty[0] & /*DtempmaxM*/ 1 && t9_value !== (t9_value = Math.round(/*DtempmaxM*/ ctx[0]) + "")) set_data_dev(t9, t9_value);
+  			if (dirty[0] & /*DtempminM*/ 2 && t12_value !== (t12_value = Math.round(/*DtempminM*/ ctx[1]) + "")) set_data_dev(t12, t12_value);
+  			if (dirty[0] & /*nombresemanadiadosPasado*/ 67108864) set_data_dev(t15, /*nombresemanadiadosPasado*/ ctx[26]);
+  			if (dirty[0] & /*diatimesdiadosPasado*/ 134217728) set_data_dev(t17, /*diatimesdiadosPasado*/ ctx[27]);
+  			if (dirty[0] & /*mestimesdiadosPasado*/ 268435456) set_data_dev(t19, /*mestimesdiadosPasado*/ ctx[28]);
+
+  			if (dirty[0] & /*DiconElementPasado*/ 32 && img1.src !== (img1_src_value = "images/icons/" + /*DiconElementPasado*/ ctx[5] + ".gif")) {
+  				attr_dev(img1, "src", img1_src_value);
+  			}
+
+  			if (dirty[0] & /*DdescripcionPasado*/ 524288) set_data_dev(t22, /*DdescripcionPasado*/ ctx[19]);
+  			if (dirty[0] & /*DtempmaxP*/ 8 && t24_value !== (t24_value = Math.round(/*DtempmaxP*/ ctx[3]) + "")) set_data_dev(t24, t24_value);
+  			if (dirty[0] & /*DtempminP*/ 16 && t27_value !== (t27_value = Math.round(/*DtempminP*/ ctx[4]) + "")) set_data_dev(t27, t27_value);
+  			if (dirty[0] & /*nombresemanadiados*/ 536870912) set_data_dev(t30, /*nombresemanadiados*/ ctx[29]);
+  			if (dirty[0] & /*diatimesdiados*/ 1073741824) set_data_dev(t32, /*diatimesdiados*/ ctx[30]);
+  			if (dirty[1] & /*mestimesdiados*/ 1) set_data_dev(t34, /*mestimesdiados*/ ctx[31]);
+
+  			if (dirty[0] & /*DiconElementEnDosDias*/ 256 && img2.src !== (img2_src_value = "images/icons/" + /*DiconElementEnDosDias*/ ctx[8] + ".gif")) {
+  				attr_dev(img2, "src", img2_src_value);
+  			}
+
+  			if (dirty[0] & /*DdescripcionEnDosDias*/ 1048576) set_data_dev(t37, /*DdescripcionEnDosDias*/ ctx[20]);
+  			if (dirty[0] & /*DtempmaxEnDosDias*/ 64 && t39_value !== (t39_value = Math.round(/*DtempmaxEnDosDias*/ ctx[6]) + "")) set_data_dev(t39, t39_value);
+  			if (dirty[0] & /*DtempminEnDosDias*/ 128 && t42_value !== (t42_value = Math.round(/*DtempminEnDosDias*/ ctx[7]) + "")) set_data_dev(t42, t42_value);
+  			if (dirty[1] & /*nombresemanadiatres*/ 2) set_data_dev(t45, /*nombresemanadiatres*/ ctx[32]);
+  			if (dirty[1] & /*diatimesdiatres*/ 4) set_data_dev(t47, /*diatimesdiatres*/ ctx[33]);
+  			if (dirty[1] & /*mestimesdiatres*/ 8) set_data_dev(t49, /*mestimesdiatres*/ ctx[34]);
+
+  			if (dirty[0] & /*DiconElementEnTresDias*/ 2048 && img3.src !== (img3_src_value = "images/icons/" + /*DiconElementEnTresDias*/ ctx[11] + ".gif")) {
+  				attr_dev(img3, "src", img3_src_value);
+  			}
+
+  			if (dirty[0] & /*DdescripcionEnTresDias*/ 2097152) set_data_dev(t52, /*DdescripcionEnTresDias*/ ctx[21]);
+  			if (dirty[0] & /*DtempmaxEnTresDias*/ 512 && t54_value !== (t54_value = Math.round(/*DtempmaxEnTresDias*/ ctx[9]) + "")) set_data_dev(t54, t54_value);
+  			if (dirty[0] & /*DtempminEnTresDias*/ 1024 && t57_value !== (t57_value = Math.round(/*DtempminEnTresDias*/ ctx[10]) + "")) set_data_dev(t57, t57_value);
+  			if (dirty[1] & /*nombresemanadiacuatro*/ 16) set_data_dev(t60, /*nombresemanadiacuatro*/ ctx[35]);
+  			if (dirty[1] & /*diatimesdiacuatro*/ 32) set_data_dev(t62, /*diatimesdiacuatro*/ ctx[36]);
+  			if (dirty[1] & /*mestimesdiacuatro*/ 64) set_data_dev(t64, /*mestimesdiacuatro*/ ctx[37]);
+
+  			if (dirty[0] & /*DiconElementEnCuatroDias*/ 16384 && img4.src !== (img4_src_value = "images/icons/" + /*DiconElementEnCuatroDias*/ ctx[14] + ".gif")) {
+  				attr_dev(img4, "src", img4_src_value);
+  			}
+
+  			if (dirty[0] & /*DdescripcionEnCuatroDias*/ 4194304) set_data_dev(t67, /*DdescripcionEnCuatroDias*/ ctx[22]);
+  			if (dirty[0] & /*DtempmaxEnCuatroDias*/ 4096 && t69_value !== (t69_value = Math.round(/*DtempmaxEnCuatroDias*/ ctx[12]) + "")) set_data_dev(t69, t69_value);
+  			if (dirty[0] & /*DtempminEnCuatroDias*/ 8192 && t72_value !== (t72_value = Math.round(/*DtempminEnCuatroDias*/ ctx[13]) + "")) set_data_dev(t72, t72_value);
+  			if (dirty[1] & /*nombresemanadiacinco*/ 128) set_data_dev(t75, /*nombresemanadiacinco*/ ctx[38]);
+  			if (dirty[1] & /*diatimesdiacinco*/ 256) set_data_dev(t77, /*diatimesdiacinco*/ ctx[39]);
+  			if (dirty[1] & /*mestimesdiacinco*/ 512) set_data_dev(t79, /*mestimesdiacinco*/ ctx[40]);
+
+  			if (dirty[0] & /*DiconElementEnCincoDias*/ 131072 && img5.src !== (img5_src_value = "images/icons/" + /*DiconElementEnCincoDias*/ ctx[17] + ".gif")) {
+  				attr_dev(img5, "src", img5_src_value);
+  			}
+
+  			if (dirty[0] & /*DdescripcionEnCincoDias*/ 8388608) set_data_dev(t82, /*DdescripcionEnCincoDias*/ ctx[23]);
+  			if (dirty[0] & /*DtempmaxEnCincoDias*/ 32768 && t84_value !== (t84_value = Math.round(/*DtempmaxEnCincoDias*/ ctx[15]) + "")) set_data_dev(t84, t84_value);
+  			if (dirty[0] & /*DtempminEnCincoDias*/ 65536 && t87_value !== (t87_value = Math.round(/*DtempminEnCincoDias*/ ctx[16]) + "")) set_data_dev(t87, t87_value);
+  		},
+  		i: noop,
+  		o: noop,
+  		d: function destroy(detaching) {
+  			if (detaching) detach_dev(div45);
+  		}
+  	};
+
+  	dispatch_dev("SvelteRegisterBlock", {
+  		block,
+  		id: create_fragment$b.name,
+  		type: "component",
+  		source: "",
+  		ctx
+  	});
+
+  	return block;
+  }
+
+  const KEY$4 = "3e867330616c39fa60d18a1af5d82f16";
+
+  function instance$b($$self, $$props, $$invalidate) {
+  	let { $$slots: slots = {}, $$scope } = $$props;
+  	validate_slots("Carddias", slots, []);
+  	let { longitude } = $$props;
+  	let { latitude } = $$props;
+  	let DtempmaxM = "";
+  	let DtempminM = "";
+  	let DiconElementManana = "";
+  	let DtempmaxP = "";
+  	let DtempminP = "";
+  	let DiconElementPasado = "";
+  	let DtempmaxEnDosDias = "";
+  	let DtempminEnDosDias = "";
+  	let DiconElementEnDosDias = "";
+  	let DtempmaxEnTresDias = "";
+  	let DtempminEnTresDias = "";
+  	let DiconElementEnTresDias = "";
+  	let DtempmaxEnCuatroDias = "";
+  	let DtempminEnCuatroDias = "";
+  	let DiconElementEnCuatroDias = "";
+  	let DtempmaxEnCincoDias = "";
+  	let DtempminEnCincoDias = "";
+  	let DiconElementEnCincoDias = "";
+
+  	//Descripción del tiempo bajo los iconos
+  	let DdescripcionManana = "";
+
+  	let DdescripcionPasado = "";
+  	let DdescripcionEnDosDias = "";
+  	let DdescripcionEnTresDias = "";
+  	let DdescripcionEnCuatroDias = "";
+  	let DdescripcionEnCincoDias = "";
+
+  	//Dia y mes
+  	let diatimesdiaManana = "";
+
+  	let mestimesdiaManana = "";
+  	let nombresemanadiadosPasado = "";
+  	let diatimesdiadosPasado = "";
+  	let mestimesdiadosPasado = "";
+  	let nombresemanadiados = "";
+  	let diatimesdiados = "";
+  	let mestimesdiados = "";
+  	let nombresemanadiatres = "";
+  	let diatimesdiatres = "";
+  	let mestimesdiatres = "";
+  	let nombresemanadiacuatro = "";
+  	let diatimesdiacuatro = "";
+  	let mestimesdiacuatro = "";
+  	let nombresemanadiacinco = "";
+  	let diatimesdiacinco = "";
+  	let mestimesdiacinco = "";
+
+  	onMount(async () => {
+  		axios$1.get(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=minutely&appid=${KEY$4}&units=metric&lang=gl`).then(data => {
+  			data = data.data;
+  			console.log(data.data);
+  			$$invalidate(0, DtempmaxM = data.daily[1].temp.max);
+  			$$invalidate(1, DtempminM = data.daily[1].temp.min);
+  			$$invalidate(2, DiconElementManana = data.daily[1].weather[0].icon);
+  			$$invalidate(3, DtempmaxP = data.daily[2].temp.max);
+  			$$invalidate(4, DtempminP = data.daily[2].temp.min);
+  			$$invalidate(5, DiconElementPasado = data.daily[2].weather[0].icon);
+  			$$invalidate(6, DtempmaxEnDosDias = data.daily[3].temp.max);
+  			$$invalidate(7, DtempminEnDosDias = data.daily[3].temp.min);
+  			$$invalidate(8, DiconElementEnDosDias = data.daily[3].weather[0].icon);
+  			$$invalidate(9, DtempmaxEnTresDias = data.daily[4].temp.max);
+  			$$invalidate(10, DtempminEnTresDias = data.daily[4].temp.min);
+  			$$invalidate(11, DiconElementEnTresDias = data.daily[4].weather[0].icon);
+  			$$invalidate(12, DtempmaxEnCuatroDias = data.daily[5].temp.max);
+  			$$invalidate(13, DtempminEnCuatroDias = data.daily[5].temp.min);
+  			$$invalidate(14, DiconElementEnCuatroDias = data.daily[5].weather[0].icon);
+  			$$invalidate(15, DtempmaxEnCincoDias = data.daily[6].temp.max);
+  			$$invalidate(16, DtempminEnCincoDias = data.daily[6].temp.min);
+  			$$invalidate(17, DiconElementEnCincoDias = data.daily[6].weather[0].icon);
+
+  			//Descripción del tiempo bajo los iconos
+  			$$invalidate(18, DdescripcionManana = data.daily[1].weather[0].description);
+
+  			$$invalidate(19, DdescripcionPasado = data.daily[2].weather[0].description);
+  			$$invalidate(20, DdescripcionEnDosDias = data.daily[3].weather[0].description);
+  			$$invalidate(21, DdescripcionEnTresDias = data.daily[4].weather[0].description);
+  			$$invalidate(22, DdescripcionEnCuatroDias = data.daily[5].weather[0].description);
+  			$$invalidate(23, DdescripcionEnCincoDias = data.daily[6].weather[0].description);
+
+  			//Convertir en dias de la semana
+  			let DdiaMes = data.daily[1].dt;
+
+  			var eldiaManana = new Date(DdiaMes * 1000);
+  			$$invalidate(24, diatimesdiaManana = eldiaManana.getDate());
+
+  			var meses = [
+  				"Xan.",
+  				"Feb.",
+  				"Mar.",
+  				"Abr.",
+  				"Mai.",
+  				"Xuñ.",
+  				"Xul.",
+  				"Ago.",
+  				"Set.",
+  				"Out.",
+  				"Nov.",
+  				"Dec."
+  			];
+
+  			$$invalidate(25, mestimesdiaManana = meses[eldiaManana.getMonth()]);
+  			let DdiaPasado = data.daily[2].dt;
+  			var eldiadosPasado = new Date(DdiaPasado * 1000);
+  			var days = ["Domingo", "Luns", "Martes", "Mércores", "Xoves", "Venres", "Sábado"];
+  			$$invalidate(26, nombresemanadiadosPasado = days[eldiadosPasado.getDay()]);
+  			$$invalidate(27, diatimesdiadosPasado = eldiadosPasado.getDate());
+  			$$invalidate(28, mestimesdiadosPasado = meses[eldiadosPasado.getMonth()]);
+  			let DdiaEnDosDias = data.daily[3].dt;
+  			var eldiados = new Date(DdiaEnDosDias * 1000);
+  			var daysDos = ["Domingo", "Luns", "Martes", "Mércores", "Xoves", "Venres", "Sábado"];
+  			$$invalidate(29, nombresemanadiados = daysDos[eldiados.getDay()]);
+  			$$invalidate(30, diatimesdiados = eldiados.getDate());
+  			$$invalidate(31, mestimesdiados = meses[eldiados.getMonth()]);
+  			let DdiaEnTresDias = data.daily[4].dt;
+  			var eldiatres = new Date(DdiaEnTresDias * 1000);
+  			var daysTres = ["Domingo", "Luns", "Martes", "Mércores", "Xoves", "Venres", "Sábado"];
+  			$$invalidate(32, nombresemanadiatres = daysTres[eldiatres.getDay()]);
+  			$$invalidate(33, diatimesdiatres = eldiatres.getDate());
+  			$$invalidate(34, mestimesdiatres = meses[eldiatres.getMonth()]);
+  			let DdiaEnCuatroDias = data.daily[5].dt;
+  			var eldiacuatro = new Date(DdiaEnCuatroDias * 1000);
+  			var daysCuatro = ["Domingo", "Luns", "Martes", "Mércores", "Xoves", "Venres", "Sábado"];
+  			$$invalidate(35, nombresemanadiacuatro = daysCuatro[eldiacuatro.getDay()]);
+  			$$invalidate(36, diatimesdiacuatro = eldiacuatro.getDate());
+  			$$invalidate(37, mestimesdiacuatro = meses[eldiacuatro.getMonth()]);
+  			let DdiaEnCincoDias = data.daily[6].dt;
+  			var eldiacinco = new Date(DdiaEnCincoDias * 1000);
+  			var daysCinco = ["Domingo", "Luns", "Martes", "Mércores", "Xoves", "Venres", "Sábado"];
+  			$$invalidate(38, nombresemanadiacinco = daysCinco[eldiacinco.getDay()]);
+  			$$invalidate(39, diatimesdiacinco = eldiacinco.getDate());
+  			$$invalidate(40, mestimesdiacinco = meses[eldiacinco.getMonth()]);
+  		});
+  	});
+
+  	const writable_props = ["longitude", "latitude"];
+
+  	Object.keys($$props).forEach(key => {
+  		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$5.warn(`<Carddias> was created with unknown prop '${key}'`);
+  	});
+
+  	$$self.$$set = $$props => {
+  		if ("longitude" in $$props) $$invalidate(41, longitude = $$props.longitude);
+  		if ("latitude" in $$props) $$invalidate(42, latitude = $$props.latitude);
+  	};
+
+  	$$self.$capture_state = () => ({
+  		axios: axios$1,
+  		onMount,
+  		longitude,
+  		latitude,
+  		DtempmaxM,
+  		DtempminM,
+  		DiconElementManana,
+  		DtempmaxP,
+  		DtempminP,
+  		DiconElementPasado,
+  		DtempmaxEnDosDias,
+  		DtempminEnDosDias,
+  		DiconElementEnDosDias,
+  		DtempmaxEnTresDias,
+  		DtempminEnTresDias,
+  		DiconElementEnTresDias,
+  		DtempmaxEnCuatroDias,
+  		DtempminEnCuatroDias,
+  		DiconElementEnCuatroDias,
+  		DtempmaxEnCincoDias,
+  		DtempminEnCincoDias,
+  		DiconElementEnCincoDias,
+  		DdescripcionManana,
+  		DdescripcionPasado,
+  		DdescripcionEnDosDias,
+  		DdescripcionEnTresDias,
+  		DdescripcionEnCuatroDias,
+  		DdescripcionEnCincoDias,
+  		diatimesdiaManana,
+  		mestimesdiaManana,
+  		nombresemanadiadosPasado,
+  		diatimesdiadosPasado,
+  		mestimesdiadosPasado,
+  		nombresemanadiados,
+  		diatimesdiados,
+  		mestimesdiados,
+  		nombresemanadiatres,
+  		diatimesdiatres,
+  		mestimesdiatres,
+  		nombresemanadiacuatro,
+  		diatimesdiacuatro,
+  		mestimesdiacuatro,
+  		nombresemanadiacinco,
+  		diatimesdiacinco,
+  		mestimesdiacinco,
+  		KEY: KEY$4
+  	});
+
+  	$$self.$inject_state = $$props => {
+  		if ("longitude" in $$props) $$invalidate(41, longitude = $$props.longitude);
+  		if ("latitude" in $$props) $$invalidate(42, latitude = $$props.latitude);
+  		if ("DtempmaxM" in $$props) $$invalidate(0, DtempmaxM = $$props.DtempmaxM);
+  		if ("DtempminM" in $$props) $$invalidate(1, DtempminM = $$props.DtempminM);
+  		if ("DiconElementManana" in $$props) $$invalidate(2, DiconElementManana = $$props.DiconElementManana);
+  		if ("DtempmaxP" in $$props) $$invalidate(3, DtempmaxP = $$props.DtempmaxP);
+  		if ("DtempminP" in $$props) $$invalidate(4, DtempminP = $$props.DtempminP);
+  		if ("DiconElementPasado" in $$props) $$invalidate(5, DiconElementPasado = $$props.DiconElementPasado);
+  		if ("DtempmaxEnDosDias" in $$props) $$invalidate(6, DtempmaxEnDosDias = $$props.DtempmaxEnDosDias);
+  		if ("DtempminEnDosDias" in $$props) $$invalidate(7, DtempminEnDosDias = $$props.DtempminEnDosDias);
+  		if ("DiconElementEnDosDias" in $$props) $$invalidate(8, DiconElementEnDosDias = $$props.DiconElementEnDosDias);
+  		if ("DtempmaxEnTresDias" in $$props) $$invalidate(9, DtempmaxEnTresDias = $$props.DtempmaxEnTresDias);
+  		if ("DtempminEnTresDias" in $$props) $$invalidate(10, DtempminEnTresDias = $$props.DtempminEnTresDias);
+  		if ("DiconElementEnTresDias" in $$props) $$invalidate(11, DiconElementEnTresDias = $$props.DiconElementEnTresDias);
+  		if ("DtempmaxEnCuatroDias" in $$props) $$invalidate(12, DtempmaxEnCuatroDias = $$props.DtempmaxEnCuatroDias);
+  		if ("DtempminEnCuatroDias" in $$props) $$invalidate(13, DtempminEnCuatroDias = $$props.DtempminEnCuatroDias);
+  		if ("DiconElementEnCuatroDias" in $$props) $$invalidate(14, DiconElementEnCuatroDias = $$props.DiconElementEnCuatroDias);
+  		if ("DtempmaxEnCincoDias" in $$props) $$invalidate(15, DtempmaxEnCincoDias = $$props.DtempmaxEnCincoDias);
+  		if ("DtempminEnCincoDias" in $$props) $$invalidate(16, DtempminEnCincoDias = $$props.DtempminEnCincoDias);
+  		if ("DiconElementEnCincoDias" in $$props) $$invalidate(17, DiconElementEnCincoDias = $$props.DiconElementEnCincoDias);
+  		if ("DdescripcionManana" in $$props) $$invalidate(18, DdescripcionManana = $$props.DdescripcionManana);
+  		if ("DdescripcionPasado" in $$props) $$invalidate(19, DdescripcionPasado = $$props.DdescripcionPasado);
+  		if ("DdescripcionEnDosDias" in $$props) $$invalidate(20, DdescripcionEnDosDias = $$props.DdescripcionEnDosDias);
+  		if ("DdescripcionEnTresDias" in $$props) $$invalidate(21, DdescripcionEnTresDias = $$props.DdescripcionEnTresDias);
+  		if ("DdescripcionEnCuatroDias" in $$props) $$invalidate(22, DdescripcionEnCuatroDias = $$props.DdescripcionEnCuatroDias);
+  		if ("DdescripcionEnCincoDias" in $$props) $$invalidate(23, DdescripcionEnCincoDias = $$props.DdescripcionEnCincoDias);
+  		if ("diatimesdiaManana" in $$props) $$invalidate(24, diatimesdiaManana = $$props.diatimesdiaManana);
+  		if ("mestimesdiaManana" in $$props) $$invalidate(25, mestimesdiaManana = $$props.mestimesdiaManana);
+  		if ("nombresemanadiadosPasado" in $$props) $$invalidate(26, nombresemanadiadosPasado = $$props.nombresemanadiadosPasado);
+  		if ("diatimesdiadosPasado" in $$props) $$invalidate(27, diatimesdiadosPasado = $$props.diatimesdiadosPasado);
+  		if ("mestimesdiadosPasado" in $$props) $$invalidate(28, mestimesdiadosPasado = $$props.mestimesdiadosPasado);
+  		if ("nombresemanadiados" in $$props) $$invalidate(29, nombresemanadiados = $$props.nombresemanadiados);
+  		if ("diatimesdiados" in $$props) $$invalidate(30, diatimesdiados = $$props.diatimesdiados);
+  		if ("mestimesdiados" in $$props) $$invalidate(31, mestimesdiados = $$props.mestimesdiados);
+  		if ("nombresemanadiatres" in $$props) $$invalidate(32, nombresemanadiatres = $$props.nombresemanadiatres);
+  		if ("diatimesdiatres" in $$props) $$invalidate(33, diatimesdiatres = $$props.diatimesdiatres);
+  		if ("mestimesdiatres" in $$props) $$invalidate(34, mestimesdiatres = $$props.mestimesdiatres);
+  		if ("nombresemanadiacuatro" in $$props) $$invalidate(35, nombresemanadiacuatro = $$props.nombresemanadiacuatro);
+  		if ("diatimesdiacuatro" in $$props) $$invalidate(36, diatimesdiacuatro = $$props.diatimesdiacuatro);
+  		if ("mestimesdiacuatro" in $$props) $$invalidate(37, mestimesdiacuatro = $$props.mestimesdiacuatro);
+  		if ("nombresemanadiacinco" in $$props) $$invalidate(38, nombresemanadiacinco = $$props.nombresemanadiacinco);
+  		if ("diatimesdiacinco" in $$props) $$invalidate(39, diatimesdiacinco = $$props.diatimesdiacinco);
+  		if ("mestimesdiacinco" in $$props) $$invalidate(40, mestimesdiacinco = $$props.mestimesdiacinco);
+  	};
+
+  	if ($$props && "$$inject" in $$props) {
+  		$$self.$inject_state($$props.$$inject);
+  	}
+
+  	return [
+  		DtempmaxM,
+  		DtempminM,
+  		DiconElementManana,
+  		DtempmaxP,
+  		DtempminP,
+  		DiconElementPasado,
+  		DtempmaxEnDosDias,
+  		DtempminEnDosDias,
+  		DiconElementEnDosDias,
+  		DtempmaxEnTresDias,
+  		DtempminEnTresDias,
+  		DiconElementEnTresDias,
+  		DtempmaxEnCuatroDias,
+  		DtempminEnCuatroDias,
+  		DiconElementEnCuatroDias,
+  		DtempmaxEnCincoDias,
+  		DtempminEnCincoDias,
+  		DiconElementEnCincoDias,
+  		DdescripcionManana,
+  		DdescripcionPasado,
+  		DdescripcionEnDosDias,
+  		DdescripcionEnTresDias,
+  		DdescripcionEnCuatroDias,
+  		DdescripcionEnCincoDias,
+  		diatimesdiaManana,
+  		mestimesdiaManana,
+  		nombresemanadiadosPasado,
+  		diatimesdiadosPasado,
+  		mestimesdiadosPasado,
+  		nombresemanadiados,
+  		diatimesdiados,
+  		mestimesdiados,
+  		nombresemanadiatres,
+  		diatimesdiatres,
+  		mestimesdiatres,
+  		nombresemanadiacuatro,
+  		diatimesdiacuatro,
+  		mestimesdiacuatro,
+  		nombresemanadiacinco,
+  		diatimesdiacinco,
+  		mestimesdiacinco,
+  		longitude,
+  		latitude
+  	];
+  }
+
+  class Carddias extends SvelteComponentDev {
+  	constructor(options) {
+  		super(options);
+  		init(this, options, instance$b, create_fragment$b, safe_not_equal, { longitude: 41, latitude: 42 }, [-1, -1]);
+
+  		dispatch_dev("SvelteRegisterComponent", {
+  			component: this,
+  			tagName: "Carddias",
+  			options,
+  			id: create_fragment$b.name
+  		});
+
+  		const { ctx } = this.$$;
+  		const props = options.props || {};
+
+  		if (/*longitude*/ ctx[41] === undefined && !("longitude" in props)) {
+  			console_1$5.warn("<Carddias> was created without expected prop 'longitude'");
+  		}
+
+  		if (/*latitude*/ ctx[42] === undefined && !("latitude" in props)) {
+  			console_1$5.warn("<Carddias> was created without expected prop 'latitude'");
+  		}
+  	}
+
+  	get longitude() {
+  		throw new Error("<Carddias>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+  	}
+
+  	set longitude(value) {
+  		throw new Error("<Carddias>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+  	}
+
+  	get latitude() {
+  		throw new Error("<Carddias>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+  	}
+
+  	set latitude(value) {
+  		throw new Error("<Carddias>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+  	}
+  }
+
+  /* src/Componentes/Cardtiempo.svelte generated by Svelte v3.25.0 */
+
+  const { console: console_1$6 } = globals;
+  const file$b = "src/Componentes/Cardtiempo.svelte";
+
+  // (43:4) {#if datosCard!==null}
+  function create_if_block$4(ctx) {
+  	let div7;
+  	let div6;
+  	let div5;
+  	let div2;
+  	let div0;
+  	let p0;
+  	let t0;
+  	let t1;
+  	let div1;
+  	let p1;
+  	let t2_value = Math.round(/*temperature*/ ctx[1]) + "";
+  	let t2;
+  	let t3;
+  	let t4;
+  	let div4;
+  	let div3;
+  	let p2;
+  	let t5;
+  	let t6;
+  	let carddias;
+  	let current;
+
+  	carddias = new Carddias({
+  			props: {
+  				longitude: /*longitude*/ ctx[4],
+  				latitude: /*latitude*/ ctx[3]
+  			},
+  			$$inline: true
+  		});
+
+  	const block = {
+  		c: function create() {
+  			div7 = element("div");
+  			div6 = element("div");
+  			div5 = element("div");
+  			div2 = element("div");
+  			div0 = element("div");
+  			p0 = element("p");
+  			t0 = text(/*city*/ ctx[0]);
+  			t1 = space();
+  			div1 = element("div");
+  			p1 = element("p");
+  			t2 = text(t2_value);
+  			t3 = text("°C");
+  			t4 = space();
+  			div4 = element("div");
+  			div3 = element("div");
+  			p2 = element("p");
+  			t5 = text(/*descripcion*/ ctx[2]);
+  			t6 = space();
+  			create_component(carddias.$$.fragment);
+  			attr_dev(p0, "class", "svelte-goial3");
+  			add_location(p0, file$b, 48, 24, 1136);
+  			attr_dev(div0, "class", "col s12 location svelte-goial3");
+  			add_location(div0, file$b, 47, 20, 1081);
+  			attr_dev(p1, "class", "svelte-goial3");
+  			add_location(p1, file$b, 51, 24, 1268);
+  			attr_dev(div1, "class", "col s12 temperature-value center svelte-goial3");
+  			add_location(div1, file$b, 50, 20, 1197);
+  			attr_dev(div2, "class", "weather-container svelte-goial3");
+  			add_location(div2, file$b, 46, 16, 1029);
+  			attr_dev(p2, "class", "svelte-goial3");
+  			add_location(p2, file$b, 56, 24, 1494);
+  			attr_dev(div3, "class", "col s12 temperature-description center svelte-goial3");
+  			add_location(div3, file$b, 55, 20, 1417);
+  			attr_dev(div4, "class", "weather-datos svelte-goial3");
+  			add_location(div4, file$b, 54, 16, 1369);
+  			attr_dev(div5, "class", "row");
+  			add_location(div5, file$b, 45, 12, 995);
+  			attr_dev(div6, "class", "container");
+  			add_location(div6, file$b, 44, 8, 959);
+  			attr_dev(div7, "class", "white-text PanelPrincipal");
+  			add_location(div7, file$b, 43, 4, 911);
+  		},
+  		m: function mount(target, anchor) {
+  			insert_dev(target, div7, anchor);
+  			append_dev(div7, div6);
+  			append_dev(div6, div5);
+  			append_dev(div5, div2);
+  			append_dev(div2, div0);
+  			append_dev(div0, p0);
+  			append_dev(p0, t0);
+  			append_dev(div2, t1);
+  			append_dev(div2, div1);
+  			append_dev(div1, p1);
+  			append_dev(p1, t2);
+  			append_dev(p1, t3);
+  			append_dev(div5, t4);
+  			append_dev(div5, div4);
+  			append_dev(div4, div3);
+  			append_dev(div3, p2);
+  			append_dev(p2, t5);
+  			insert_dev(target, t6, anchor);
+  			mount_component(carddias, target, anchor);
+  			current = true;
+  		},
+  		p: function update(ctx, dirty) {
+  			if (!current || dirty & /*city*/ 1) set_data_dev(t0, /*city*/ ctx[0]);
+  			if ((!current || dirty & /*temperature*/ 2) && t2_value !== (t2_value = Math.round(/*temperature*/ ctx[1]) + "")) set_data_dev(t2, t2_value);
+  			if (!current || dirty & /*descripcion*/ 4) set_data_dev(t5, /*descripcion*/ ctx[2]);
+  			const carddias_changes = {};
+  			if (dirty & /*longitude*/ 16) carddias_changes.longitude = /*longitude*/ ctx[4];
+  			if (dirty & /*latitude*/ 8) carddias_changes.latitude = /*latitude*/ ctx[3];
+  			carddias.$set(carddias_changes);
+  		},
+  		i: function intro(local) {
+  			if (current) return;
+  			transition_in(carddias.$$.fragment, local);
+  			current = true;
+  		},
+  		o: function outro(local) {
+  			transition_out(carddias.$$.fragment, local);
+  			current = false;
+  		},
+  		d: function destroy(detaching) {
+  			if (detaching) detach_dev(div7);
+  			if (detaching) detach_dev(t6);
+  			destroy_component(carddias, detaching);
+  		}
+  	};
+
+  	dispatch_dev("SvelteRegisterBlock", {
+  		block,
+  		id: create_if_block$4.name,
+  		type: "if",
+  		source: "(43:4) {#if datosCard!==null}",
+  		ctx
+  	});
+
+  	return block;
+  }
+
+  function create_fragment$c(ctx) {
+  	let div;
+  	let current;
+  	let if_block = /*datosCard*/ ctx[5] !== null && create_if_block$4(ctx);
+
+  	const block = {
+  		c: function create() {
+  			div = element("div");
+  			if (if_block) if_block.c();
+  			attr_dev(div, "class", "center");
+  			add_location(div, file$b, 41, 0, 859);
+  		},
+  		l: function claim(nodes) {
+  			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+  		},
+  		m: function mount(target, anchor) {
+  			insert_dev(target, div, anchor);
+  			if (if_block) if_block.m(div, null);
+  			current = true;
+  		},
+  		p: function update(ctx, [dirty]) {
+  			if (/*datosCard*/ ctx[5] !== null) {
+  				if (if_block) {
+  					if_block.p(ctx, dirty);
+
+  					if (dirty & /*datosCard*/ 32) {
+  						transition_in(if_block, 1);
+  					}
+  				} else {
+  					if_block = create_if_block$4(ctx);
+  					if_block.c();
+  					transition_in(if_block, 1);
+  					if_block.m(div, null);
+  				}
+  			} else if (if_block) {
+  				group_outros();
+
+  				transition_out(if_block, 1, 1, () => {
+  					if_block = null;
+  				});
+
+  				check_outros();
+  			}
+  		},
+  		i: function intro(local) {
+  			if (current) return;
+  			transition_in(if_block);
+  			current = true;
+  		},
+  		o: function outro(local) {
+  			transition_out(if_block);
+  			current = false;
+  		},
+  		d: function destroy(detaching) {
+  			if (detaching) detach_dev(div);
+  			if (if_block) if_block.d();
+  		}
+  	};
+
+  	dispatch_dev("SvelteRegisterBlock", {
+  		block,
+  		id: create_fragment$c.name,
+  		type: "component",
+  		source: "",
+  		ctx
+  	});
+
+  	return block;
+  }
+
+  const key = "3e867330616c39fa60d18a1af5d82f16";
+
+  function instance$c($$self, $$props, $$invalidate) {
+  	let { $$slots: slots = {}, $$scope } = $$props;
+  	validate_slots("Cardtiempo", slots, []);
+  	let { name } = $$props;
+  	let city = "";
+  	let temperature = "";
+  	let descripcion = "";
+  	let latitude = "";
+  	let longitude = "";
+  	var datosCard = null;
+
+  	onMount(async () => {
+  		axios$1.get(`http://api.openweathermap.org/data/2.5/weather?q=${name}&appid=${key}&units=metric&lang=gl`).then(data => {
+  			console.log(data);
+  			$$invalidate(5, datosCard = data.data);
+  			$$invalidate(0, city = datosCard.name);
+  			$$invalidate(1, temperature = datosCard.main.temp);
+  			$$invalidate(2, descripcion = datosCard.weather[0].description);
+  			$$invalidate(3, latitude = datosCard.coord.lat);
+  			$$invalidate(4, longitude = datosCard.coord.lon);
+  		});
+  	});
+
+  	const writable_props = ["name"];
+
+  	Object.keys($$props).forEach(key => {
+  		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$6.warn(`<Cardtiempo> was created with unknown prop '${key}'`);
+  	});
+
+  	$$self.$$set = $$props => {
+  		if ("name" in $$props) $$invalidate(6, name = $$props.name);
+  	};
+
+  	$$self.$capture_state = () => ({
+  		axios: axios$1,
+  		onMount,
+  		Carddias,
+  		name,
+  		key,
+  		city,
+  		temperature,
+  		descripcion,
+  		latitude,
+  		longitude,
+  		datosCard
+  	});
+
+  	$$self.$inject_state = $$props => {
+  		if ("name" in $$props) $$invalidate(6, name = $$props.name);
+  		if ("city" in $$props) $$invalidate(0, city = $$props.city);
+  		if ("temperature" in $$props) $$invalidate(1, temperature = $$props.temperature);
+  		if ("descripcion" in $$props) $$invalidate(2, descripcion = $$props.descripcion);
+  		if ("latitude" in $$props) $$invalidate(3, latitude = $$props.latitude);
+  		if ("longitude" in $$props) $$invalidate(4, longitude = $$props.longitude);
+  		if ("datosCard" in $$props) $$invalidate(5, datosCard = $$props.datosCard);
+  	};
+
+  	if ($$props && "$$inject" in $$props) {
+  		$$self.$inject_state($$props.$$inject);
+  	}
+
+  	return [city, temperature, descripcion, latitude, longitude, datosCard, name];
+  }
+
+  class Cardtiempo extends SvelteComponentDev {
+  	constructor(options) {
+  		super(options);
+  		init(this, options, instance$c, create_fragment$c, safe_not_equal, { name: 6 });
+
+  		dispatch_dev("SvelteRegisterComponent", {
+  			component: this,
+  			tagName: "Cardtiempo",
+  			options,
+  			id: create_fragment$c.name
+  		});
+
+  		const { ctx } = this.$$;
+  		const props = options.props || {};
+
+  		if (/*name*/ ctx[6] === undefined && !("name" in props)) {
+  			console_1$6.warn("<Cardtiempo> was created without expected prop 'name'");
+  		}
+  	}
+
+  	get name() {
+  		throw new Error("<Cardtiempo>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+  	}
+
+  	set name(value) {
+  		throw new Error("<Cardtiempo>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+  	}
+  }
+
+  /* src/Componentes/Cardbusqueda.svelte generated by Svelte v3.25.0 */
+  const file$c = "src/Componentes/Cardbusqueda.svelte";
+
+  // (57:4) <span slot="right" on:click={switchVisible}>
+  function create_right_slot(ctx) {
+  	let span;
+  	let mounted;
+  	let dispose;
+
+  	const block = {
+  		c: function create() {
+  			span = element("span");
+  			span.textContent = "Pechar";
+  			attr_dev(span, "slot", "right");
+  			add_location(span, file$c, 56, 4, 1617);
+  		},
+  		m: function mount(target, anchor) {
+  			insert_dev(target, span, anchor);
+
+  			if (!mounted) {
+  				dispose = listen_dev(span, "click", /*switchVisible*/ ctx[7], false, false, false);
+  				mounted = true;
+  			}
+  		},
+  		p: noop,
+  		d: function destroy(detaching) {
+  			if (detaching) detach_dev(span);
+  			mounted = false;
+  			dispose();
+  		}
+  	};
+
+  	dispatch_dev("SvelteRegisterBlock", {
+  		block,
+  		id: create_right_slot.name,
+  		type: "slot",
+  		source: "(57:4) <span slot=\\\"right\\\" on:click={switchVisible}>",
+  		ctx
+  	});
+
+  	return block;
+  }
+
+  // (56:0) <DraggableDraw bind:visible {maxVH} {minVH}>
+  function create_default_slot(ctx) {
+  	let t;
+  	let cardtiempo;
+  	let current;
+
+  	cardtiempo = new Cardtiempo({
+  			props: { name: /*name*/ ctx[1] },
+  			$$inline: true
+  		});
+
+  	const block = {
+  		c: function create() {
+  			t = space();
+  			create_component(cardtiempo.$$.fragment);
+  		},
+  		m: function mount(target, anchor) {
+  			insert_dev(target, t, anchor);
+  			mount_component(cardtiempo, target, anchor);
+  			current = true;
+  		},
+  		p: function update(ctx, dirty) {
+  			const cardtiempo_changes = {};
+  			if (dirty & /*name*/ 2) cardtiempo_changes.name = /*name*/ ctx[1];
+  			cardtiempo.$set(cardtiempo_changes);
+  		},
+  		i: function intro(local) {
+  			if (current) return;
+  			transition_in(cardtiempo.$$.fragment, local);
+  			current = true;
+  		},
+  		o: function outro(local) {
+  			transition_out(cardtiempo.$$.fragment, local);
+  			current = false;
+  		},
+  		d: function destroy(detaching) {
+  			if (detaching) detach_dev(t);
+  			destroy_component(cardtiempo, detaching);
+  		}
+  	};
+
+  	dispatch_dev("SvelteRegisterBlock", {
+  		block,
+  		id: create_default_slot.name,
+  		type: "slot",
+  		source: "(56:0) <DraggableDraw bind:visible {maxVH} {minVH}>",
+  		ctx
+  	});
+
+  	return block;
+  }
+
+  function create_fragment$d(ctx) {
   	let li;
   	let div4;
   	let div3;
@@ -20242,8 +23036,37 @@ var app = (function () {
   	let t7;
   	let a1;
   	let i1;
+  	let t9;
+  	let draggabledraw;
+  	let updating_visible;
+  	let current;
   	let mounted;
   	let dispose;
+
+  	function draggabledraw_visible_binding(value) {
+  		/*draggabledraw_visible_binding*/ ctx[11].call(null, value);
+  	}
+
+  	let draggabledraw_props = {
+  		maxVH: /*maxVH*/ ctx[5],
+  		minVH: /*minVH*/ ctx[6],
+  		$$slots: {
+  			default: [create_default_slot],
+  			right: [create_right_slot]
+  		},
+  		$$scope: { ctx }
+  	};
+
+  	if (/*visible*/ ctx[4] !== void 0) {
+  		draggabledraw_props.visible = /*visible*/ ctx[4];
+  	}
+
+  	draggabledraw = new Draggabledraw({
+  			props: draggabledraw_props,
+  			$$inline: true
+  		});
+
+  	binding_callbacks.push(() => bind(draggabledraw, "visible", draggabledraw_visible_binding));
 
   	const block = {
   		c: function create() {
@@ -20270,35 +23093,37 @@ var app = (function () {
   			a1 = element("a");
   			i1 = element("i");
   			i1.textContent = "delete";
+  			t9 = space();
+  			create_component(draggabledraw.$$.fragment);
   			if (img.src !== (img_src_value = "/images/tarxetas/" + /*icon*/ ctx[2] + ".gif")) attr_dev(img, "src", img_src_value);
   			attr_dev(img, "alt", "icono do tempo");
-  			attr_dev(img, "class", "fondo_card svelte-zitpj9");
-  			add_location(img, file$9, 29, 24, 540);
-  			add_location(br, file$9, 30, 80, 701);
-  			attr_dev(p, "class", "city-name svelte-zitpj9");
-  			add_location(p, file$9, 31, 28, 734);
-  			attr_dev(span, "class", "card-title city-temp svelte-zitpj9");
-  			add_location(span, file$9, 30, 24, 645);
+  			attr_dev(img, "class", "fondo_card svelte-1sxrtz7");
+  			add_location(img, file$c, 39, 24, 791);
+  			add_location(br, file$c, 40, 80, 951);
+  			attr_dev(p, "class", "city-name svelte-1sxrtz7");
+  			add_location(p, file$c, 41, 28, 984);
+  			attr_dev(span, "class", "card-title city-temp svelte-1sxrtz7");
+  			add_location(span, file$c, 40, 24, 895);
   			attr_dev(i0, "class", "material-icons");
-  			add_location(i0, file$9, 34, 41, 956);
-  			attr_dev(a0, "class", "btn-floating halfway-fab waves-effect waves-light\n                        black verTiempo svelte-zitpj9");
-  			add_location(a0, file$9, 33, 24, 822);
+  			add_location(i0, file$c, 44, 45, 1227);
+  			attr_dev(a0, "class", "btn modal-trigger btn-floating halfway-fab waves-effect waves-light\n                            black verTiempo svelte-1sxrtz7");
+  			add_location(a0, file$c, 43, 24, 1072);
   			attr_dev(i1, "class", "material-icons");
-  			add_location(i1, file$9, 36, 35, 1153);
+  			add_location(i1, file$c, 46, 35, 1424);
   			attr_dev(a1, "class", "btn-floating halfway-fab waves-effect waves-light\n                            black");
-  			add_location(a1, file$9, 35, 24, 1025);
-  			attr_dev(div0, "class", "card-image svelte-zitpj9");
-  			add_location(div0, file$9, 28, 20, 491);
-  			attr_dev(div1, "class", "card svelte-zitpj9");
-  			add_location(div1, file$9, 27, 16, 452);
+  			add_location(a1, file$c, 45, 24, 1296);
+  			attr_dev(div0, "class", "card-image svelte-1sxrtz7");
+  			add_location(div0, file$c, 38, 20, 742);
+  			attr_dev(div1, "class", "card svelte-1sxrtz7");
+  			add_location(div1, file$c, 37, 16, 703);
   			attr_dev(div2, "class", "col s12 m6");
-  			add_location(div2, file$9, 26, 12, 411);
+  			add_location(div2, file$c, 36, 12, 662);
   			attr_dev(div3, "class", "row");
-  			add_location(div3, file$9, 25, 8, 381);
+  			add_location(div3, file$c, 35, 8, 632);
   			attr_dev(div4, "class", "ulwrpper");
-  			add_location(div4, file$9, 24, 8, 350);
+  			add_location(div4, file$c, 34, 4, 601);
   			attr_dev(li, "class", "data");
-  			add_location(li, file$9, 23, 0, 324);
+  			add_location(li, file$c, 33, 0, 579);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -20325,28 +23150,53 @@ var app = (function () {
   			append_dev(div0, t7);
   			append_dev(div0, a1);
   			append_dev(a1, i1);
+  			insert_dev(target, t9, anchor);
+  			mount_component(draggabledraw, target, anchor);
+  			current = true;
 
   			if (!mounted) {
   				dispose = [
-  					listen_dev(a0, "click", /*click_handler*/ ctx[5], false, false, false),
-  					listen_dev(a1, "click", /*click_handler_1*/ ctx[6], false, false, false)
+  					listen_dev(a0, "click", /*click_handler*/ ctx[9], false, false, false),
+  					listen_dev(a1, "click", /*click_handler_1*/ ctx[10], false, false, false)
   				];
 
   				mounted = true;
   			}
   		},
   		p: function update(ctx, [dirty]) {
-  			if (dirty & /*icon*/ 4 && img.src !== (img_src_value = "/images/tarxetas/" + /*icon*/ ctx[2] + ".gif")) {
+  			if (!current || dirty & /*icon*/ 4 && img.src !== (img_src_value = "/images/tarxetas/" + /*icon*/ ctx[2] + ".gif")) {
   				attr_dev(img, "src", img_src_value);
   			}
 
-  			if (dirty & /*temp*/ 8 && t1_value !== (t1_value = Math.round(/*temp*/ ctx[3]) + "")) set_data_dev(t1, t1_value);
-  			if (dirty & /*name*/ 2) set_data_dev(t4, /*name*/ ctx[1]);
+  			if ((!current || dirty & /*temp*/ 8) && t1_value !== (t1_value = Math.round(/*temp*/ ctx[3]) + "")) set_data_dev(t1, t1_value);
+  			if (!current || dirty & /*name*/ 2) set_data_dev(t4, /*name*/ ctx[1]);
+  			const draggabledraw_changes = {};
+
+  			if (dirty & /*$$scope, name*/ 8194) {
+  				draggabledraw_changes.$$scope = { dirty, ctx };
+  			}
+
+  			if (!updating_visible && dirty & /*visible*/ 16) {
+  				updating_visible = true;
+  				draggabledraw_changes.visible = /*visible*/ ctx[4];
+  				add_flush_callback(() => updating_visible = false);
+  			}
+
+  			draggabledraw.$set(draggabledraw_changes);
   		},
-  		i: noop,
-  		o: noop,
+  		i: function intro(local) {
+  			if (current) return;
+  			transition_in(draggabledraw.$$.fragment, local);
+  			current = true;
+  		},
+  		o: function outro(local) {
+  			transition_out(draggabledraw.$$.fragment, local);
+  			current = false;
+  		},
   		d: function destroy(detaching) {
   			if (detaching) detach_dev(li);
+  			if (detaching) detach_dev(t9);
+  			destroy_component(draggabledraw, detaching);
   			mounted = false;
   			run_all(dispose);
   		}
@@ -20354,7 +23204,7 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_fragment$a.name,
+  		id: create_fragment$d.name,
   		type: "component",
   		source: "",
   		ctx
@@ -20363,9 +23213,17 @@ var app = (function () {
   	return block;
   }
 
-  function instance$a($$self, $$props, $$invalidate) {
+  function instance$d($$self, $$props, $$invalidate) {
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("Cardbusqueda", slots, []);
+  	let visible = true;
+  	let maxVH = 90;
+  	let minVH = 85;
+
+  	function switchVisible() {
+  		$$invalidate(4, visible = !visible);
+  	}
+
   	let { id } = $$props;
   	let { name } = $$props;
   	let { icon } = $$props;
@@ -20385,6 +23243,11 @@ var app = (function () {
   	const click_handler = () => switchVisible();
   	const click_handler_1 = () => removeTiempo();
 
+  	function draggabledraw_visible_binding(value) {
+  		visible = value;
+  		$$invalidate(4, visible);
+  	}
+
   	$$self.$$set = $$props => {
   		if ("id" in $$props) $$invalidate(0, id = $$props.id);
   		if ("name" in $$props) $$invalidate(1, name = $$props.name);
@@ -20394,6 +23257,12 @@ var app = (function () {
 
   	$$self.$capture_state = () => ({
   		createEventDispatcher,
+  		DraggableDraw: Draggabledraw,
+  		Cardtiempo,
+  		visible,
+  		maxVH,
+  		minVH,
+  		switchVisible,
   		id,
   		name,
   		icon,
@@ -20403,6 +23272,9 @@ var app = (function () {
   	});
 
   	$$self.$inject_state = $$props => {
+  		if ("visible" in $$props) $$invalidate(4, visible = $$props.visible);
+  		if ("maxVH" in $$props) $$invalidate(5, maxVH = $$props.maxVH);
+  		if ("minVH" in $$props) $$invalidate(6, minVH = $$props.minVH);
   		if ("id" in $$props) $$invalidate(0, id = $$props.id);
   		if ("name" in $$props) $$invalidate(1, name = $$props.name);
   		if ("icon" in $$props) $$invalidate(2, icon = $$props.icon);
@@ -20413,19 +23285,32 @@ var app = (function () {
   		$$self.$inject_state($$props.$$inject);
   	}
 
-  	return [id, name, icon, temp, removeTiempo, click_handler, click_handler_1];
+  	return [
+  		id,
+  		name,
+  		icon,
+  		temp,
+  		visible,
+  		maxVH,
+  		minVH,
+  		switchVisible,
+  		removeTiempo,
+  		click_handler,
+  		click_handler_1,
+  		draggabledraw_visible_binding
+  	];
   }
 
   class Cardbusqueda extends SvelteComponentDev {
   	constructor(options) {
   		super(options);
-  		init(this, options, instance$a, create_fragment$a, safe_not_equal, { id: 0, name: 1, icon: 2, temp: 3 });
+  		init(this, options, instance$d, create_fragment$d, safe_not_equal, { id: 0, name: 1, icon: 2, temp: 3 });
 
   		dispatch_dev("SvelteRegisterComponent", {
   			component: this,
   			tagName: "Cardbusqueda",
   			options,
-  			id: create_fragment$a.name
+  			id: create_fragment$d.name
   		});
 
   		const { ctx } = this.$$;
@@ -20528,8 +23413,8 @@ var app = (function () {
 
   /* src/Paginas/Buscar.svelte generated by Svelte v3.25.0 */
 
-  const { console: console_1$5 } = globals;
-  const file$a = "src/Paginas/Buscar.svelte";
+  const { console: console_1$7 } = globals;
+  const file$d = "src/Paginas/Buscar.svelte";
 
   function get_each_context$1(ctx, list, i) {
   	const child_ctx = ctx.slice();
@@ -20539,14 +23424,14 @@ var app = (function () {
   }
 
   // (131:6) {#if loading}
-  function create_if_block_1$1(ctx) {
+  function create_if_block_1$2(ctx) {
   	let div;
 
   	const block = {
   		c: function create() {
   			div = element("div");
   			attr_dev(div, "class", "loader svelte-u26sdc");
-  			add_location(div, file$a, 131, 12, 2809);
+  			add_location(div, file$d, 131, 12, 2809);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div, anchor);
@@ -20558,7 +23443,7 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_if_block_1$1.name,
+  		id: create_if_block_1$2.name,
   		type: "if",
   		source: "(131:6) {#if loading}",
   		ctx
@@ -20568,7 +23453,7 @@ var app = (function () {
   }
 
   // (138:8) {#if todos.length}
-  function create_if_block$3(ctx) {
+  function create_if_block$5(ctx) {
   	let each_blocks = [];
   	let each_1_lookup = new Map();
   	let each_1_anchor;
@@ -20637,7 +23522,7 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_if_block$3.name,
+  		id: create_if_block$5.name,
   		type: "if",
   		source: "(138:8) {#if todos.length}",
   		ctx
@@ -20714,7 +23599,7 @@ var app = (function () {
   	return block;
   }
 
-  function create_fragment$b(ctx) {
+  function create_fragment$e(ctx) {
   	let main;
   	let nav;
   	let div1;
@@ -20737,8 +23622,8 @@ var app = (function () {
   	let current;
   	let mounted;
   	let dispose;
-  	let if_block0 = /*loading*/ ctx[2] && create_if_block_1$1(ctx);
-  	let if_block1 = /*todos*/ ctx[0].length && create_if_block$3(ctx);
+  	let if_block0 = /*loading*/ ctx[2] && create_if_block_1$2(ctx);
+  	let if_block1 = /*todos*/ ctx[0].length && create_if_block$5(ctx);
 
   	const block = {
   		c: function create() {
@@ -20772,32 +23657,32 @@ var app = (function () {
   			attr_dev(input_1, "placeholder", "Busca aquí unha cidade");
   			input_1.required = true;
   			attr_dev(input_1, "class", "svelte-u26sdc");
-  			add_location(input_1, file$a, 122, 10, 2390);
+  			add_location(input_1, file$d, 122, 10, 2390);
   			attr_dev(i0, "class", "material-icons");
-  			add_location(i0, file$a, 124, 49, 2569);
+  			add_location(i0, file$d, 124, 49, 2569);
   			attr_dev(label, "class", "label-icon");
   			attr_dev(label, "for", "search");
-  			add_location(label, file$a, 124, 10, 2530);
+  			add_location(label, file$d, 124, 10, 2530);
   			attr_dev(i1, "class", "material-icons");
-  			add_location(i1, file$a, 125, 10, 2624);
+  			add_location(i1, file$d, 125, 10, 2624);
   			attr_dev(span, "class", "msg");
-  			add_location(span, file$a, 126, 10, 2670);
+  			add_location(span, file$d, 126, 10, 2670);
   			attr_dev(div0, "class", "input-field");
-  			add_location(div0, file$a, 121, 8, 2354);
+  			add_location(div0, file$d, 121, 8, 2354);
   			attr_dev(button, "class", "transparent");
-  			add_location(button, file$a, 128, 8, 2719);
+  			add_location(button, file$d, 128, 8, 2719);
   			attr_dev(form, "class", "forminput");
-  			add_location(form, file$a, 120, 6, 2284);
+  			add_location(form, file$d, 120, 6, 2284);
   			attr_dev(div1, "class", "nav-wrapper");
-  			add_location(div1, file$a, 119, 4, 2252);
+  			add_location(div1, file$d, 119, 4, 2252);
   			attr_dev(nav, "class", "navbar-fixed navbarbaja grey darken-4 svelte-u26sdc");
-  			add_location(nav, file$a, 118, 2, 2196);
+  			add_location(nav, file$d, 118, 2, 2196);
   			toggle_class(ul, "list", /*todos*/ ctx[0].length > 0);
-  			add_location(ul, file$a, 136, 8, 2917);
+  			add_location(ul, file$d, 136, 8, 2917);
   			attr_dev(section, "class", "ajax-section svelte-u26sdc");
-  			add_location(section, file$a, 135, 4, 2878);
+  			add_location(section, file$d, 135, 4, 2878);
   			attr_dev(main, "class", "svelte-u26sdc");
-  			add_location(main, file$a, 117, 0, 2187);
+  			add_location(main, file$d, 117, 0, 2187);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -20849,7 +23734,7 @@ var app = (function () {
   						transition_in(if_block1, 1);
   					}
   				} else {
-  					if_block1 = create_if_block$3(ctx);
+  					if_block1 = create_if_block$5(ctx);
   					if_block1.c();
   					transition_in(if_block1, 1);
   					if_block1.m(ul, null);
@@ -20888,7 +23773,7 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_fragment$b.name,
+  		id: create_fragment$e.name,
   		type: "component",
   		source: "",
   		ctx
@@ -20897,9 +23782,9 @@ var app = (function () {
   	return block;
   }
 
-  const key = "3e867330616c39fa60d18a1af5d82f16";
+  const key$1 = "3e867330616c39fa60d18a1af5d82f16";
 
-  function instance$b($$self, $$props, $$invalidate) {
+  function instance$e($$self, $$props, $$invalidate) {
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("Buscar", slots, []);
   	var loading = false;
@@ -20919,7 +23804,7 @@ var app = (function () {
   		if (arr !== undefined) cities = arr;
   		console.log(cities);
 
-  		for (var city of cities) axios$1.get(`http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${key}&units=metric&lang=gl`).then(data => {
+  		for (var city of cities) axios$1.get(`http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${key$1}&units=metric&lang=gl`).then(data => {
   			console.log(data);
   			incomeData = data.data;
   			name = incomeData.name;
@@ -20941,7 +23826,7 @@ var app = (function () {
   	}
 
   	function addTiempo() {
-  		axios$1.get(`http://api.openweathermap.org/data/2.5/weather?q=${input}&appid=${key}&units=metric&lang=gl`).then(data => {
+  		axios$1.get(`http://api.openweathermap.org/data/2.5/weather?q=${input}&appid=${key$1}&units=metric&lang=gl`).then(data => {
   			console.log(data);
   			incomeData = data.data;
   			name = incomeData.name;
@@ -20970,7 +23855,7 @@ var app = (function () {
   	const writable_props = [];
 
   	Object.keys($$props).forEach(key => {
-  		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$5.warn(`<Buscar> was created with unknown prop '${key}'`);
+  		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$7.warn(`<Buscar> was created with unknown prop '${key}'`);
   	});
 
   	function input_1_input_handler() {
@@ -20990,7 +23875,7 @@ var app = (function () {
   		name,
   		icon,
   		incomeData,
-  		key,
+  		key: key$1,
   		todos,
   		input,
   		cities,
@@ -21021,29 +23906,29 @@ var app = (function () {
   class Buscar extends SvelteComponentDev {
   	constructor(options) {
   		super(options);
-  		init(this, options, instance$b, create_fragment$b, safe_not_equal, {});
+  		init(this, options, instance$e, create_fragment$e, safe_not_equal, {});
 
   		dispatch_dev("SvelteRegisterComponent", {
   			component: this,
   			tagName: "Buscar",
   			options,
-  			id: create_fragment$b.name
+  			id: create_fragment$e.name
   		});
   	}
   }
 
   /* src/Paginas/ErrorRuta.svelte generated by Svelte v3.25.0 */
 
-  const file$b = "src/Paginas/ErrorRuta.svelte";
+  const file$e = "src/Paginas/ErrorRuta.svelte";
 
-  function create_fragment$c(ctx) {
+  function create_fragment$f(ctx) {
   	let h1;
 
   	const block = {
   		c: function create() {
   			h1 = element("h1");
   			h1.textContent = "ERROR 404";
-  			add_location(h1, file$b, 0, 0, 0);
+  			add_location(h1, file$e, 0, 0, 0);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -21061,7 +23946,7 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_fragment$c.name,
+  		id: create_fragment$f.name,
   		type: "component",
   		source: "",
   		ctx
@@ -21070,7 +23955,7 @@ var app = (function () {
   	return block;
   }
 
-  function instance$c($$self, $$props) {
+  function instance$f($$self, $$props) {
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("ErrorRuta", slots, []);
   	const writable_props = [];
@@ -21085,13 +23970,13 @@ var app = (function () {
   class ErrorRuta extends SvelteComponentDev {
   	constructor(options) {
   		super(options);
-  		init(this, options, instance$c, create_fragment$c, safe_not_equal, {});
+  		init(this, options, instance$f, create_fragment$f, safe_not_equal, {});
 
   		dispatch_dev("SvelteRegisterComponent", {
   			component: this,
   			tagName: "ErrorRuta",
   			options,
-  			id: create_fragment$c.name
+  			id: create_fragment$f.name
   		});
   	}
   }
@@ -21104,9 +23989,9 @@ var app = (function () {
   };
 
   /* src/App.svelte generated by Svelte v3.25.0 */
-  const file$c = "src/App.svelte";
+  const file$f = "src/App.svelte";
 
-  function create_fragment$d(ctx) {
+  function create_fragment$g(ctx) {
   	let div;
   	let a0;
   	let i0;
@@ -21158,30 +24043,30 @@ var app = (function () {
   			t7 = space();
   			create_component(router.$$.fragment);
   			attr_dev(i0, "class", "large material-icons black-text");
-  			add_location(i0, file$c, 17, 4, 468);
+  			add_location(i0, file$f, 17, 4, 468);
   			attr_dev(a0, "class", "btn-floating btn-large white");
-  			add_location(a0, file$c, 16, 2, 423);
+  			add_location(a0, file$f, 16, 2, 423);
   			attr_dev(i1, "class", "material-icons black-text");
-  			add_location(i1, file$c, 20, 57, 591);
+  			add_location(i1, file$f, 20, 57, 591);
   			attr_dev(a1, "class", "btn-floating");
   			attr_dev(a1, "href", "/Buscar");
-  			add_location(a1, file$c, 20, 8, 542);
-  			add_location(li0, file$c, 20, 4, 538);
+  			add_location(a1, file$f, 20, 8, 542);
+  			add_location(li0, file$f, 20, 4, 538);
   			attr_dev(i2, "class", "material-icons black-text");
-  			add_location(i2, file$c, 21, 51, 699);
+  			add_location(i2, file$f, 21, 51, 699);
   			attr_dev(a2, "class", "btn-floating");
   			attr_dev(a2, "href", "/");
-  			add_location(a2, file$c, 21, 8, 656);
-  			add_location(li1, file$c, 21, 4, 652);
+  			add_location(a2, file$f, 21, 8, 656);
+  			add_location(li1, file$f, 21, 4, 652);
   			attr_dev(i3, "class", "material-icons black-text");
-  			add_location(i3, file$c, 22, 60, 814);
+  			add_location(i3, file$f, 22, 60, 814);
   			attr_dev(a3, "class", "btn-floating");
   			attr_dev(a3, "href", "/Taboleiro");
-  			add_location(a3, file$c, 22, 8, 762);
-  			add_location(li2, file$c, 22, 4, 758);
-  			add_location(ul, file$c, 19, 2, 529);
+  			add_location(a3, file$f, 22, 8, 762);
+  			add_location(li2, file$f, 22, 4, 758);
+  			add_location(ul, file$f, 19, 2, 529);
   			attr_dev(div, "class", "fixed-action-btn toolbar");
-  			add_location(div, file$c, 15, 0, 382);
+  			add_location(div, file$f, 15, 0, 382);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -21238,7 +24123,7 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_fragment$d.name,
+  		id: create_fragment$g.name,
   		type: "component",
   		source: "",
   		ctx
@@ -21247,7 +24132,7 @@ var app = (function () {
   	return block;
   }
 
-  function instance$d($$self, $$props, $$invalidate) {
+  function instance$g($$self, $$props, $$invalidate) {
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("App", slots, []);
 
@@ -21269,13 +24154,13 @@ var app = (function () {
   class App extends SvelteComponentDev {
   	constructor(options) {
   		super(options);
-  		init(this, options, instance$d, create_fragment$d, safe_not_equal, {});
+  		init(this, options, instance$g, create_fragment$g, safe_not_equal, {});
 
   		dispatch_dev("SvelteRegisterComponent", {
   			component: this,
   			tagName: "App",
   			options,
-  			id: create_fragment$d.name
+  			id: create_fragment$g.name
   		});
   	}
   }
