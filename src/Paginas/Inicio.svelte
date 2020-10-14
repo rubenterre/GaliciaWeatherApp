@@ -4,7 +4,6 @@
     import Paneldias from '../Componentes/Paneldias.svelte'
     import Datostecnicos from '../Componentes/Datostecnicos.svelte'
     import Footer from '../Componentes/Footer.svelte'
-    
 </script>
 
 <main>

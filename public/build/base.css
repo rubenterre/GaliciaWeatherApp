@@ -18,14 +18,14 @@ body {
        /* Fondos tiempo */
 
     .fondo_soleado {
-        background: url("/images/fondos/fondo_santiago_soleado.png") #333;
+        background: url("/images/fondos/santiagoCompostela/fondo_santiago_soleado.png") #333;
         background-size: contain;
         background-repeat: no-repeat;
         width: 100%;
     }
 
     .fondo_noite_clara {
-        background: url("/images/fondos/fondo_santiago_noite_clara.png") #333;
+        background: url("/images/fondos/santiagoCompostela/fondo_santiago_noite_clara.png") #333;
         background-size: contain;
         background-repeat: no-repeat;
         width: 100%;
@@ -33,7 +33,7 @@ body {
     }
 
     .fondo_soleado_poucas_nubes {
-        background: url("/images/fondos/fondo_santiago_soleado_poucas_nubes.png") #333;
+        background: url("/images/fondos/santiagoCompostela/fondo_santiago_soleado_poucas_nubes.png") #333;
         background-size: contain;
         background-repeat: no-repeat;
         width: 100%;
@@ -41,7 +41,7 @@ body {
     }
 
     .fondo_noite_poucas_nubes {
-        background: url("/images/fondos/fondo_santiago_noite_poucas_nubes.png") #333;
+        background: url("/images/fondos/santiagoCompostela/fondo_santiago_noite_poucas_nubes.png") #333;
         background-size: contain;
         background-repeat: no-repeat;
         width: 100%;
@@ -49,7 +49,7 @@ body {
     }
 
     .fondo_dia_nublado {
-        background: url("/images/fondos/fondo_santiago_soleado_moitas_nubes.png") #333;
+        background: url("/images/fondos/santiagoCompostela/fondo_santiago_soleado_moitas_nubes.png") #333;
         background-size: contain;
         background-repeat: no-repeat;
         width: 100%;
@@ -57,7 +57,7 @@ body {
     }
 
     .fondo_noite_nublado {
-        background: url("/images/fondos/fondo_santiago_noite_moitas_nubes.png") #333;
+        background: url("/images/fondos/santiagoCompostela/fondo_santiago_noite_moitas_nubes.png") #333;
         background-size: contain;
         background-repeat: no-repeat;
         width: 100%;
@@ -65,7 +65,7 @@ body {
     }
 
     .fondo_nublado {
-        background: url("/images/fondos/fondo_santiago_nublado.png") #333;
+        background: url("/images/fondos/santiagoCompostela/fondo_santiago_nublado.png") #333;
         background-size: contain;
         background-repeat: no-repeat;
         width: 100%;
@@ -73,7 +73,7 @@ body {
     }
 
     .fondo_moita_choiva {
-        background: url("/images/fondos/fondo_santiago_moita_choiva.png") #333;
+        background: url("/images/fondos/santiagoCompostela/fondo_santiago_moita_choiva.png") #333;
         background-size: contain;
         background-repeat: no-repeat;
         width: 100%;
@@ -81,7 +81,7 @@ body {
     }
 
     .fondo_pouca_choiva {
-        background: url("/images/fondos/fondo_santiago_pouca_choiva.png") #333;
+        background: url("/images/fondos/santiagoCompostela/fondo_santiago_pouca_choiva.png") #333;
         background-size: contain;
         background-repeat: no-repeat;
         width: 100%;
@@ -89,7 +89,7 @@ body {
     }
 
     .fondo_tormenta {
-        background: url("/images/fondos/fondo_santiago_tormenta.png") #333;
+        background: url("/images/fondos/santiagoCompostela/fondo_santiago_tormenta.png") #333;
         background-size: contain;
         background-repeat: no-repeat;
         width: 100%;
@@ -97,7 +97,7 @@ body {
     }
 
     .fondo_neve {
-        background: url("/images/fondos/fondo_santiago_neve.png") #333;
+        background: url("/images/fondos/santiagoCompostela/fondo_santiago_neve.png") #333;
         background-size: contain;
         background-repeat: no-repeat;
         width: 100%;
@@ -105,7 +105,7 @@ body {
     }
 
     .fondo_neboa {
-        background: url("/images/fondos/fondo_santiago_neboa.png") #333;
+        background: url("/images/fondos/santiagoCompostela/fondo_santiago_neboa.png") #333;
         background-size: contain;
         background-repeat: no-repeat;
         width: 100%;

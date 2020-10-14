@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="71px" height="71px" viewBox="0 0 71 71" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>btn_natureza</title>
+    <defs>
+        <circle id="path-1" cx="31.5" cy="31.5" r="31.5"></circle>
+        <filter x="-11.1%" y="-7.9%" width="122.2%" height="122.2%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="GaliciaWeather_perfil" transform="translate(-299.000000, -225.000000)">
+            <g id="btn_natureza" transform="translate(303.000000, 227.000000)">
+                <g id="Oval-Copy-2">
+                    <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+                    <use fill="#D8D8D8" fill-rule="evenodd" xlink:href="#path-1"></use>
+                </g>
+                <path d="M41,34.7744958 C38.2734367,41.4577307 31.7415611,37.4145447 31.7415611,37.4145447 C29.7374628,41.4137299 26.4269895,43.9853331 22.6068319,44 C21.810141,44 21.785399,42.807089 22.6068319,42.807089 C25.7935955,42.7924221 28.5696426,40.7194948 30.385702,37.4243227 C28.3519134,38.2016704 24.5169107,38.7883479 22.3891027,33.4055816 C27.7828485,31.2104298 30.2619922,33.9531473 31.2120832,35.6300672 C31.7019739,34.4371562 32.0533097,33.1415767 32.2809356,31.7335506 C32.2809356,31.7335506 25.3680339,32.8042371 24.8830916,26.9374618 C30.7766249,24.5956407 32.4343357,30.687309 32.4343357,30.687309 C32.51351,29.8708495 32.5976326,28.1157058 32.5976326,28.076594 C32.5976326,28.076594 27.3374934,24.4734162 30.7122958,20 C36.8779906,22.1022612 33.7506077,27.9397026 33.7506077,27.9397026 C33.7753496,28.0179263 33.7753496,29.1032797 33.7506077,29.5726217 C33.7506077,29.5726217 35.9872802,25.22143 40.5002125,26.7614585 C40.2923801,33.312691 33.4784462,31.9633327 33.4784462,31.9633327 C33.260717,33.302913 32.9242264,34.5740477 32.488768,35.7522917 C32.488768,35.7522917 36.5959323,31.2642086 41,34.7744958 L41,34.7744958 Z" id="Path" fill="#000000" fill-rule="nonzero"></path>
+            </g>
+        </g>
+    </g>
+</svg>

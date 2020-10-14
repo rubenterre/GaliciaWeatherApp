@@ -3,7 +3,6 @@
   import { link } from 'svelte-spa-router'
   import routes from './routes.js'
 
-
   //Menu flotante
   document.addEventListener('DOMContentLoaded', function() {
     var elems = document.querySelectorAll('.fixed-action-btn');
