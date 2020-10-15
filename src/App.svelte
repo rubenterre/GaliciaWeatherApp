@@ -10,6 +10,7 @@
       toolbarEnabled: true
     });
   });
+
 </script>
 
 <div class="fixed-action-btn toolbar">
@@ -23,3 +24,4 @@
   </ul>
 </div>
 <Router {routes} />
+

@@ -1,4 +1,5 @@
 <script>
+    import Sidebar from '../Componentes/Sidebar.svelte'
     import Panelprincipal from '../Componentes/Panelprincipal.svelte'
     import Panelhoras from '../Componentes/Panelhoras.svelte'
     import Paneldias from '../Componentes/Paneldias.svelte'
@@ -7,6 +8,7 @@
 </script>
 
 <main>
+    <Sidebar/>
     <Panelprincipal />
     <Panelhoras />
     <Paneldias />

@@ -1,4 +1,7 @@
 <script>
+
+    import Sidebar from '../Componentes/Sidebar.svelte'
+
     //Filtro
 
     let visibleFiltro = true;
@@ -103,43 +106,56 @@
     if (selectedCheckbox = []) {
         todos()
     }
+
+
+
 </script>
 <div class="fondo">
-    <div class="logoGW" >
-        <img src="images/logo_galiciaweather.svg" alt="">
+
+<Sidebar/>
+
+    <div class="logoGW">
+        <h1 class="logoGW_tit">GaliciaWeather<span class="logoGW_txt">O tempo de Galicia</span></h1>
     </div>
+
 
     <div class="corpo center">
         <div class="usuario">
             <div class="container">
                 <div class="row">
-                    <img class="banner" src="images/Banner_Rexistro.png" alt="Rexístrate">
+                    <img class="banner" src="images/Banner_rexistrate.png" alt="Rexístrate">
                 </div>
             </div>
         </div>
-
         <div class="container">
-            <div class="row">
-                <!-- Menu filtro -->
-                <div id="BtnContainer">
+            <div id="BtnContainer" class="col s12">
+                <div class="col s3">
                     <button on:click={()=> todos()} class="btn_filtro active"><img class="center-align" width="80%"
                             src="images/btn_todos.svg"><span>TODOS</span></button>
+                </div>
+                <div class="col s3 ">
                     <button on:click={()=> monumentos()} class="btn_filtro"><img class="center-align" width="80%"
                             src="images/btn_monumentos.svg"><span>MONUMENTOS</span></button>
+                </div>
+                <div class="col s3">
                     <button on:click={()=> cities()} class="btn_filtro"><img class="center-align" width="80%"
                             src="images/btn_cidades.svg"><span>CIDADES</span></button>
+                </div>
+                <div class="col s3">
                     <button on:click={()=> natureza()} class="btn_filtro"><img class="center-align" width="80%"
                             src="images/btn_natureza.svg"><span>NATUREZA</span></button>
                 </div>
-                <div class="col s12 botones_filtro_sub center">
-                    <div class="col s6 left">
-                        <button on:click={()=> gratis()} class="btn_gratis left">GRATIS</button>
-                    </div>
-                    <div class="col s6 right">
-                        <button on:click={()=> descargadas()} class="btn_descargadas right">DESCARGADAS</button>
-                    </div>
+            </div>
+            <div class="col s12 botones_filtro_sub center">
+                <div class="col s6 left">
+                    <button on:click={()=> gratis()} class="btn_gratis left">GRATIS</button>
                 </div>
-
+                <div class="col s6 right">
+                    <button on:click={()=> descargadas()} class="btn_descargadas right">DESCARGADAS</button>
+                </div>
+            </div>
+            <div class="row">
+                <!-- Menu filtro -->
 
                 {#if visibleFiltro}
                 {#each selectedCheckbox as cidade }
@@ -179,11 +195,23 @@
 
 <style>
     .fondo {
+        background: url('/images/fondo_perfil.svg');
         background-color: #333;
         margin: 0px;
         padding: 0px;
         height: 100vh;
         width: 100vw;
+    }
+
+    .usuario {
+        z-index: 99;
+        position: absolute;
+        max-width: 100%;
+        width: 98vw;
+        height: auto;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
     }
 
     .corpo {
@@ -192,22 +220,37 @@
         position: absolute;
         width: 100%;
         min-height: 100vh;
-        margin-top: 90px;
+        margin-top: 80px;
     }
 
     .banner{
-        margin-top: 30px;
+        margin-top: 10px;
+        margin-bottom: 30px;
         width: 100%;
         display: flex;
     }
 
     .logoGW{
-        display: flex;
+        display: block;
         justify-content: center;
         align-items: center;
         align-content: center;
-        margin-top: 60px;
     }
+
+    .logoGW_tit{
+        text-align: center;
+        font-size: 22px;
+        padding-top: 0px;
+        margin-top: 0px;
+    }
+
+    .logoGW_txt{
+        text-align: center;
+        font-size: 12px;
+        display: block;
+    }
+
+
 
     .btn_inicio {
         height: 100px;
@@ -238,35 +281,25 @@
         font-weight: 300;
     }
 
-    .usuario{
-        z-index: 999;
-        position: absolute;
-        max-width: 100%;
-        width: 390px;
-        height: auto;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
-
 
 
     /* Filtro */
 
     #BtnContainer {
         display: inline-flex;
-        justify-content: space-around;
+        justify-content: center;
         align-items: center;
-        padding-top: 80px;
+        padding-top: 20px;
         padding-bottom: 20px;
+        margin-top: 100px;
     }
 
     .btn_filtro {
-        padding-left: 10px;
-        padding-right: 10px;
         border: 0px;
         background: transparent;
         color: white;
         font-size: 9px;
+        width: 80px;
     }
 
     .btn_filtro span {
@@ -299,6 +332,15 @@
         background: #D8D8D8;
         box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.50);
         border-radius: 4px;
+    }
+
+    @media only screen and (max-width: 360px) {
+        .btn_gratis {
+            width: 141px;
+        }
+        .btn_descargadas{
+            width: 141px;
+        }
     }
 
     .card {
@@ -339,5 +381,4 @@
     background: black;
     color: white;
     }
-
 </style>
