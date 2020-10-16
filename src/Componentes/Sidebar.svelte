@@ -1,4 +1,5 @@
 <script>
+  import { link } from 'svelte-spa-router'
 
 // navbar 
 
@@ -21,8 +22,8 @@
         <li><a href="#"><i class="material-icons white-text">people</i>Invitar Amigos</a></li>
         <li><a href="#"><i class="material-icons white-text">star</i>Calificar </a></li>
         <li><a href="#"><i class="material-icons white-text">info</i>Información</a></li>
-        <li><a href="#"><i class="material-icons white-text">person_add</i>Regístrate</a></li>
-        <li><a href="#"><i class="material-icons white-text">account_circle</i>Inicia sesión</a></li>
+        <li><a href="/Registro" use:link ><i class="material-icons white-text">person_add</i>Regístrate</a></li>
+        <li><a ><i class="material-icons white-text">account_circle</i>Inicia sesión</a></li>
         <li><a href="#"><i class="material-icons white-text">exit_to_app</i>Salir</a></li>
     </ul>
     <a on:click|preventDefault={sidebar} data-target="slide-out" class="sidenav-trigger"><i class="material-icons">sort</i></a>

@@ -107,8 +107,6 @@
         todos()
     }
 
-
-
 </script>
 <div class="fondo">
 
@@ -235,19 +233,22 @@
         justify-content: center;
         align-items: center;
         align-content: center;
-    }
+        }
 
     .logoGW_tit{
         text-align: center;
         font-size: 22px;
         padding-top: 0px;
         margin-top: 0px;
+        text-shadow: 0px 2px 4px rgba(0,0,0,1);
     }
 
     .logoGW_txt{
         text-align: center;
         font-size: 12px;
         display: block;
+        text-shadow: 0px 2px 4px rgba(0,0,0,1);
+
     }
 
 
