@@ -1,9 +1,14 @@
 <script>
+    import Sidebar from '../Componentes/Sidebar.svelte'
+    import {
+        link
+    } from 'svelte-spa-router'
+    import { fade } from 'svelte/transition';
 
 
     //Filtro
 
-    let visible = true;
+    let visibleFiltro = true;
 
     let selectedCheckbox = [];
 
@@ -65,13 +70,13 @@
 
     function descargadas() {
         let descargadas = cidades.filter((cidade) => {
-            if (cidade.descargado == 'DESCARGADO') {
+            if (cidade.tipo == 'PREMIUM') {
                 return cidade;
             }
         })
         console.log(descargadas)
 
-        selectedCheckbox = descargadas;        
+        selectedCheckbox = descargadas;
     }
 
     let cidades = [{
@@ -80,7 +85,7 @@
             imagen: 'SantiagoCompostela_descargar',
             etiqueta: 'Cidades',
             precio: 'GRATIS',
-            descargado: 'DESCARGADO'
+            tipo: 'BASIC'
         },
         {
             name: 'Teatro García Barbón',
@@ -88,7 +93,7 @@
             imagen: 'Vigo_descargar',
             etiqueta: 'Monumentos',
             precio: '0,99€',
-            descargado: 'DESCARGAR'
+            tipo: 'PREMIUM'
         },
         {
             name: 'Praia das Catedráis',
@@ -96,7 +101,7 @@
             imagen: 'Ribadeo_descargar',
             etiqueta: 'Natureza',
             precio: '0,99€',
-            descargado: 'DESCARGAR'
+            tipo: 'PREMIUM'
         }
     ]
 
@@ -106,43 +111,57 @@
         todos()
     }
 </script>
-
 <div class="fondo">
 
+    <Sidebar />
+
+    <div class="logoGW">
+        <h1 class="logoGW_tit">GaliciaWeather<span class="logoGW_txt">O tempo de Galicia</span></h1>
+    </div>
+
     <div class="corpo center">
-        <a href="#user"><img class="circle usuario center" src="images/RubenTerre2.jpg" width="20%"></a>
+    <div class="usuario">
+            <div class="container">
+                <div class="row">
+                    <a href="/Registro" use:link><img class="banner" src="images/Banner_Rexistro.png" alt="Rexístrate"></a>
+                </div>
+            </div>
+        </div>
         <div class="container">
-            <div class="row">
-                <p class="nombre_user">
-                    Rubén Terré Lameiro
-                </p>
-                <p class="center white-text bemvida">Benvido a GaliciaWeather</p>
-                <!-- Menu filtro -->
-                <div id="BtnContainer">
+            <div id="BtnContainer" class="col s12">
+                <div class="col s3">
                     <button on:click={()=> todos()} class="btn_filtro active"><img class="center-align" width="80%"
                             src="images/btn_todos.svg"><span>TODOS</span></button>
+                </div>
+                <div class="col s3 ">
                     <button on:click={()=> monumentos()} class="btn_filtro"><img class="center-align" width="80%"
                             src="images/btn_monumentos.svg"><span>MONUMENTOS</span></button>
+                </div>
+                <div class="col s3">
                     <button on:click={()=> cities()} class="btn_filtro"><img class="center-align" width="80%"
                             src="images/btn_cidades.svg"><span>CIDADES</span></button>
+                </div>
+                <div class="col s3">
                     <button on:click={()=> natureza()} class="btn_filtro"><img class="center-align" width="80%"
                             src="images/btn_natureza.svg"><span>NATUREZA</span></button>
                 </div>
-                <div class="col s12 botones_filtro_sub center">
-                    <div class="col s6 left">
-                        <button on:click={()=> gratis()} class="btn_gratis left">GRATIS</button>
-                    </div>
-                    <div class="col s6 right">
-                        <button on:click={()=> descargadas()} class="btn_descargadas right">DESCARGADAS</button>
-                    </div>
+            </div>
+            <div class="col s12 botones_filtro_sub center">
+                <div class="col s6 left">
+                    <button on:click={()=> gratis()} class="btn_gratis left">GRATIS</button>
                 </div>
+                <div class="col s6 right">
+                    <button on:click={()=> descargadas()} class="btn_descargadas right">PREMIUM</button>
+                </div>
+            </div>
+            <div class="row">
+                <!-- Menu filtro -->
 
-
-                {#if visible}
+                {#if visibleFiltro}
                 {#each selectedCheckbox as cidade }
                     
                     <div class="col s6 m7">
-                      <div class="card">
+                      <div class="card" transition:fade="{{delay: 250, duration: 300}}">
                           <div class="nombre_cidade col s12 center-align">
                             <p>{cidade.name}<span style="display: block">{cidade.lugar}</span></p>
                           </div>
@@ -158,15 +177,10 @@
                             </div>
                         </div>
                         <div class="card-action">
-                            {#if cidade.descargado == "DESCARGAR"}
-                          <a class="waves-effect waves-light btn-small">{cidade.descargado}</a>
-                            {:else}
-                          <a class="waves-effect waves-light btn-small black-text white">{cidade.descargado}</a>
-                            {/if}
+                          <a class="waves-effect waves-light btn-small">DESCARGAR</a>
                         </div>
                       </div>
                     </div>
-
                 {/each}
                 {/if}
             </div>
@@ -177,11 +191,23 @@
 
 <style>
     .fondo {
+        background: url('/images/fondo_perfil.svg');
         background-color: #333;
         margin: 0px;
         padding: 0px;
         height: 100vh;
         width: 100vw;
+    }
+
+    .usuario {
+        z-index: 99;
+        position: absolute;
+        max-width: 100%;
+        width: 98vw;
+        height: auto;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
     }
 
     .corpo {
@@ -190,46 +216,88 @@
         position: absolute;
         width: 100%;
         min-height: 100vh;
-        margin-top: 90px;
+        margin-top: 80px;
     }
 
-    .usuario {
-        z-index: 999;
-        position: absolute;
-        max-width: 100%;
-        height: auto;
-        left: 50%;
-        transform: translate(-50%, -50%);
-
+    .banner{
+        margin-top: 10px;
+        margin-bottom: 30px;
+        width: 100%;
+        display: flex;
     }
 
-    .nombre_user {
+    .logoGW{
+        display: block;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+        }
+
+    .logoGW_tit{
         text-align: center;
-        font-weight: 400;
-        padding-top: 40px;
-        font-size: 18px;
-        color: #FFFFFF;
-        letter-spacing: 0.79px;
+        font-size: 22px;
+        padding-top: 0px;
+        margin-top: 0px;
+        text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
     }
+
+    .logoGW_txt{
+        text-align: center;
+        font-size: 12px;
+        display: block;
+        text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
+    }
+
+
+
+    .btn_inicio {
+        height: 100px;
+        width: 90px;
+        background: #D8D8D8;
+        box-shadow: 0 2px 4px 0 rgba(0,0,0,0.50);
+        border-radius: 8px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .btn_registro{
+        height: 100px;
+        width: 90px;
+        background: #D8D8D8;
+        box-shadow: 0 2px 4px 0 rgba(0,0,0,0.50);
+        border-radius: 8px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .txt_btn{
+        font-size: 12px;
+        color: #333;
+        letter-spacing: 0.79px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        text-align: center;
+        font-weight: 300;
+    }
+
 
 
     /* Filtro */
 
     #BtnContainer {
         display: inline-flex;
-        justify-content: space-around;
+        justify-content: center;
         align-items: center;
-        padding-top: 40px;
+        padding-top: 20px;
         padding-bottom: 20px;
+        margin-top: 100px;
     }
 
     .btn_filtro {
-        padding-left: 10px;
-        padding-right: 10px;
         border: 0px;
         background: transparent;
         color: white;
         font-size: 9px;
+        width: 80px;
     }
 
     .btn_filtro span {
@@ -264,14 +332,32 @@
         border-radius: 4px;
     }
 
+    @media only screen and (max-width: 360px) {
+        .btn_gratis {
+            width: 141px;
+        }
+        .btn_descargadas{
+            width: 141px;
+        }
+    }
+
     .card {
         border-radius: 10px;
         background: #D8D8D8;
     }
 
     .card-action {
-        border-radius: 10px !important;
+        border-radius: 8px !important;
         padding: 4px 10px;
+        border-top:0px;
+    }
+
+    .card-content{
+        padding-top: 14px;
+        border-radius: 0 0 2px 2px;
+        padding-bottom: 28px;
+        padding-left: 18px;
+        padding-right: 18px;
     }
 
     .nombre_cidade {
@@ -302,5 +388,4 @@
     background: black;
     color: white;
     }
-
 </style>

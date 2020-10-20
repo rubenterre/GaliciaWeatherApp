@@ -110,7 +110,12 @@
     console.log(id)
     todos.splice(index, 1);
     todos = todos;
-    del('names')
+    
+    const indexSave = cities.findIndex(name => cities.name === name);
+    console.log(name)
+    cities.splice(indexSave, 1);
+    cities = cities;
+    set('names', cities);
   }
 
 

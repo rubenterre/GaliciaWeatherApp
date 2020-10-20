@@ -1,8 +1,8 @@
 <script>
-    import Perfilsinlogin from '../Componentes/Perfilsinlogin.svelte'
+    import Perfil from '../Componentes/Perfil.svelte'
 
 
 </script>
 
 
-<Perfilsinlogin />
+<Perfil />

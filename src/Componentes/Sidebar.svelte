@@ -18,15 +18,16 @@
                 <p class="logoTIT_siderbar">GaliciaWeather<span class="logoTEXT_siderbar">O tempo de Galicia</span></p>
             </div>
         </li>
-        <li><a href="#"><i class="material-icons white-text">settings</i>Ajustes</a></li>
-        <li><a href="#"><i class="material-icons white-text">people</i>Invitar Amigos</a></li>
+        <li><a href="#"><i class="material-icons white-text">settings</i>Axustes</a></li>
+        <li><a href="#"><i class="material-icons white-text">people</i>Convidar Amigos</a></li>
         <li><a href="#"><i class="material-icons white-text">star</i>Calificar </a></li>
-        <li><a href="#"><i class="material-icons white-text">info</i>Información</a></li>
-        <li><a href="/Registro" use:link ><i class="material-icons white-text">person_add</i>Regístrate</a></li>
-        <li><a ><i class="material-icons white-text">account_circle</i>Inicia sesión</a></li>
-        <li><a href="#"><i class="material-icons white-text">exit_to_app</i>Salir</a></li>
+        <li><a href="/Creditos" use:link ><i class="material-icons white-text">info</i>Información</a></li>
+       <!-- <li><a href="/Registro" use:link ><i class="material-icons white-text">person_add</i>Rexístrate</a></li>
+        <li><a href="/Login" use:link ><i class="material-icons white-text">account_circle</i>Inicia sesión</a></li>
+        <li><a href="#"><i class="material-icons white-text">exit_to_app</i>Saír</a></li> 
+        -->
     </ul>
-    <a on:click|preventDefault={sidebar} data-target="slide-out" class="sidenav-trigger"><i class="material-icons">sort</i></a>
+    <a on:click|preventDefault={sidebar} data-target="slide-out" class="sidenav-trigger">MENU</a>
 
     <style>
         /* NAVBAR */
@@ -38,8 +39,11 @@
       }
   
       .sidenav-trigger{
-          color:white;
           padding-left: 30px;
+          color: #fff;
+          writing-mode: vertical-rl;
+          font-size: 18px;
+          text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
       }
   
       .sidenav{

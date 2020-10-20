@@ -17,17 +17,10 @@
         </svg>
     </div>
     <div class="container">
-        <div class="row">
-            <div class="caja_benvida col s12">
-                <div class="benvida col s6">
-                    <h1 class="saudo">Bos días,</h1>
-                    <p>Benvido a GaliciaWeather</p>
-                </div>
-            </div>
-        </div>
+
     </div>
     <div class="banner">
-        <img class="center" src="/images/Banner_ilustracions.png" alt="">
+        <img class="center" src="/images/GaliciaWeather.gif" alt="">
     </div>
 
     <section>
@@ -35,7 +28,7 @@
             <div class="row">
                 <div class="col s12 center-align">
                     <h4 class="about-tit">GaliciaWeather</h4>
-                    <p class="about-version">Versión 1.2.1.</p>
+                    <p class="about-version">Versión 2.2.1.</p>
                     <p class="about-txt">Esta aplicación está susentada pola base de datos de Openweathermaps.</p>
 
 
@@ -50,13 +43,11 @@
                     <p class="about-textoDos"><strong class="white-text">Actualizacións nas que estamos
                             traballando</strong></p>
                     <ul class="white-text left-align">
-                        <li> 1- Sistema de temas do tempo para escoller ilustracións da túa cidade para o pronostico do
-                            tempo.</li>
-                        <li>2- Engadir un widget</li>
-                        <li> 3- Melloras de rendimento xeral da aplicación</li>
-                        <li> 4- Sistema de alertas meterolóxicas</li>
-                        <li> 5- Notificacións Push</li>
-                        <li> 6- Melloras no diseño</li>
+                        <li>1- Engadir un widget</li>
+                        <li> 2- Melloras de rendimento xeral da aplicación</li>
+                        <li> 3- Sistema de alertas meterolóxicas</li>
+                        <li> 4- Notificacións Push</li>
+                        <li> 5- Melloras no diseño</li>
                     </ul>
 
                 </div>
@@ -65,8 +56,8 @@
         </div>
     </section>
 
-    <Footer />
 </div>
+<Footer />
 
 <style>
     .fondo {
@@ -103,9 +94,9 @@
 
     .banner img {
         display: block;
-        margin: 0px;
-        padding-bottom: 10px;
-        width: 100%;
+        margin: 0px auto;
+        padding-bottom: 0px;
+        width: 50%;
     }
 
     .saudo {
