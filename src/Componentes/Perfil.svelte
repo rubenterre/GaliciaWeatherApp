@@ -3,8 +3,11 @@
     import {
         link
     } from 'svelte-spa-router'
-    import { fade } from 'svelte/transition';
+    import {
+        fade
+    } from 'svelte/transition';
 
+	let current = 'TODOS';
 
     //Filtro
 
@@ -15,6 +18,7 @@
 
     function todos() {
         selectedCheckbox = cidades;
+        current = 'TODOS';
     };
 
     function cities() {
@@ -28,20 +32,21 @@
         selectedCheckbox = cities;
 
         console.log(selectedCheckbox)
+        current = 'CIDADES'
 
 
     }
 
     function monumentos() {
         let monumentos = cidades.filter((cidade) => {
-            if (cidade.etiqueta == 'Monumentos') {
+            if (cidade.etiqueta == 'Arte') {
                 return cidade;
             }
         })
         console.log(monumentos)
 
         selectedCheckbox = monumentos;
-
+        current = 'ARTE';
     }
 
     function natureza() {
@@ -53,6 +58,7 @@
         console.log(natureza)
 
         selectedCheckbox = natureza;
+        current = 'NATUREZA';
 
     }
 
@@ -91,7 +97,7 @@
             name: 'Teatro García Barbón',
             lugar: 'Vigo',
             imagen: 'Vigo_descargar',
-            etiqueta: 'Monumentos',
+            etiqueta: 'Arte',
             precio: '0,99€',
             tipo: 'PREMIUM'
         },
@@ -120,29 +126,30 @@
     </div>
 
     <div class="corpo center">
-    <div class="usuario">
+        <div class="usuario">
             <div class="container">
                 <div class="row">
-                    <a href="/Registro" use:link><img class="banner" src="images/Banner_Rexistro.png" alt="Rexístrate"></a>
+                    <a href="/Registro" use:link><img class="banner" src="images/Banner_Rexistro.png"
+                            alt="Rexístrate"></a>
                 </div>
             </div>
         </div>
         <div class="container">
             <div id="BtnContainer" class="col s12">
-                <div class="col s3">
-                    <button on:click={()=> todos()} class="btn_filtro active"><img class="center-align" width="80%"
+                <div class="col s3 todos">
+                    <button on:click={()=> todos()} class:selected="{current === 'TODOS'}"  class="btn_filtro"><img class="center-align" width="60%"
                             src="images/btn_todos.svg"><span>TODOS</span></button>
                 </div>
-                <div class="col s3 ">
-                    <button on:click={()=> monumentos()} class="btn_filtro"><img class="center-align" width="80%"
-                            src="images/btn_monumentos.svg"><span>MONUMENTOS</span></button>
+                <div class="col s3 arte">
+                    <button on:click={()=> monumentos()} class:selected="{current === 'ARTE'}" class="btn_filtro"><img class="center-align" width="60%"
+                            src="images/btn_monumentos.svg"><span>ARTE</span></button>
                 </div>
-                <div class="col s3">
-                    <button on:click={()=> cities()} class="btn_filtro"><img class="center-align" width="80%"
+                <div class="col s3 cidades">
+                    <button on:click={()=> cities()} class:selected="{current === 'CIDADES'}" class="btn_filtro"><img class="center-align" width="60%"
                             src="images/btn_cidades.svg"><span>CIDADES</span></button>
                 </div>
-                <div class="col s3">
-                    <button on:click={()=> natureza()} class="btn_filtro"><img class="center-align" width="80%"
+                <div class="col s3 natureza">
+                    <button on:click={()=> natureza()} class:selected="{current === 'NATUREZA'}" class="btn_filtro"><img class="center-align" width="60%"
                             src="images/btn_natureza.svg"><span>NATUREZA</span></button>
                 </div>
             </div>
@@ -250,37 +257,6 @@
 
 
 
-    .btn_inicio {
-        height: 100px;
-        width: 90px;
-        background: #D8D8D8;
-        box-shadow: 0 2px 4px 0 rgba(0,0,0,0.50);
-        border-radius: 8px;
-        margin-top: 20px;
-        margin-bottom: 20px;
-    }
-
-    .btn_registro{
-        height: 100px;
-        width: 90px;
-        background: #D8D8D8;
-        box-shadow: 0 2px 4px 0 rgba(0,0,0,0.50);
-        border-radius: 8px;
-        margin-top: 20px;
-        margin-bottom: 20px;
-    }
-
-    .txt_btn{
-        font-size: 12px;
-        color: #333;
-        letter-spacing: 0.79px;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        text-align: center;
-        font-weight: 300;
-    }
-
-
-
     /* Filtro */
 
     #BtnContainer {
@@ -292,12 +268,32 @@
         margin-top: 100px;
     }
 
+    .selected {
+        border: 3px solid #333!important;
+        background: #D8D8D8!important;
+        color: #333!important;
+        font-size: 9px;
+        width: 70px!important;
+        margin: 5px;
+        text-align: center;
+        padding: 5px;
+        border-radius: 8px;
+        height: 85px;
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.50);
+	}
+
     .btn_filtro {
         border: 0px;
-        background: transparent;
-        color: white;
+        background: #D8D8D8;
+        color: #333;
         font-size: 9px;
-        width: 80px;
+        width: 70px;
+        margin: 5px;
+        text-align: center;
+        padding: 5px;
+        border-radius: 8px;
+        height: 85px;
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.50);
     }
 
     .btn_filtro span {

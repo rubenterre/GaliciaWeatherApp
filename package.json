@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "axios": "^0.20.0",
-    "firebase": "^7.23.0",
     "idb-keyval": "^3.2.0",
     "sirv-cli": "^0.4.4",
     "svelte-loading-spinners": "^0.1.1",

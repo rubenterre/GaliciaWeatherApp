@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="71px" height="71px" viewBox="0 0 71 71" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>btn_monumentos</title>
+<svg width="33px" height="33px" viewBox="0 0 33 33" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Shape</title>
     <defs>
-        <circle id="path-1" cx="31.5" cy="31.5" r="31.5"></circle>
-        <filter x="-11.1%" y="-7.9%" width="122.2%" height="122.2%" filterUnits="objectBoundingBox" id="filter-2">
+        <filter x="-15.4%" y="-12.1%" width="130.8%" height="124.2%" filterUnits="objectBoundingBox" id="filter-1">
             <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
             <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
-            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
         </filter>
     </defs>
     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="GaliciaWeather_perfil" transform="translate(-41.000000, -225.000000)">
-            <g id="btn_monumentos" transform="translate(45.000000, 227.000000)">
-                <g id="Oval">
-                    <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
-                    <use fill="#D8D8D8" fill-rule="evenodd" xlink:href="#path-1"></use>
+        <g id="GaliciaWeather_perfil" transform="translate(-145.000000, -330.000000)" fill="#333333" fill-rule="nonzero">
+            <g id="Filtros" transform="translate(17.000000, 314.000000)">
+                <g id="btn_arte" filter="url(#filter-1)" transform="translate(105.000000, 0.000000)">
+                    <path d="M51.4931641,22.4975574 L40.0488281,18.0996079 C39.6951629,17.9667974 39.3053254,17.9667974 38.9516602,18.0996079 L27.5068359,22.4975574 C27.2019804,22.6119403 27,22.903395 27,23.2290027 L27,25.0312489 C27,25.4628896 27.3496094,25.812499 27.78125,25.812499 L51.21875,25.812499 C51.6503906,25.812499 52,25.4628896 52,25.0312489 L52,23.2290027 C52,22.9033191 51.7978516,22.6118152 51.4931641,22.4975574 Z M30.125,27.3749991 L30.125,35.1874995 L29.34375,35.1874995 C28.9121094,35.1874995 28.5625,35.5371089 28.5625,35.9687496 L28.5625,38.3124997 L50.4375,38.3124997 L50.4375,35.9687496 C50.4375,35.5371089 50.0878906,35.1874995 49.65625,35.1874995 L48.875,35.1874995 L48.875,27.3749991 L45.75,27.3749991 L45.75,35.1874995 L41.0625,35.1874995 L41.0625,27.3749991 L37.9375,27.3749991 L37.9375,35.1874995 L33.25,35.1874995 L33.25,27.3749991 L30.125,27.3749991 Z M51.21875,39.8749998 L27.78125,39.8749998 C27.3496094,39.8749998 27,40.2246092 27,40.6562499 L27,42.21875 C27,42.6503906 27.3496094,43 27.78125,43 L51.21875,43 C51.6503906,43 52,42.6503906 52,42.21875 L52,40.6562499 C52,40.2246092 51.6503906,39.8749998 51.21875,39.8749998 Z" id="Shape"></path>
                 </g>
-                <path d="M43.4931641,22.4975574 L32.0488281,18.0996079 C31.6951629,17.9667974 31.3053254,17.9667974 30.9516602,18.0996079 L19.5068359,22.4975574 C19.2019804,22.6119403 19,22.903395 19,23.2290027 L19,25.0312489 C19,25.4628896 19.3496094,25.812499 19.78125,25.812499 L43.21875,25.812499 C43.6503906,25.812499 44,25.4628896 44,25.0312489 L44,23.2290027 C44,22.9033191 43.7978516,22.6118152 43.4931641,22.4975574 Z M22.125,27.3749991 L22.125,35.1874995 L21.34375,35.1874995 C20.9121094,35.1874995 20.5625,35.5371089 20.5625,35.9687496 L20.5625,38.3124997 L42.4375,38.3124997 L42.4375,35.9687496 C42.4375,35.5371089 42.0878906,35.1874995 41.65625,35.1874995 L40.875,35.1874995 L40.875,27.3749991 L37.75,27.3749991 L37.75,35.1874995 L33.0625,35.1874995 L33.0625,27.3749991 L29.9375,27.3749991 L29.9375,35.1874995 L25.25,35.1874995 L25.25,27.3749991 L22.125,27.3749991 Z M43.21875,39.8749998 L19.78125,39.8749998 C19.3496094,39.8749998 19,40.2246092 19,40.6562499 L19,42.21875 C19,42.6503906 19.3496094,43 19.78125,43 L43.21875,43 C43.6503906,43 44,42.6503906 44,42.21875 L44,40.6562499 C44,40.2246092 43.6503906,39.8749998 43.21875,39.8749998 Z" id="Shape" fill="#333333" fill-rule="nonzero"></path>
             </g>
         </g>
     </g>

@@ -14102,172 +14102,149 @@ var app = (function () {
   const file = "src/Componentes/Sidebar.svelte";
 
   function create_fragment$1(ctx) {
-  	let nav;
-  	let t0;
+  	let div2;
+  	let a0;
+  	let t1;
+  	let div1;
   	let ul;
   	let li0;
-  	let div;
+  	let div0;
   	let img;
   	let img_src_value;
-  	let t1;
-  	let p;
   	let t2;
-  	let span;
-  	let t4;
+  	let p;
+  	let t3;
+  	let span0;
+  	let t5;
   	let li1;
-  	let a0;
-  	let i0;
-  	let t6;
+  	let a1;
+  	let link_action;
   	let t7;
   	let li2;
-  	let a1;
-  	let i1;
-  	let t9;
-  	let t10;
-  	let li3;
   	let a2;
-  	let i2;
-  	let t12;
-  	let t13;
-  	let li4;
+  	let t9;
+  	let li3;
   	let a3;
-  	let i3;
-  	let t15;
-  	let link_action;
-  	let t16;
+  	let t11;
+  	let li4;
   	let a4;
+  	let link_action_1;
+  	let t13;
+  	let span1;
   	let mounted;
   	let dispose;
 
   	const block = {
   		c: function create() {
-  			nav = element("nav");
-  			t0 = space();
+  			div2 = element("div");
+  			a0 = element("a");
+  			a0.textContent = "×";
+  			t1 = space();
+  			div1 = element("div");
   			ul = element("ul");
   			li0 = element("li");
-  			div = element("div");
+  			div0 = element("div");
   			img = element("img");
-  			t1 = space();
+  			t2 = space();
   			p = element("p");
-  			t2 = text("GaliciaWeather");
-  			span = element("span");
-  			span.textContent = "O tempo de Galicia";
-  			t4 = space();
+  			t3 = text("GaliciaWeather");
+  			span0 = element("span");
+  			span0.textContent = "O tempo de Galicia";
+  			t5 = space();
   			li1 = element("li");
-  			a0 = element("a");
-  			i0 = element("i");
-  			i0.textContent = "settings";
-  			t6 = text("Axustes");
+  			a1 = element("a");
+  			a1.textContent = "Axustes";
   			t7 = space();
   			li2 = element("li");
-  			a1 = element("a");
-  			i1 = element("i");
-  			i1.textContent = "people";
-  			t9 = text("Convidar Amigos");
-  			t10 = space();
-  			li3 = element("li");
   			a2 = element("a");
-  			i2 = element("i");
-  			i2.textContent = "star";
-  			t12 = text("Calificar");
-  			t13 = space();
-  			li4 = element("li");
+  			a2.textContent = "Convidar Amigos";
+  			t9 = space();
+  			li3 = element("li");
   			a3 = element("a");
-  			i3 = element("i");
-  			i3.textContent = "info";
-  			t15 = text("Información");
-  			t16 = space();
+  			a3.textContent = "Calificar";
+  			t11 = space();
+  			li4 = element("li");
   			a4 = element("a");
-  			a4.textContent = "MENU";
-  			attr_dev(nav, "class", "svelte-dulmaa");
-  			add_location(nav, file, 12, 0, 202);
-  			attr_dev(img, "class", "img_siderbar svelte-dulmaa");
+  			a4.textContent = "Información";
+  			t13 = space();
+  			span1 = element("span");
+  			span1.textContent = "MENU";
+  			attr_dev(a0, "href", "javascript:void(0)");
+  			attr_dev(a0, "class", "closebtn svelte-wgnw63");
+  			add_location(a0, file, 18, 4, 457);
+  			attr_dev(img, "class", "img_siderbar svelte-wgnw63");
   			if (img.src !== (img_src_value = "images/GaliciaWeather.gif")) attr_dev(img, "src", img_src_value);
   			attr_dev(img, "width", "50%");
-  			add_location(img, file, 16, 16, 319);
-  			attr_dev(span, "class", "logoTEXT_siderbar svelte-dulmaa");
-  			add_location(span, file, 17, 58, 448);
-  			attr_dev(p, "class", "logoTIT_siderbar svelte-dulmaa");
-  			add_location(p, file, 17, 16, 406);
-  			attr_dev(div, "class", "user-view svelte-dulmaa");
-  			add_location(div, file, 15, 12, 279);
-  			add_location(li0, file, 14, 8, 262);
-  			attr_dev(i0, "class", "material-icons white-text");
-  			add_location(i0, file, 20, 24, 567);
-  			attr_dev(a0, "href", "#");
-  			attr_dev(a0, "class", "svelte-dulmaa");
-  			add_location(a0, file, 20, 12, 555);
-  			attr_dev(li1, "class", "svelte-dulmaa");
-  			add_location(li1, file, 20, 8, 551);
-  			attr_dev(i1, "class", "material-icons white-text");
-  			add_location(i1, file, 21, 24, 657);
-  			attr_dev(a1, "href", "#");
-  			attr_dev(a1, "class", "svelte-dulmaa");
-  			add_location(a1, file, 21, 12, 645);
-  			attr_dev(li2, "class", "svelte-dulmaa");
-  			add_location(li2, file, 21, 8, 641);
-  			attr_dev(i2, "class", "material-icons white-text");
-  			add_location(i2, file, 22, 24, 753);
+  			add_location(img, file, 25, 20, 688);
+  			attr_dev(span0, "class", "logoTEXT_siderbar svelte-wgnw63");
+  			add_location(span0, file, 26, 62, 821);
+  			attr_dev(p, "class", "logoTIT_siderbar svelte-wgnw63");
+  			add_location(p, file, 26, 20, 779);
+  			attr_dev(div0, "class", "user-view svelte-wgnw63");
+  			add_location(div0, file, 24, 16, 644);
+  			add_location(li0, file, 23, 12, 623);
+  			attr_dev(a1, "href", "/Axustes");
+  			attr_dev(a1, "class", "svelte-wgnw63");
+  			add_location(a1, file, 29, 16, 940);
+  			add_location(li1, file, 29, 12, 936);
   			attr_dev(a2, "href", "#");
-  			attr_dev(a2, "class", "svelte-dulmaa");
-  			add_location(a2, file, 22, 12, 741);
-  			attr_dev(li3, "class", "svelte-dulmaa");
-  			add_location(li3, file, 22, 8, 737);
-  			attr_dev(i3, "class", "material-icons white-text");
-  			add_location(i3, file, 23, 42, 860);
-  			attr_dev(a3, "href", "/Creditos");
-  			attr_dev(a3, "class", "svelte-dulmaa");
-  			add_location(a3, file, 23, 12, 830);
-  			attr_dev(li4, "class", "svelte-dulmaa");
-  			add_location(li4, file, 23, 8, 826);
-  			attr_dev(ul, "id", "slide-out");
-  			attr_dev(ul, "class", "sidenav svelte-dulmaa");
-  			add_location(ul, file, 13, 4, 218);
-  			attr_dev(a4, "data-target", "slide-out");
-  			attr_dev(a4, "class", "sidenav-trigger svelte-dulmaa");
-  			add_location(a4, file, 29, 4, 1277);
+  			attr_dev(a2, "class", "svelte-wgnw63");
+  			add_location(a2, file, 30, 16, 1002);
+  			add_location(li2, file, 30, 12, 998);
+  			attr_dev(a3, "href", "#");
+  			attr_dev(a3, "class", "svelte-wgnw63");
+  			add_location(a3, file, 31, 16, 1055);
+  			add_location(li3, file, 31, 12, 1051);
+  			attr_dev(a4, "href", "/Creditos");
+  			attr_dev(a4, "class", "svelte-wgnw63");
+  			add_location(a4, file, 32, 16, 1103);
+  			add_location(li4, file, 32, 12, 1099);
+  			add_location(ul, file, 22, 8, 606);
+  			attr_dev(div1, "class", "overlay-content svelte-wgnw63");
+  			add_location(div1, file, 21, 4, 568);
+  			attr_dev(div2, "id", "myNav");
+  			attr_dev(div2, "class", "overlay svelte-wgnw63");
+  			add_location(div2, file, 15, 0, 367);
+  			attr_dev(span1, "class", "sidenav-trigger svelte-wgnw63");
+  			add_location(span1, file, 41, 2, 1267);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
   		},
   		m: function mount(target, anchor) {
-  			insert_dev(target, nav, anchor);
-  			insert_dev(target, t0, anchor);
-  			insert_dev(target, ul, anchor);
+  			insert_dev(target, div2, anchor);
+  			append_dev(div2, a0);
+  			append_dev(div2, t1);
+  			append_dev(div2, div1);
+  			append_dev(div1, ul);
   			append_dev(ul, li0);
-  			append_dev(li0, div);
-  			append_dev(div, img);
-  			append_dev(div, t1);
-  			append_dev(div, p);
-  			append_dev(p, t2);
-  			append_dev(p, span);
-  			append_dev(ul, t4);
+  			append_dev(li0, div0);
+  			append_dev(div0, img);
+  			append_dev(div0, t2);
+  			append_dev(div0, p);
+  			append_dev(p, t3);
+  			append_dev(p, span0);
+  			append_dev(ul, t5);
   			append_dev(ul, li1);
-  			append_dev(li1, a0);
-  			append_dev(a0, i0);
-  			append_dev(a0, t6);
+  			append_dev(li1, a1);
   			append_dev(ul, t7);
   			append_dev(ul, li2);
-  			append_dev(li2, a1);
-  			append_dev(a1, i1);
-  			append_dev(a1, t9);
-  			append_dev(ul, t10);
+  			append_dev(li2, a2);
+  			append_dev(ul, t9);
   			append_dev(ul, li3);
-  			append_dev(li3, a2);
-  			append_dev(a2, i2);
-  			append_dev(a2, t12);
-  			append_dev(ul, t13);
+  			append_dev(li3, a3);
+  			append_dev(ul, t11);
   			append_dev(ul, li4);
-  			append_dev(li4, a3);
-  			append_dev(a3, i3);
-  			append_dev(a3, t15);
-  			insert_dev(target, t16, anchor);
-  			insert_dev(target, a4, anchor);
+  			append_dev(li4, a4);
+  			insert_dev(target, t13, anchor);
+  			insert_dev(target, span1, anchor);
 
   			if (!mounted) {
   				dispose = [
-  					action_destroyer(link_action = link.call(null, a3)),
-  					listen_dev(a4, "click", prevent_default(/*sidebar*/ ctx[0]), false, true, false)
+  					listen_dev(a0, "click", /*close*/ ctx[1], false, false, false),
+  					action_destroyer(link_action = link.call(null, a1)),
+  					action_destroyer(link_action_1 = link.call(null, a4)),
+  					listen_dev(span1, "click", /*open*/ ctx[0], false, false, false)
   				];
 
   				mounted = true;
@@ -14277,11 +14254,9 @@ var app = (function () {
   		i: noop,
   		o: noop,
   		d: function destroy(detaching) {
-  			if (detaching) detach_dev(nav);
-  			if (detaching) detach_dev(t0);
-  			if (detaching) detach_dev(ul);
-  			if (detaching) detach_dev(t16);
-  			if (detaching) detach_dev(a4);
+  			if (detaching) detach_dev(div2);
+  			if (detaching) detach_dev(t13);
+  			if (detaching) detach_dev(span1);
   			mounted = false;
   			run_all(dispose);
   		}
@@ -14302,9 +14277,13 @@ var app = (function () {
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("Sidebar", slots, []);
 
-  	const sidebar = () => {
-  		var elems = document.querySelectorAll(".sidenav");
-  		var instances = M.Sidenav.init(elems);
+  	const open = () => {
+  		document.getElementById("myNav").style.width = "100%";
+  	};
+
+  	/* Close when someone clicks on the "x" symbol inside the overlay */
+  	const close = () => {
+  		document.getElementById("myNav").style.width = "0%";
   	};
 
   	const writable_props = [];
@@ -14313,8 +14292,8 @@ var app = (function () {
   		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<Sidebar> was created with unknown prop '${key}'`);
   	});
 
-  	$$self.$capture_state = () => ({ link, sidebar });
-  	return [sidebar];
+  	$$self.$capture_state = () => ({ link, open, close });
+  	return [open, close];
   }
 
   class Sidebar extends SvelteComponentDev {
@@ -20564,15 +20543,15 @@ var app = (function () {
 
   function get_each_context$1(ctx, list, i) {
   	const child_ctx = ctx.slice();
-  	child_ctx[15] = list[i];
+  	child_ctx[16] = list[i];
   	return child_ctx;
   }
 
-  // (160:16) {#if visibleFiltro}
+  // (167:16) {#if visibleFiltro}
   function create_if_block$3(ctx) {
   	let each_1_anchor;
   	let current;
-  	let each_value = /*selectedCheckbox*/ ctx[0];
+  	let each_value = /*selectedCheckbox*/ ctx[1];
   	validate_each_argument(each_value);
   	let each_blocks = [];
 
@@ -20601,8 +20580,8 @@ var app = (function () {
   			current = true;
   		},
   		p: function update(ctx, dirty) {
-  			if (dirty & /*selectedCheckbox*/ 1) {
-  				each_value = /*selectedCheckbox*/ ctx[0];
+  			if (dirty & /*selectedCheckbox*/ 2) {
+  				each_value = /*selectedCheckbox*/ ctx[1];
   				validate_each_argument(each_value);
   				let i;
 
@@ -20657,23 +20636,23 @@ var app = (function () {
   		block,
   		id: create_if_block$3.name,
   		type: "if",
-  		source: "(160:16) {#if visibleFiltro}",
+  		source: "(167:16) {#if visibleFiltro}",
   		ctx
   	});
 
   	return block;
   }
 
-  // (161:16) {#each selectedCheckbox as cidade }
+  // (168:16) {#each selectedCheckbox as cidade }
   function create_each_block$1(ctx) {
   	let div7;
   	let div6;
   	let div0;
   	let p0;
-  	let t0_value = /*cidade*/ ctx[15].name + "";
+  	let t0_value = /*cidade*/ ctx[16].name + "";
   	let t0;
   	let span;
-  	let t1_value = /*cidade*/ ctx[15].lugar + "";
+  	let t1_value = /*cidade*/ ctx[16].lugar + "";
   	let t1;
   	let t2;
   	let div1;
@@ -20683,12 +20662,12 @@ var app = (function () {
   	let div4;
   	let div2;
   	let p1;
-  	let t4_value = /*cidade*/ ctx[15].etiqueta + "";
+  	let t4_value = /*cidade*/ ctx[16].etiqueta + "";
   	let t4;
   	let t5;
   	let div3;
   	let p2;
-  	let t6_value = /*cidade*/ ctx[15].precio + "";
+  	let t6_value = /*cidade*/ ctx[16].precio + "";
   	let t6;
   	let t7;
   	let div5;
@@ -20724,30 +20703,30 @@ var app = (function () {
   			a.textContent = "DESCARGAR";
   			t9 = space();
   			set_style(span, "display", "block");
-  			add_location(span, file$9, 165, 44, 4911);
-  			add_location(p0, file$9, 165, 28, 4895);
-  			attr_dev(div0, "class", "nombre_cidade col s12 center-align svelte-5le6ko");
-  			add_location(div0, file$9, 164, 26, 4818);
-  			if (img.src !== (img_src_value = "/images/descargar/" + /*cidade*/ ctx[15].imagen + ".png")) attr_dev(img, "src", img_src_value);
-  			add_location(img, file$9, 168, 26, 5074);
-  			attr_dev(div1, "class", "card-image svelte-5le6ko");
-  			add_location(div1, file$9, 167, 24, 5023);
-  			add_location(p1, file$9, 172, 32, 5307);
-  			attr_dev(div2, "class", "etiqueta col s6 svelte-5le6ko");
-  			add_location(div2, file$9, 171, 28, 5245);
-  			add_location(p2, file$9, 175, 32, 5455);
-  			attr_dev(div3, "class", "precio col s6 svelte-5le6ko");
-  			add_location(div3, file$9, 174, 28, 5395);
-  			attr_dev(div4, "class", "card-content black-text svelte-5le6ko");
-  			add_location(div4, file$9, 170, 24, 5179);
-  			attr_dev(a, "class", "waves-effect waves-light btn-small svelte-5le6ko");
-  			add_location(a, file$9, 179, 26, 5620);
-  			attr_dev(div5, "class", "card-action svelte-5le6ko");
-  			add_location(div5, file$9, 178, 24, 5568);
-  			attr_dev(div6, "class", "card svelte-5le6ko");
-  			add_location(div6, file$9, 163, 22, 4725);
+  			add_location(span, file$9, 172, 44, 5252);
+  			add_location(p0, file$9, 172, 28, 5236);
+  			attr_dev(div0, "class", "nombre_cidade col s12 center-align svelte-jbn3k3");
+  			add_location(div0, file$9, 171, 26, 5159);
+  			if (img.src !== (img_src_value = "/images/descargar/" + /*cidade*/ ctx[16].imagen + ".png")) attr_dev(img, "src", img_src_value);
+  			add_location(img, file$9, 175, 26, 5415);
+  			attr_dev(div1, "class", "card-image svelte-jbn3k3");
+  			add_location(div1, file$9, 174, 24, 5364);
+  			add_location(p1, file$9, 179, 32, 5648);
+  			attr_dev(div2, "class", "etiqueta col s6 svelte-jbn3k3");
+  			add_location(div2, file$9, 178, 28, 5586);
+  			add_location(p2, file$9, 182, 32, 5796);
+  			attr_dev(div3, "class", "precio col s6 svelte-jbn3k3");
+  			add_location(div3, file$9, 181, 28, 5736);
+  			attr_dev(div4, "class", "card-content black-text svelte-jbn3k3");
+  			add_location(div4, file$9, 177, 24, 5520);
+  			attr_dev(a, "class", "waves-effect waves-light btn-small svelte-jbn3k3");
+  			add_location(a, file$9, 186, 26, 5961);
+  			attr_dev(div5, "class", "card-action svelte-jbn3k3");
+  			add_location(div5, file$9, 185, 24, 5909);
+  			attr_dev(div6, "class", "card svelte-jbn3k3");
+  			add_location(div6, file$9, 170, 22, 5066);
   			attr_dev(div7, "class", "col s6 m7");
-  			add_location(div7, file$9, 162, 20, 4679);
+  			add_location(div7, file$9, 169, 20, 5020);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div7, anchor);
@@ -20776,15 +20755,15 @@ var app = (function () {
   			current = true;
   		},
   		p: function update(ctx, dirty) {
-  			if ((!current || dirty & /*selectedCheckbox*/ 1) && t0_value !== (t0_value = /*cidade*/ ctx[15].name + "")) set_data_dev(t0, t0_value);
-  			if ((!current || dirty & /*selectedCheckbox*/ 1) && t1_value !== (t1_value = /*cidade*/ ctx[15].lugar + "")) set_data_dev(t1, t1_value);
+  			if ((!current || dirty & /*selectedCheckbox*/ 2) && t0_value !== (t0_value = /*cidade*/ ctx[16].name + "")) set_data_dev(t0, t0_value);
+  			if ((!current || dirty & /*selectedCheckbox*/ 2) && t1_value !== (t1_value = /*cidade*/ ctx[16].lugar + "")) set_data_dev(t1, t1_value);
 
-  			if (!current || dirty & /*selectedCheckbox*/ 1 && img.src !== (img_src_value = "/images/descargar/" + /*cidade*/ ctx[15].imagen + ".png")) {
+  			if (!current || dirty & /*selectedCheckbox*/ 2 && img.src !== (img_src_value = "/images/descargar/" + /*cidade*/ ctx[16].imagen + ".png")) {
   				attr_dev(img, "src", img_src_value);
   			}
 
-  			if ((!current || dirty & /*selectedCheckbox*/ 1) && t4_value !== (t4_value = /*cidade*/ ctx[15].etiqueta + "")) set_data_dev(t4, t4_value);
-  			if ((!current || dirty & /*selectedCheckbox*/ 1) && t6_value !== (t6_value = /*cidade*/ ctx[15].precio + "")) set_data_dev(t6, t6_value);
+  			if ((!current || dirty & /*selectedCheckbox*/ 2) && t4_value !== (t4_value = /*cidade*/ ctx[16].etiqueta + "")) set_data_dev(t4, t4_value);
+  			if ((!current || dirty & /*selectedCheckbox*/ 2) && t6_value !== (t6_value = /*cidade*/ ctx[16].precio + "")) set_data_dev(t6, t6_value);
   		},
   		i: function intro(local) {
   			if (current) return;
@@ -20811,7 +20790,7 @@ var app = (function () {
   		block,
   		id: create_each_block$1.name,
   		type: "each",
-  		source: "(161:16) {#each selectedCheckbox as cidade }",
+  		source: "(168:16) {#each selectedCheckbox as cidade }",
   		ctx
   	});
 
@@ -20874,7 +20853,7 @@ var app = (function () {
   	let mounted;
   	let dispose;
   	sidebar = new Sidebar({ $$inline: true });
-  	let if_block = /*visibleFiltro*/ ctx[1] && create_if_block$3(ctx);
+  	let if_block = /*visibleFiltro*/ ctx[2] && create_if_block$3(ctx);
 
   	const block = {
   		c: function create() {
@@ -20906,7 +20885,7 @@ var app = (function () {
   			button1 = element("button");
   			img2 = element("img");
   			span2 = element("span");
-  			span2.textContent = "MONUMENTOS";
+  			span2.textContent = "ARTE";
   			t8 = space();
   			div6 = element("div");
   			button2 = element("button");
@@ -20931,85 +20910,89 @@ var app = (function () {
   			t16 = space();
   			div12 = element("div");
   			if (if_block) if_block.c();
-  			attr_dev(span0, "class", "logoGW_txt svelte-5le6ko");
-  			add_location(span0, file$9, 118, 45, 2550);
-  			attr_dev(h1, "class", "logoGW_tit svelte-5le6ko");
-  			add_location(h1, file$9, 118, 8, 2513);
-  			attr_dev(div0, "class", "logoGW svelte-5le6ko");
-  			add_location(div0, file$9, 117, 4, 2484);
-  			attr_dev(img0, "class", "banner svelte-5le6ko");
+  			attr_dev(span0, "class", "logoGW_txt svelte-jbn3k3");
+  			add_location(span0, file$9, 124, 45, 2684);
+  			attr_dev(h1, "class", "logoGW_tit svelte-jbn3k3");
+  			add_location(h1, file$9, 124, 8, 2647);
+  			attr_dev(div0, "class", "logoGW svelte-jbn3k3");
+  			add_location(div0, file$9, 123, 4, 2618);
+  			attr_dev(img0, "class", "banner svelte-jbn3k3");
   			if (img0.src !== (img0_src_value = "images/Banner_Rexistro.png")) attr_dev(img0, "src", img0_src_value);
   			attr_dev(img0, "alt", "Rexístrate");
-  			add_location(img0, file$9, 125, 49, 2794);
+  			add_location(img0, file$9, 131, 49, 2932);
   			attr_dev(a, "href", "/Registro");
-  			add_location(a, file$9, 125, 20, 2765);
+  			add_location(a, file$9, 131, 20, 2903);
   			attr_dev(div1, "class", "row");
-  			add_location(div1, file$9, 124, 16, 2727);
+  			add_location(div1, file$9, 130, 16, 2865);
   			attr_dev(div2, "class", "container");
-  			add_location(div2, file$9, 123, 12, 2687);
-  			attr_dev(div3, "class", "usuario svelte-5le6ko");
-  			add_location(div3, file$9, 122, 4, 2653);
+  			add_location(div2, file$9, 129, 12, 2825);
+  			attr_dev(div3, "class", "usuario svelte-jbn3k3");
+  			add_location(div3, file$9, 128, 8, 2791);
   			attr_dev(img1, "class", "center-align");
-  			attr_dev(img1, "width", "80%");
+  			attr_dev(img1, "width", "60%");
   			if (img1.src !== (img1_src_value = "images/btn_todos.svg")) attr_dev(img1, "src", img1_src_value);
-  			add_location(img1, file$9, 132, 78, 3125);
-  			attr_dev(span1, "class", "svelte-5le6ko");
-  			add_location(span1, file$9, 133, 55, 3218);
-  			attr_dev(button0, "class", "btn_filtro active svelte-5le6ko");
-  			add_location(button0, file$9, 132, 20, 3067);
-  			attr_dev(div4, "class", "col s3");
-  			add_location(div4, file$9, 131, 16, 3026);
+  			add_location(img1, file$9, 139, 111, 3330);
+  			attr_dev(span1, "class", "svelte-jbn3k3");
+  			add_location(span1, file$9, 140, 55, 3423);
+  			attr_dev(button0, "class", "btn_filtro svelte-jbn3k3");
+  			toggle_class(button0, "selected", /*current*/ ctx[0] === "TODOS");
+  			add_location(button0, file$9, 139, 20, 3239);
+  			attr_dev(div4, "class", "col s3 todos");
+  			add_location(div4, file$9, 138, 16, 3192);
   			attr_dev(img2, "class", "center-align");
-  			attr_dev(img2, "width", "80%");
+  			attr_dev(img2, "width", "60%");
   			if (img2.src !== (img2_src_value = "images/btn_monumentos.svg")) attr_dev(img2, "src", img2_src_value);
-  			add_location(img2, file$9, 136, 76, 3383);
-  			attr_dev(span2, "class", "svelte-5le6ko");
-  			add_location(span2, file$9, 137, 60, 3481);
-  			attr_dev(button1, "class", "btn_filtro svelte-5le6ko");
-  			add_location(button1, file$9, 136, 20, 3327);
-  			attr_dev(div5, "class", "col s3 ");
-  			add_location(div5, file$9, 135, 16, 3285);
+  			add_location(img2, file$9, 143, 114, 3630);
+  			attr_dev(span2, "class", "svelte-jbn3k3");
+  			add_location(span2, file$9, 144, 60, 3728);
+  			attr_dev(button1, "class", "btn_filtro svelte-jbn3k3");
+  			toggle_class(button1, "selected", /*current*/ ctx[0] === "ARTE");
+  			add_location(button1, file$9, 143, 20, 3536);
+  			attr_dev(div5, "class", "col s3 arte");
+  			add_location(div5, file$9, 142, 16, 3490);
   			attr_dev(img3, "class", "center-align");
-  			attr_dev(img3, "width", "80%");
+  			attr_dev(img3, "width", "60%");
   			if (img3.src !== (img3_src_value = "images/btn_cidades.svg")) attr_dev(img3, "src", img3_src_value);
-  			add_location(img3, file$9, 140, 72, 3646);
-  			attr_dev(span3, "class", "svelte-5le6ko");
-  			add_location(span3, file$9, 141, 57, 3741);
-  			attr_dev(button2, "class", "btn_filtro svelte-5le6ko");
-  			add_location(button2, file$9, 140, 20, 3594);
-  			attr_dev(div6, "class", "col s3");
-  			add_location(div6, file$9, 139, 16, 3553);
+  			add_location(img3, file$9, 147, 113, 3936);
+  			attr_dev(span3, "class", "svelte-jbn3k3");
+  			add_location(span3, file$9, 148, 57, 4031);
+  			attr_dev(button2, "class", "btn_filtro svelte-jbn3k3");
+  			toggle_class(button2, "selected", /*current*/ ctx[0] === "CIDADES");
+  			add_location(button2, file$9, 147, 20, 3843);
+  			attr_dev(div6, "class", "col s3 cidades");
+  			add_location(div6, file$9, 146, 16, 3794);
   			attr_dev(img4, "class", "center-align");
-  			attr_dev(img4, "width", "80%");
+  			attr_dev(img4, "width", "60%");
   			if (img4.src !== (img4_src_value = "images/btn_natureza.svg")) attr_dev(img4, "src", img4_src_value);
-  			add_location(img4, file$9, 144, 74, 3905);
-  			attr_dev(span4, "class", "svelte-5le6ko");
-  			add_location(span4, file$9, 145, 58, 4001);
-  			attr_dev(button3, "class", "btn_filtro svelte-5le6ko");
-  			add_location(button3, file$9, 144, 20, 3851);
-  			attr_dev(div7, "class", "col s3");
-  			add_location(div7, file$9, 143, 16, 3810);
+  			add_location(img4, file$9, 151, 116, 4246);
+  			attr_dev(span4, "class", "svelte-jbn3k3");
+  			add_location(span4, file$9, 152, 58, 4342);
+  			attr_dev(button3, "class", "btn_filtro svelte-jbn3k3");
+  			toggle_class(button3, "selected", /*current*/ ctx[0] === "NATUREZA");
+  			add_location(button3, file$9, 151, 20, 4150);
+  			attr_dev(div7, "class", "col s3 natureza");
+  			add_location(div7, file$9, 150, 16, 4100);
   			attr_dev(div8, "id", "BtnContainer");
-  			attr_dev(div8, "class", "col s12 svelte-5le6ko");
-  			add_location(div8, file$9, 130, 12, 2970);
-  			attr_dev(button4, "class", "btn_gratis left svelte-5le6ko");
-  			add_location(button4, file$9, 150, 20, 4196);
+  			attr_dev(div8, "class", "col s12 svelte-jbn3k3");
+  			add_location(div8, file$9, 137, 12, 3136);
+  			attr_dev(button4, "class", "btn_gratis left svelte-jbn3k3");
+  			add_location(button4, file$9, 157, 20, 4537);
   			attr_dev(div9, "class", "col s6 left");
-  			add_location(div9, file$9, 149, 16, 4150);
-  			attr_dev(button5, "class", "btn_descargadas right svelte-5le6ko");
-  			add_location(button5, file$9, 153, 20, 4355);
+  			add_location(div9, file$9, 156, 16, 4491);
+  			attr_dev(button5, "class", "btn_descargadas right svelte-jbn3k3");
+  			add_location(button5, file$9, 160, 20, 4696);
   			attr_dev(div10, "class", "col s6 right");
-  			add_location(div10, file$9, 152, 16, 4308);
-  			attr_dev(div11, "class", "col s12 botones_filtro_sub center svelte-5le6ko");
-  			add_location(div11, file$9, 148, 12, 4086);
+  			add_location(div10, file$9, 159, 16, 4649);
+  			attr_dev(div11, "class", "col s12 botones_filtro_sub center svelte-jbn3k3");
+  			add_location(div11, file$9, 155, 12, 4427);
   			attr_dev(div12, "class", "row");
-  			add_location(div12, file$9, 156, 12, 4494);
+  			add_location(div12, file$9, 163, 12, 4835);
   			attr_dev(div13, "class", "container");
-  			add_location(div13, file$9, 129, 8, 2934);
-  			attr_dev(div14, "class", "corpo center svelte-5le6ko");
-  			add_location(div14, file$9, 121, 4, 2622);
-  			attr_dev(div15, "class", "fondo svelte-5le6ko");
-  			add_location(div15, file$9, 113, 0, 2442);
+  			add_location(div13, file$9, 136, 8, 3100);
+  			attr_dev(div14, "class", "corpo center svelte-jbn3k3");
+  			add_location(div14, file$9, 127, 4, 2756);
+  			attr_dev(div15, "class", "fondo svelte-jbn3k3");
+  			add_location(div15, file$9, 119, 0, 2576);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -21066,19 +21049,35 @@ var app = (function () {
   			if (!mounted) {
   				dispose = [
   					action_destroyer(link_action = link.call(null, a)),
-  					listen_dev(button0, "click", /*click_handler*/ ctx[8], false, false, false),
-  					listen_dev(button1, "click", /*click_handler_1*/ ctx[9], false, false, false),
-  					listen_dev(button2, "click", /*click_handler_2*/ ctx[10], false, false, false),
-  					listen_dev(button3, "click", /*click_handler_3*/ ctx[11], false, false, false),
-  					listen_dev(button4, "click", /*click_handler_4*/ ctx[12], false, false, false),
-  					listen_dev(button5, "click", /*click_handler_5*/ ctx[13], false, false, false)
+  					listen_dev(button0, "click", /*click_handler*/ ctx[9], false, false, false),
+  					listen_dev(button1, "click", /*click_handler_1*/ ctx[10], false, false, false),
+  					listen_dev(button2, "click", /*click_handler_2*/ ctx[11], false, false, false),
+  					listen_dev(button3, "click", /*click_handler_3*/ ctx[12], false, false, false),
+  					listen_dev(button4, "click", /*click_handler_4*/ ctx[13], false, false, false),
+  					listen_dev(button5, "click", /*click_handler_5*/ ctx[14], false, false, false)
   				];
 
   				mounted = true;
   			}
   		},
   		p: function update(ctx, [dirty]) {
-  			if (/*visibleFiltro*/ ctx[1]) if_block.p(ctx, dirty);
+  			if (dirty & /*current*/ 1) {
+  				toggle_class(button0, "selected", /*current*/ ctx[0] === "TODOS");
+  			}
+
+  			if (dirty & /*current*/ 1) {
+  				toggle_class(button1, "selected", /*current*/ ctx[0] === "ARTE");
+  			}
+
+  			if (dirty & /*current*/ 1) {
+  				toggle_class(button2, "selected", /*current*/ ctx[0] === "CIDADES");
+  			}
+
+  			if (dirty & /*current*/ 1) {
+  				toggle_class(button3, "selected", /*current*/ ctx[0] === "NATUREZA");
+  			}
+
+  			if (/*visibleFiltro*/ ctx[2]) if_block.p(ctx, dirty);
   		},
   		i: function intro(local) {
   			if (current) return;
@@ -21114,11 +21113,16 @@ var app = (function () {
   function instance$a($$self, $$props, $$invalidate) {
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("Perfil", slots, []);
+  	let current = "TODOS";
+
+  	//Filtro
   	let visibleFiltro = true;
+
   	let selectedCheckbox = [];
 
   	function todos() {
-  		$$invalidate(0, selectedCheckbox = cidades);
+  		$$invalidate(1, selectedCheckbox = cidades);
+  		$$invalidate(0, current = "TODOS");
   	}
 
   	
@@ -21131,19 +21135,21 @@ var app = (function () {
   		});
 
   		console.log(cities);
-  		$$invalidate(0, selectedCheckbox = cities);
+  		$$invalidate(1, selectedCheckbox = cities);
   		console.log(selectedCheckbox);
+  		$$invalidate(0, current = "CIDADES");
   	}
 
   	function monumentos() {
   		let monumentos = cidades.filter(cidade => {
-  			if (cidade.etiqueta == "Monumentos") {
+  			if (cidade.etiqueta == "Arte") {
   				return cidade;
   			}
   		});
 
   		console.log(monumentos);
-  		$$invalidate(0, selectedCheckbox = monumentos);
+  		$$invalidate(1, selectedCheckbox = monumentos);
+  		$$invalidate(0, current = "ARTE");
   	}
 
   	function natureza() {
@@ -21154,7 +21160,8 @@ var app = (function () {
   		});
 
   		console.log(natureza);
-  		$$invalidate(0, selectedCheckbox = natureza);
+  		$$invalidate(1, selectedCheckbox = natureza);
+  		$$invalidate(0, current = "NATUREZA");
   	}
 
   	function gratis() {
@@ -21165,7 +21172,7 @@ var app = (function () {
   		});
 
   		console.log(gratis);
-  		$$invalidate(0, selectedCheckbox = gratis);
+  		$$invalidate(1, selectedCheckbox = gratis);
   	}
 
   	function descargadas() {
@@ -21176,7 +21183,7 @@ var app = (function () {
   		});
 
   		console.log(descargadas);
-  		$$invalidate(0, selectedCheckbox = descargadas);
+  		$$invalidate(1, selectedCheckbox = descargadas);
   	}
 
   	let cidades = [
@@ -21192,7 +21199,7 @@ var app = (function () {
   			name: "Teatro García Barbón",
   			lugar: "Vigo",
   			imagen: "Vigo_descargar",
-  			etiqueta: "Monumentos",
+  			etiqueta: "Arte",
   			precio: "0,99€",
   			tipo: "PREMIUM"
   		},
@@ -21229,6 +21236,7 @@ var app = (function () {
   		Sidebar,
   		link,
   		fade,
+  		current,
   		visibleFiltro,
   		selectedCheckbox,
   		todos,
@@ -21241,8 +21249,9 @@ var app = (function () {
   	});
 
   	$$self.$inject_state = $$props => {
-  		if ("visibleFiltro" in $$props) $$invalidate(1, visibleFiltro = $$props.visibleFiltro);
-  		if ("selectedCheckbox" in $$props) $$invalidate(0, selectedCheckbox = $$props.selectedCheckbox);
+  		if ("current" in $$props) $$invalidate(0, current = $$props.current);
+  		if ("visibleFiltro" in $$props) $$invalidate(2, visibleFiltro = $$props.visibleFiltro);
+  		if ("selectedCheckbox" in $$props) $$invalidate(1, selectedCheckbox = $$props.selectedCheckbox);
   		if ("cidades" in $$props) cidades = $$props.cidades;
   	};
 
@@ -21251,6 +21260,7 @@ var app = (function () {
   	}
 
   	return [
+  		current,
   		selectedCheckbox,
   		visibleFiltro,
   		todos,
@@ -24640,235 +24650,308 @@ var app = (function () {
   const file$f = "src/Paginas/Creditos.svelte";
 
   function create_fragment$h(ctx) {
-  	let div7;
+  	let div12;
+  	let div5;
+  	let div4;
+  	let div3;
+  	let div2;
   	let div0;
+  	let a;
+  	let img0;
+  	let img0_src_value;
+  	let link_action;
+  	let t0;
+  	let div1;
+  	let p0;
+  	let t2;
+  	let div6;
   	let svg;
   	let path0;
   	let path1;
   	let path2;
-  	let t0;
-  	let div1;
-  	let t1;
-  	let div2;
-  	let img0;
-  	let img0_src_value;
-  	let t2;
-  	let section;
-  	let div6;
-  	let div5;
-  	let div4;
-  	let h4;
+  	let t3;
+  	let div7;
   	let t4;
-  	let p0;
-  	let t6;
-  	let p1;
-  	let t8;
-  	let div3;
-  	let a0;
+  	let div8;
   	let img1;
   	let img1_src_value;
+  	let t5;
+  	let section;
+  	let div11;
+  	let div10;
+  	let div9;
+  	let h40;
+  	let t7;
+  	let p1;
   	let t9;
-  	let br;
-  	let t10;
-  	let a1;
-  	let t12;
-  	let t13;
   	let p2;
+  	let t11;
+  	let p3;
   	let strong;
-  	let t15;
+  	let t13;
   	let ul;
   	let li0;
-  	let t17;
+  	let t15;
   	let li1;
-  	let t19;
+  	let t17;
   	let li2;
-  	let t21;
+  	let t19;
   	let li3;
-  	let t23;
+  	let t21;
   	let li4;
-  	let t25;
+  	let t23;
+  	let br;
+  	let t24;
+  	let h41;
+  	let t26;
+  	let p4;
+  	let t28;
+  	let p5;
+  	let t30;
+  	let p6;
+  	let t32;
+  	let p7;
+  	let t34;
   	let footer;
   	let current;
+  	let mounted;
+  	let dispose;
   	footer = new Footer({ $$inline: true });
 
   	const block = {
   		c: function create() {
-  			div7 = element("div");
+  			div12 = element("div");
+  			div5 = element("div");
+  			div4 = element("div");
+  			div3 = element("div");
+  			div2 = element("div");
   			div0 = element("div");
+  			a = element("a");
+  			img0 = element("img");
+  			t0 = space();
+  			div1 = element("div");
+  			p0 = element("p");
+  			p0.textContent = "INFORMACIÓN";
+  			t2 = space();
+  			div6 = element("div");
   			svg = svg_element("svg");
   			path0 = svg_element("path");
   			path1 = svg_element("path");
   			path2 = svg_element("path");
-  			t0 = space();
-  			div1 = element("div");
-  			t1 = space();
-  			div2 = element("div");
-  			img0 = element("img");
-  			t2 = space();
-  			section = element("section");
-  			div6 = element("div");
-  			div5 = element("div");
-  			div4 = element("div");
-  			h4 = element("h4");
-  			h4.textContent = "GaliciaWeather";
+  			t3 = space();
+  			div7 = element("div");
   			t4 = space();
-  			p0 = element("p");
-  			p0.textContent = "Versión 2.2.1.";
-  			t6 = space();
-  			p1 = element("p");
-  			p1.textContent = "Esta aplicación está susentada pola base de datos de Openweathermaps.";
-  			t8 = space();
-  			div3 = element("div");
-  			a0 = element("a");
+  			div8 = element("div");
   			img1 = element("img");
+  			t5 = space();
+  			section = element("section");
+  			div11 = element("div");
+  			div10 = element("div");
+  			div9 = element("div");
+  			h40 = element("h4");
+  			h40.textContent = "GaliciaWeather";
+  			t7 = space();
+  			p1 = element("p");
+  			p1.textContent = "Versión 2.2.1.";
   			t9 = space();
-  			br = element("br");
-  			t10 = text("Esta obra está baixo unha ");
-  			a1 = element("a");
-  			a1.textContent = "Licenza Creative Commons\n                            Atribución-NonComercial-CompartirIgual 4.0 Internacional";
-  			t12 = text(".");
-  			t13 = space();
   			p2 = element("p");
+  			p2.textContent = "Esta aplicación está susentada pola base de datos de Openweathermaps.";
+  			t11 = space();
+  			p3 = element("p");
   			strong = element("strong");
   			strong.textContent = "Actualizacións nas que estamos\n                            traballando";
-  			t15 = space();
+  			t13 = space();
   			ul = element("ul");
   			li0 = element("li");
   			li0.textContent = "1- Engadir un widget";
-  			t17 = space();
+  			t15 = space();
   			li1 = element("li");
   			li1.textContent = "2- Melloras de rendimento xeral da aplicación";
-  			t19 = space();
+  			t17 = space();
   			li2 = element("li");
   			li2.textContent = "3- Sistema de alertas meterolóxicas";
-  			t21 = space();
+  			t19 = space();
   			li3 = element("li");
   			li3.textContent = "4- Notificacións Push";
-  			t23 = space();
+  			t21 = space();
   			li4 = element("li");
   			li4.textContent = "5- Melloras no diseño";
-  			t25 = space();
+  			t23 = space();
+  			br = element("br");
+  			t24 = space();
+  			h41 = element("h4");
+  			h41.textContent = "MIT License";
+  			t26 = space();
+  			p4 = element("p");
+  			p4.textContent = "Copyright (c) 2020 GaliciaWeather";
+  			t28 = space();
+  			p5 = element("p");
+  			p5.textContent = "Permission is hereby granted, free of charge, to any person obtaining a copy\n                        of this software and associated documentation files (the \"Software\"), to deal\n                        in the Software without restriction, including without limitation the rights\n                        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n                        copies of the Software, and to permit persons to whom the Software is\n                        furnished to do so, subject to the following conditions:";
+  			t30 = space();
+  			p6 = element("p");
+  			p6.textContent = "The above copyright notice and this permission notice shall be included in all\n                        copies or substantial portions of the Software.";
+  			t32 = space();
+  			p7 = element("p");
+  			p7.textContent = "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n                        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n                        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n                        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n                        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n                        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n                        SOFTWARE.";
+  			t34 = space();
   			create_component(footer.$$.fragment);
+  			if (img0.src !== (img0_src_value = "images/prev.png")) attr_dev(img0, "src", img0_src_value);
+  			attr_dev(img0, "alt", "");
+  			attr_dev(img0, "width", "50%");
+  			attr_dev(img0, "class", "prev svelte-1nlljx");
+  			add_location(img0, file$f, 13, 58, 408);
+  			attr_dev(a, "href", "/");
+  			attr_dev(a, "class", "left");
+  			add_location(a, file$f, 13, 24, 374);
+  			attr_dev(div0, "class", "col s6 content-left svelte-1nlljx");
+  			add_location(div0, file$f, 12, 20, 316);
+  			attr_dev(p0, "class", "white-text axustes svelte-1nlljx");
+  			add_location(p0, file$f, 17, 24, 610);
+  			attr_dev(div1, "class", "col s6 content-right svelte-1nlljx");
+  			add_location(div1, file$f, 16, 20, 551);
+  			attr_dev(div2, "class", "col s12");
+  			add_location(div2, file$f, 11, 16, 274);
+  			attr_dev(div3, "class", "row svelte-1nlljx");
+  			add_location(div3, file$f, 10, 12, 240);
+  			attr_dev(div4, "class", "container");
+  			add_location(div4, file$f, 9, 8, 204);
+  			attr_dev(div5, "class", "navbar svelte-1nlljx");
+  			add_location(div5, file$f, 8, 4, 175);
   			attr_dev(path0, "class", "elementor-shape-fill");
   			attr_dev(path0, "opacity", "0.33");
   			attr_dev(path0, "d", "M473,67.3c-203.9,88.3-263.1-34-320.3,0C66,119.1,0,59.7,0,59.7V0h1000v59.7 c0,0-62.1,26.1-94.9,29.3c-32.8,3.3-62.8-12.3-75.8-22.1C806,49.6,745.3,8.7,694.9,4.7S492.4,59,473,67.3z");
-  			add_location(path0, file$f, 7, 12, 271);
+  			add_location(path0, file$f, 26, 12, 951);
   			attr_dev(path1, "class", "elementor-shape-fill");
   			attr_dev(path1, "opacity", "0.66");
   			attr_dev(path1, "d", "M734,67.3c-45.5,0-77.2-23.2-129.1-39.1c-28.6-8.7-150.3-10.1-254,39.1 s-91.7-34.4-149.2,0C115.7,118.3,0,39.8,0,39.8V0h1000v36.5c0,0-28.2-18.5-92.1-18.5C810.2,18.1,775.7,67.3,734,67.3z");
-  			add_location(path1, file$f, 10, 12, 551);
+  			add_location(path1, file$f, 29, 12, 1231);
   			attr_dev(path2, "class", "elementor-shape-fill");
   			attr_dev(path2, "d", "M766.1,28.9c-200-57.5-266,65.5-395.1,19.5C242,1.8,242,5.4,184.8,20.6C128,35.8,132.3,44.9,89.9,52.5C28.6,63.7,0,0,0,0 h1000c0,0-9.9,40.9-83.6,48.1S829.6,47,766.1,28.9z");
-  			add_location(path2, file$f, 13, 12, 837);
+  			add_location(path2, file$f, 32, 12, 1517);
   			attr_dev(svg, "xmlns", "http://www.w3.org/2000/svg");
   			attr_dev(svg, "viewBox", "0 0 1000 100");
   			attr_dev(svg, "preserveAspectRatio", "none");
-  			attr_dev(svg, "class", "shape-fill svelte-18zdtyy");
-  			add_location(svg, file$f, 6, 8, 149);
-  			attr_dev(div0, "class", "shape svelte-18zdtyy");
-  			attr_dev(div0, "data-negative", "false");
-  			add_location(div0, file$f, 5, 4, 99);
-  			attr_dev(div1, "class", "container");
-  			add_location(div1, file$f, 18, 4, 1110);
-  			attr_dev(img0, "class", "center svelte-18zdtyy");
-  			if (img0.src !== (img0_src_value = "/images/GaliciaWeather.gif")) attr_dev(img0, "src", img0_src_value);
-  			attr_dev(img0, "alt", "");
-  			add_location(img0, file$f, 22, 8, 1179);
-  			attr_dev(div2, "class", "banner svelte-18zdtyy");
-  			add_location(div2, file$f, 21, 4, 1150);
-  			attr_dev(h4, "class", "about-tit svelte-18zdtyy");
-  			add_location(h4, file$f, 29, 20, 1399);
-  			attr_dev(p0, "class", "about-version svelte-18zdtyy");
-  			add_location(p0, file$f, 30, 20, 1461);
-  			attr_dev(p1, "class", "about-txt svelte-18zdtyy");
-  			add_location(p1, file$f, 31, 20, 1525);
-  			attr_dev(img1, "alt", "Licenza Creative Commons");
-  			set_style(img1, "border-width", "0");
-  			if (img1.src !== (img1_src_value = "https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png")) attr_dev(img1, "src", img1_src_value);
-  			add_location(img1, file$f, 36, 28, 1828);
-  			attr_dev(a0, "class", "about-txt center svelte-18zdtyy");
-  			attr_dev(a0, "rel", "license");
-  			attr_dev(a0, "href", "http://creativecommons.org/licenses/by-nc-sa/4.0/");
-  			add_location(a0, file$f, 34, 50, 1672);
-  			add_location(br, file$f, 38, 28, 2011);
-  			attr_dev(a1, "class", "about-txt center svelte-18zdtyy");
-  			attr_dev(a1, "rel", "license");
-  			attr_dev(a1, "href", "http://creativecommons.org/licenses/by-nc-sa/4.0/");
-  			add_location(a1, file$f, 38, 60, 2043);
-  			attr_dev(div3, "class", "about-txt center svelte-18zdtyy");
-  			add_location(div3, file$f, 34, 20, 1642);
+  			attr_dev(svg, "class", "shape-fill svelte-1nlljx");
+  			add_location(svg, file$f, 25, 8, 829);
+  			attr_dev(div6, "class", "shape svelte-1nlljx");
+  			attr_dev(div6, "data-negative", "false");
+  			add_location(div6, file$f, 24, 4, 779);
+  			attr_dev(div7, "class", "container");
+  			add_location(div7, file$f, 38, 4, 1791);
+  			attr_dev(img1, "class", "center svelte-1nlljx");
+  			if (img1.src !== (img1_src_value = "/images/GaliciaWeather.gif")) attr_dev(img1, "src", img1_src_value);
+  			attr_dev(img1, "alt", "");
+  			add_location(img1, file$f, 42, 8, 1860);
+  			attr_dev(div8, "class", "banner svelte-1nlljx");
+  			add_location(div8, file$f, 41, 4, 1831);
+  			attr_dev(h40, "class", "about-tit svelte-1nlljx");
+  			add_location(h40, file$f, 49, 20, 2080);
+  			attr_dev(p1, "class", "about-version svelte-1nlljx");
+  			add_location(p1, file$f, 50, 20, 2142);
+  			attr_dev(p2, "class", "about-txt svelte-1nlljx");
+  			add_location(p2, file$f, 51, 20, 2206);
   			attr_dev(strong, "class", "white-text");
-  			add_location(strong, file$f, 42, 46, 2338);
-  			attr_dev(p2, "class", "about-textoDos svelte-18zdtyy");
-  			add_location(p2, file$f, 42, 20, 2312);
-  			add_location(li0, file$f, 45, 24, 2528);
-  			add_location(li1, file$f, 46, 24, 2582);
-  			add_location(li2, file$f, 47, 24, 2662);
-  			add_location(li3, file$f, 48, 24, 2732);
-  			add_location(li4, file$f, 49, 24, 2788);
+  			add_location(strong, file$f, 53, 46, 2348);
+  			attr_dev(p3, "class", "about-textoDos svelte-1nlljx");
+  			add_location(p3, file$f, 53, 20, 2322);
+  			add_location(li0, file$f, 56, 24, 2538);
+  			add_location(li1, file$f, 57, 24, 2592);
+  			add_location(li2, file$f, 58, 24, 2672);
+  			add_location(li3, file$f, 59, 24, 2742);
+  			add_location(li4, file$f, 60, 24, 2798);
   			attr_dev(ul, "class", "white-text left-align");
-  			add_location(ul, file$f, 44, 20, 2469);
-  			attr_dev(div4, "class", "col s12 center-align");
-  			add_location(div4, file$f, 28, 16, 1344);
-  			attr_dev(div5, "class", "row");
-  			add_location(div5, file$f, 27, 12, 1310);
-  			attr_dev(div6, "class", "container");
-  			add_location(div6, file$f, 26, 8, 1274);
-  			add_location(section, file$f, 25, 4, 1256);
-  			attr_dev(div7, "class", "fondo svelte-18zdtyy");
-  			add_location(div7, file$f, 4, 0, 75);
+  			add_location(ul, file$f, 55, 20, 2479);
+  			add_location(br, file$f, 62, 0, 2856);
+  			attr_dev(h41, "class", "about-tit svelte-1nlljx");
+  			add_location(h41, file$f, 63, 20, 2881);
+  			attr_dev(p4, "class", "about-version svelte-1nlljx");
+  			add_location(p4, file$f, 65, 20, 2941);
+  			attr_dev(p5, "class", "licencia-txt svelte-1nlljx");
+  			add_location(p5, file$f, 67, 20, 3025);
+  			attr_dev(p6, "class", "licencia-txt svelte-1nlljx");
+  			add_location(p6, file$f, 74, 20, 3627);
+  			attr_dev(p7, "class", "licencia-txt svelte-1nlljx");
+  			add_location(p7, file$f, 77, 20, 3827);
+  			attr_dev(div9, "class", "col s12 center-align");
+  			add_location(div9, file$f, 48, 16, 2025);
+  			attr_dev(div10, "class", "row");
+  			add_location(div10, file$f, 47, 12, 1991);
+  			attr_dev(div11, "class", "container");
+  			add_location(div11, file$f, 46, 8, 1955);
+  			add_location(section, file$f, 45, 4, 1937);
+  			attr_dev(div12, "class", "fondo svelte-1nlljx");
+  			add_location(div12, file$f, 6, 0, 131);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
   		},
   		m: function mount(target, anchor) {
-  			insert_dev(target, div7, anchor);
-  			append_dev(div7, div0);
-  			append_dev(div0, svg);
+  			insert_dev(target, div12, anchor);
+  			append_dev(div12, div5);
+  			append_dev(div5, div4);
+  			append_dev(div4, div3);
+  			append_dev(div3, div2);
+  			append_dev(div2, div0);
+  			append_dev(div0, a);
+  			append_dev(a, img0);
+  			append_dev(div2, t0);
+  			append_dev(div2, div1);
+  			append_dev(div1, p0);
+  			append_dev(div12, t2);
+  			append_dev(div12, div6);
+  			append_dev(div6, svg);
   			append_dev(svg, path0);
   			append_dev(svg, path1);
   			append_dev(svg, path2);
-  			append_dev(div7, t0);
-  			append_dev(div7, div1);
-  			append_dev(div7, t1);
-  			append_dev(div7, div2);
-  			append_dev(div2, img0);
-  			append_dev(div7, t2);
-  			append_dev(div7, section);
-  			append_dev(section, div6);
-  			append_dev(div6, div5);
-  			append_dev(div5, div4);
-  			append_dev(div4, h4);
-  			append_dev(div4, t4);
-  			append_dev(div4, p0);
-  			append_dev(div4, t6);
-  			append_dev(div4, p1);
-  			append_dev(div4, t8);
-  			append_dev(div4, div3);
-  			append_dev(div3, a0);
-  			append_dev(a0, img1);
-  			append_dev(a0, t9);
-  			append_dev(div3, br);
-  			append_dev(div3, t10);
-  			append_dev(div3, a1);
-  			append_dev(div3, t12);
-  			append_dev(div4, t13);
-  			append_dev(div4, p2);
-  			append_dev(p2, strong);
-  			append_dev(div4, t15);
-  			append_dev(div4, ul);
+  			append_dev(div12, t3);
+  			append_dev(div12, div7);
+  			append_dev(div12, t4);
+  			append_dev(div12, div8);
+  			append_dev(div8, img1);
+  			append_dev(div12, t5);
+  			append_dev(div12, section);
+  			append_dev(section, div11);
+  			append_dev(div11, div10);
+  			append_dev(div10, div9);
+  			append_dev(div9, h40);
+  			append_dev(div9, t7);
+  			append_dev(div9, p1);
+  			append_dev(div9, t9);
+  			append_dev(div9, p2);
+  			append_dev(div9, t11);
+  			append_dev(div9, p3);
+  			append_dev(p3, strong);
+  			append_dev(div9, t13);
+  			append_dev(div9, ul);
   			append_dev(ul, li0);
-  			append_dev(ul, t17);
+  			append_dev(ul, t15);
   			append_dev(ul, li1);
-  			append_dev(ul, t19);
+  			append_dev(ul, t17);
   			append_dev(ul, li2);
-  			append_dev(ul, t21);
+  			append_dev(ul, t19);
   			append_dev(ul, li3);
-  			append_dev(ul, t23);
+  			append_dev(ul, t21);
   			append_dev(ul, li4);
-  			insert_dev(target, t25, anchor);
+  			append_dev(div9, t23);
+  			append_dev(div9, br);
+  			append_dev(div9, t24);
+  			append_dev(div9, h41);
+  			append_dev(div9, t26);
+  			append_dev(div9, p4);
+  			append_dev(div9, t28);
+  			append_dev(div9, p5);
+  			append_dev(div9, t30);
+  			append_dev(div9, p6);
+  			append_dev(div9, t32);
+  			append_dev(div9, p7);
+  			insert_dev(target, t34, anchor);
   			mount_component(footer, target, anchor);
   			current = true;
+
+  			if (!mounted) {
+  				dispose = action_destroyer(link_action = link.call(null, a));
+  				mounted = true;
+  			}
   		},
   		p: noop,
   		i: function intro(local) {
@@ -24881,9 +24964,11 @@ var app = (function () {
   			current = false;
   		},
   		d: function destroy(detaching) {
-  			if (detaching) detach_dev(div7);
-  			if (detaching) detach_dev(t25);
+  			if (detaching) detach_dev(div12);
+  			if (detaching) detach_dev(t34);
   			destroy_component(footer, detaching);
+  			mounted = false;
+  			dispose();
   		}
   	};
 
@@ -24907,7 +24992,7 @@ var app = (function () {
   		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<Creditos> was created with unknown prop '${key}'`);
   	});
 
-  	$$self.$capture_state = () => ({ Footer });
+  	$$self.$capture_state = () => ({ Footer, link });
   	return [];
   }
 
@@ -24925,18 +25010,141 @@ var app = (function () {
   	}
   }
 
-  /* src/Paginas/ErrorRuta.svelte generated by Svelte v3.25.0 */
-
-  const file$g = "src/Paginas/ErrorRuta.svelte";
+  /* src/Paginas/Axustes.svelte generated by Svelte v3.25.0 */
+  const file$g = "src/Paginas/Axustes.svelte";
 
   function create_fragment$i(ctx) {
+  	let div5;
+  	let div4;
+  	let div3;
+  	let div2;
+  	let div0;
+  	let a;
+  	let img;
+  	let img_src_value;
+  	let link_action;
+  	let t0;
+  	let div1;
+  	let p;
+  	let mounted;
+  	let dispose;
+
+  	const block = {
+  		c: function create() {
+  			div5 = element("div");
+  			div4 = element("div");
+  			div3 = element("div");
+  			div2 = element("div");
+  			div0 = element("div");
+  			a = element("a");
+  			img = element("img");
+  			t0 = space();
+  			div1 = element("div");
+  			p = element("p");
+  			p.textContent = "AXUSTES";
+  			if (img.src !== (img_src_value = "images/prev.png")) attr_dev(img, "src", img_src_value);
+  			attr_dev(img, "alt", "");
+  			attr_dev(img, "width", "50%");
+  			attr_dev(img, "class", "prev svelte-t83hqo");
+  			add_location(img, file$g, 11, 58, 321);
+  			attr_dev(a, "href", "/");
+  			attr_dev(a, "class", "left");
+  			add_location(a, file$g, 11, 24, 287);
+  			attr_dev(div0, "class", "col s6 content-left svelte-t83hqo");
+  			add_location(div0, file$g, 10, 20, 229);
+  			attr_dev(p, "class", "white-text axustes svelte-t83hqo");
+  			add_location(p, file$g, 14, 24, 491);
+  			attr_dev(div1, "class", "col s6 content-right svelte-t83hqo");
+  			add_location(div1, file$g, 13, 20, 432);
+  			attr_dev(div2, "class", "col s12");
+  			add_location(div2, file$g, 9, 16, 187);
+  			attr_dev(div3, "class", "row svelte-t83hqo");
+  			add_location(div3, file$g, 8, 12, 153);
+  			attr_dev(div4, "class", "container");
+  			add_location(div4, file$g, 7, 8, 117);
+  			attr_dev(div5, "class", "navbar svelte-t83hqo");
+  			add_location(div5, file$g, 6, 4, 88);
+  		},
+  		l: function claim(nodes) {
+  			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+  		},
+  		m: function mount(target, anchor) {
+  			insert_dev(target, div5, anchor);
+  			append_dev(div5, div4);
+  			append_dev(div4, div3);
+  			append_dev(div3, div2);
+  			append_dev(div2, div0);
+  			append_dev(div0, a);
+  			append_dev(a, img);
+  			append_dev(div2, t0);
+  			append_dev(div2, div1);
+  			append_dev(div1, p);
+
+  			if (!mounted) {
+  				dispose = action_destroyer(link_action = link.call(null, a));
+  				mounted = true;
+  			}
+  		},
+  		p: noop,
+  		i: noop,
+  		o: noop,
+  		d: function destroy(detaching) {
+  			if (detaching) detach_dev(div5);
+  			mounted = false;
+  			dispose();
+  		}
+  	};
+
+  	dispatch_dev("SvelteRegisterBlock", {
+  		block,
+  		id: create_fragment$i.name,
+  		type: "component",
+  		source: "",
+  		ctx
+  	});
+
+  	return block;
+  }
+
+  function instance$i($$self, $$props, $$invalidate) {
+  	let { $$slots: slots = {}, $$scope } = $$props;
+  	validate_slots("Axustes", slots, []);
+  	const writable_props = [];
+
+  	Object.keys($$props).forEach(key => {
+  		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<Axustes> was created with unknown prop '${key}'`);
+  	});
+
+  	$$self.$capture_state = () => ({ link });
+  	return [];
+  }
+
+  class Axustes extends SvelteComponentDev {
+  	constructor(options) {
+  		super(options);
+  		init(this, options, instance$i, create_fragment$i, safe_not_equal, {});
+
+  		dispatch_dev("SvelteRegisterComponent", {
+  			component: this,
+  			tagName: "Axustes",
+  			options,
+  			id: create_fragment$i.name
+  		});
+  	}
+  }
+
+  /* src/Paginas/ErrorRuta.svelte generated by Svelte v3.25.0 */
+
+  const file$h = "src/Paginas/ErrorRuta.svelte";
+
+  function create_fragment$j(ctx) {
   	let h1;
 
   	const block = {
   		c: function create() {
   			h1 = element("h1");
   			h1.textContent = "ERROR 404";
-  			add_location(h1, file$g, 0, 0, 0);
+  			add_location(h1, file$h, 0, 0, 0);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -24954,7 +25162,7 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_fragment$i.name,
+  		id: create_fragment$j.name,
   		type: "component",
   		source: "",
   		ctx
@@ -24963,7 +25171,7 @@ var app = (function () {
   	return block;
   }
 
-  function instance$i($$self, $$props) {
+  function instance$j($$self, $$props) {
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("ErrorRuta", slots, []);
   	const writable_props = [];
@@ -24978,13 +25186,13 @@ var app = (function () {
   class ErrorRuta extends SvelteComponentDev {
   	constructor(options) {
   		super(options);
-  		init(this, options, instance$i, create_fragment$i, safe_not_equal, {});
+  		init(this, options, instance$j, create_fragment$j, safe_not_equal, {});
 
   		dispatch_dev("SvelteRegisterComponent", {
   			component: this,
   			tagName: "ErrorRuta",
   			options,
-  			id: create_fragment$i.name
+  			id: create_fragment$j.name
   		});
   	}
   }
@@ -24994,13 +25202,14 @@ var app = (function () {
       '/Taboleiro':Taboleiro,
       '/Buscar':Buscar,
       '/Creditos':Creditos,
+      '/Axustes':Axustes,
       '*':ErrorRuta
   };
 
   /* src/App.svelte generated by Svelte v3.25.0 */
-  const file$h = "src/App.svelte";
+  const file$i = "src/App.svelte";
 
-  function create_fragment$j(ctx) {
+  function create_fragment$k(ctx) {
   	let div;
   	let a0;
   	let i0;
@@ -25052,30 +25261,30 @@ var app = (function () {
   			t7 = space();
   			create_component(router.$$.fragment);
   			attr_dev(i0, "class", "large material-icons black-text");
-  			add_location(i0, file$h, 17, 4, 468);
+  			add_location(i0, file$i, 17, 4, 468);
   			attr_dev(a0, "class", "btn-floating btn-large white");
-  			add_location(a0, file$h, 16, 2, 423);
+  			add_location(a0, file$i, 16, 2, 423);
   			attr_dev(i1, "class", "material-icons black-text");
-  			add_location(i1, file$h, 20, 57, 591);
+  			add_location(i1, file$i, 20, 57, 591);
   			attr_dev(a1, "class", "btn-floating");
   			attr_dev(a1, "href", "/Buscar");
-  			add_location(a1, file$h, 20, 8, 542);
-  			add_location(li0, file$h, 20, 4, 538);
+  			add_location(a1, file$i, 20, 8, 542);
+  			add_location(li0, file$i, 20, 4, 538);
   			attr_dev(i2, "class", "material-icons black-text");
-  			add_location(i2, file$h, 21, 51, 699);
+  			add_location(i2, file$i, 21, 51, 699);
   			attr_dev(a2, "class", "btn-floating");
   			attr_dev(a2, "href", "/");
-  			add_location(a2, file$h, 21, 8, 656);
-  			add_location(li1, file$h, 21, 4, 652);
+  			add_location(a2, file$i, 21, 8, 656);
+  			add_location(li1, file$i, 21, 4, 652);
   			attr_dev(i3, "class", "material-icons black-text");
-  			add_location(i3, file$h, 22, 60, 814);
+  			add_location(i3, file$i, 22, 60, 814);
   			attr_dev(a3, "class", "btn-floating");
   			attr_dev(a3, "href", "/Taboleiro");
-  			add_location(a3, file$h, 22, 8, 762);
-  			add_location(li2, file$h, 22, 4, 758);
-  			add_location(ul, file$h, 19, 2, 529);
+  			add_location(a3, file$i, 22, 8, 762);
+  			add_location(li2, file$i, 22, 4, 758);
+  			add_location(ul, file$i, 19, 2, 529);
   			attr_dev(div, "class", "fixed-action-btn toolbar");
-  			add_location(div, file$h, 15, 0, 382);
+  			add_location(div, file$i, 15, 0, 382);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -25132,7 +25341,7 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_fragment$j.name,
+  		id: create_fragment$k.name,
   		type: "component",
   		source: "",
   		ctx
@@ -25141,7 +25350,7 @@ var app = (function () {
   	return block;
   }
 
-  function instance$j($$self, $$props, $$invalidate) {
+  function instance$k($$self, $$props, $$invalidate) {
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("App", slots, []);
 
@@ -25163,13 +25372,13 @@ var app = (function () {
   class App extends SvelteComponentDev {
   	constructor(options) {
   		super(options);
-  		init(this, options, instance$j, create_fragment$j, safe_not_equal, {});
+  		init(this, options, instance$k, create_fragment$k, safe_not_equal, {});
 
   		dispatch_dev("SvelteRegisterComponent", {
   			component: this,
   			tagName: "App",
   			options,
-  			id: create_fragment$j.name
+  			id: create_fragment$k.name
   		});
   	}
   }

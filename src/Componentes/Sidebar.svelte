@@ -1,111 +1,131 @@
 <script>
-  import { link } from 'svelte-spa-router'
+    import { link } from 'svelte-spa-router'
 
-// navbar 
+/* Open when someone clicks on the span element */
+const open = () => {
+  document.getElementById("myNav").style.width = "100%";
+}
 
- const sidebar = ()=> {
-    var elems = document.querySelectorAll('.sidenav');
-    var instances = M.Sidenav.init(elems);
- }
-
+/* Close when someone clicks on the "x" symbol inside the overlay */
+const close = () => {
+  document.getElementById("myNav").style.width = "0%";
+}
 </script>
 
-<nav></nav>
-    <ul id="slide-out" class="sidenav">
-        <li>
-            <div class="user-view">
-                <img class="img_siderbar" src="images/GaliciaWeather.gif" width="50%">
-                <p class="logoTIT_siderbar">GaliciaWeather<span class="logoTEXT_siderbar">O tempo de Galicia</span></p>
-            </div>
-        </li>
-        <li><a href="#"><i class="material-icons white-text">settings</i>Axustes</a></li>
-        <li><a href="#"><i class="material-icons white-text">people</i>Convidar Amigos</a></li>
-        <li><a href="#"><i class="material-icons white-text">star</i>Calificar </a></li>
-        <li><a href="/Creditos" use:link ><i class="material-icons white-text">info</i>Información</a></li>
-       <!-- <li><a href="/Registro" use:link ><i class="material-icons white-text">person_add</i>Rexístrate</a></li>
-        <li><a href="/Login" use:link ><i class="material-icons white-text">account_circle</i>Inicia sesión</a></li>
-        <li><a href="#"><i class="material-icons white-text">exit_to_app</i>Saír</a></li> 
-        -->
-    </ul>
-    <a on:click|preventDefault={sidebar} data-target="slide-out" class="sidenav-trigger">MENU</a>
+<!-- The overlay -->
+<div id="myNav" class="overlay">
 
-    <style>
-        /* NAVBAR */
+    <!-- Button to close the overlay navigation -->
+    <a href="javascript:void(0)" class="closebtn" on:click={close}>&times;</a>
   
-        nav{
-          background: transparent;
-          box-shadow: none;
-          height: 36px;
-      }
+    <!-- Overlay content -->
+    <div class="overlay-content">
+        <ul>
+            <li>
+                <div class="user-view">
+                    <img class="img_siderbar" src="images/GaliciaWeather.gif" width="50%">
+                    <p class="logoTIT_siderbar">GaliciaWeather<span class="logoTEXT_siderbar">O tempo de Galicia</span></p>
+                </div>
+            </li>
+            <li><a href="/Axustes" use:link >Axustes</a></li>
+            <li><a href="#">Convidar Amigos</a></li>
+            <li><a href="#">Calificar </a></li>
+            <li><a href="/Creditos" use:link >Información</a></li>
+        </ul>
+    </div>
+
+ 
   
-      .sidenav-trigger{
-          padding-left: 30px;
-          color: #fff;
-          writing-mode: vertical-rl;
-          font-size: 18px;
-          text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
-      }
+  </div>
   
-      .sidenav{
-          color: white;
-          background: #212121;
-      }
-  
-      .img_siderbar{
-          display: flex;
-          justify-content: center;
-          align-content: center;
-          margin: 0px auto;
-      }
-  
-      .logoTIT_siderbar{
-          text-align: center;
-          color: white;
-          font-size: 18px;
-          line-height: 20px;
-      }
-  
-      .logoTEXT_siderbar{
-          text-align: center;
-          color: white;
-          font-size: 13px;
-          display: block;
-      }
-  
-      .user-view {
-      padding: 20px;
-      text-align: center;
-      background-image: linear-gradient(180deg, #181818 0%, #363636 100%);
-      border-radius: 0px 0px 30px 30px;
-      -moz-border-radius: 0px 0px 30px 30px;
-      -webkit-border-radius: 0px 0px 30px 30px;
-      }
-  
-      .sidebar-panel .side-nav .user-view span {
-      margin-top: 12px;
-      display: block;
-      }
-  
-      .sidebar-panel .side-nav .user-view .background img {
-      width: 100%;
-      height: 100%;
-      }
-  
-      .side-nav li a{
-      margin-right: 1rem;
-      width: auto;
-      font-size: 15px;
-      color: #fff;
-      }
-  
-      .sidenav li > a {
-      color: white;
-      display: block;
-      font-size: 14px;
-      font-weight: 500;
-      height: 48px;
-      line-height: 48px;
-      padding: 0 32px;
+  <!-- Use any element to open/show the overlay navigation menu -->
+  <span class="sidenav-trigger" on:click={open}>MENU</span>
+
+
+  <style>
+      
+.user-view{
+    margin-bottom: 50px;
+}
+
+.img_siderbar{
+              display: flex;
+              justify-content: center;
+              align-content: center;
+              margin: 0px auto;
+          }
+
+.logoTIT_siderbar{
+              text-align: center;
+              color: white;
+              font-size: 18px;
+              line-height: 20px;
+          }
+      
+.logoTEXT_siderbar{
+              text-align: center;
+              color: white;
+              font-size: 13px;
+              display: block;
+          }
+
+.sidenav-trigger{
+              padding-left: 30px;
+              padding-top: 30px;
+              color: #fff;
+              writing-mode: vertical-rl;
+              font-size: 18px;
+              text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
+          }
+
+.overlay {
+  height: 100%;
+  width: 0;
+  position: fixed; 
+  z-index: 999999; 
+  left: 0;
+  top: 0;
+  /* background-color: rgb(0,0,0); Black fallback color */
+  background-color: #333;
+  /* background-color: rgba(0,0,0, 0.9);  Black w/opacity */
+  overflow-x: hidden; 
+  transition: 0.5s;
+}
+
+.overlay-content {
+  position: relative;
+  top: 10%;
+  width: 100%; 
+  text-align: center;
+  margin-top: 30px;
+}
+
+.overlay a {
+  padding: 8px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+.overlay a:hover, .overlay a:focus {
+  color: #f1f1f1;
+}
+
+.overlay .closebtn {
+  position: absolute;
+  top: 20px;
+  right: 45px;
+  font-size: 60px;
+}
+
+@media screen and (max-height: 450px) {
+  .overlay a {font-size: 15px}
+  .overlay .closebtn {
+    font-size: 40px;
+    top: 15px;
+    right: 35px;
   }
-  
+}
   </style>

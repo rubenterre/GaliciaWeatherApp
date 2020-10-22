@@ -1,8 +1,27 @@
 <script>
     import Footer from "../Componentes/Footer.svelte";
+    import {
+        link
+    } from 'svelte-spa-router'
 </script>
-
 <div class="fondo">
+    <!-- navbar -->
+    <div class="navbar">
+        <div class="container">
+            <div class="row">
+                <div class="col s12">
+                    <div class="col s6 content-left">
+                        <a href="/" use:link class="left"><img src="images/prev.png" alt="" width="50%"
+                                class="prev"></a>
+                    </div>
+                    <div class="col s6 content-right">
+                        <p class="white-text axustes">INFORMACIÓN</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end navbar -->
     <div class="shape" data-negative="false">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none" class="shape-fill">
             <path class="elementor-shape-fill" opacity="0.33"
@@ -16,6 +35,7 @@
             </path>
         </svg>
     </div>
+
     <div class="container">
 
     </div>
@@ -31,15 +51,6 @@
                     <p class="about-version">Versión 2.2.1.</p>
                     <p class="about-txt">Esta aplicación está susentada pola base de datos de Openweathermaps.</p>
 
-
-                    <div class="about-txt center"><a class="about-txt center" rel="license"
-                            href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
-                            <img alt="Licenza Creative Commons" style="border-width:0"
-                                src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" />
-                        </a><br />Esta obra está baixo unha <a class="about-txt center" rel="license"
-                            href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Licenza Creative Commons
-                            Atribución-NonComercial-CompartirIgual 4.0 Internacional</a>.</div>
-
                     <p class="about-textoDos"><strong class="white-text">Actualizacións nas que estamos
                             traballando</strong></p>
                     <ul class="white-text left-align">
@@ -49,6 +60,29 @@
                         <li> 4- Notificacións Push</li>
                         <li> 5- Melloras no diseño</li>
                     </ul>
+<br>
+                    <h4 class="about-tit">MIT License</h4>
+
+                    <p class="about-version">Copyright (c) 2020 GaliciaWeather</p>
+
+                    <p class="licencia-txt">Permission is hereby granted, free of charge, to any person obtaining a copy
+                        of this software and associated documentation files (the "Software"), to deal
+                        in the Software without restriction, including without limitation the rights
+                        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+                        copies of the Software, and to permit persons to whom the Software is
+                        furnished to do so, subject to the following conditions:</p>
+
+                    <p class="licencia-txt">The above copyright notice and this permission notice shall be included in all
+                        copies or substantial portions of the Software.</p>
+
+                    <p class="licencia-txt">THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+                        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+                        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+                        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+                        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+                        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+                        SOFTWARE.
+                    </p>
 
                 </div>
 
@@ -64,7 +98,7 @@
         background-color: #333;
         margin: 0px;
         padding: 0px;
-        height: 100vh;
+        height: 100%;
         width: 100vw;
     }
 
@@ -76,6 +110,68 @@
 
     .shape {
         transform: rotate(180deg);
+    }
+
+    /*navbar*/
+
+    .navbar {
+        padding: 15px 0 11px;
+        background-color: #212121;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 99;
+    }
+
+    .navbar i {
+        font-size: 22px;
+        margin-top: 3px;
+    }
+
+    .navbar h1 {
+        font-size: 24px;
+        padding: 0;
+        margin: 0;
+        font-weight: 900;
+        letter-spacing: 1px;
+    }
+
+    .navbar .content-left {
+        display: inline-flex;
+        vertical-align: middle;
+    }
+
+    .navbar .content-right {
+        text-align: right;
+        vertical-align: middle;
+    }
+
+    .navbar .row {
+        margin-bottom: 0;
+    }
+
+    .navbar .content-left .sidebar {
+        margin-right: 18px;
+    }
+
+    .navbar .content-right .sidebar-search {
+        margin-right: 14px;
+    }
+
+    .navbar .content-right .sidebar-cart i,
+    .navbar .content-right .sidebar-search i {
+        position: relative;
+        left: 8px;
+    }
+
+    .axustes {
+        text-align: right;
+    }
+
+    .prev {
+        padding-top: 5px;
     }
 
     /* Benvida */
@@ -96,6 +192,7 @@
         display: block;
         margin: 0px auto;
         padding-bottom: 0px;
+        padding-top: 50px;
         width: 50%;
     }
 
@@ -139,5 +236,16 @@
     .about-textoDos {
         padding-top: 40px;
 
+    }
+
+    /* Licencia */
+
+    .licencia-txt{
+        color: white;
+        font-family: Roboto;
+        font-size: 11px;
+        font-weight: 300;
+        text-align: justify;
+        padding-top: 20px;
     }
 </style>
