@@ -3,17 +3,17 @@
 
 /* Open when someone clicks on the span element */
 const open = () => {
-  document.getElementById("myNav").style.width = "100%";
+  document.getElementById("menuLateral").style.width = "100%";
 }
 
 /* Close when someone clicks on the "x" symbol inside the overlay */
 const close = () => {
-  document.getElementById("myNav").style.width = "0%";
+  document.getElementById("menuLateral").style.width = "0%";
 }
 </script>
 
 <!-- The overlay -->
-<div id="myNav" class="overlay">
+<div id="menuLateral" class="overlay">
 
     <!-- Button to close the overlay navigation -->
     <a href="javascript:void(0)" class="closebtn" on:click={close}>&times;</a>
@@ -60,6 +60,7 @@ const close = () => {
               color: white;
               font-size: 18px;
               line-height: 20px;
+              text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
           }
       
 .logoTEXT_siderbar{
@@ -67,6 +68,7 @@ const close = () => {
               color: white;
               font-size: 13px;
               display: block;
+              text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
           }
 
 .sidenav-trigger{
@@ -104,9 +106,10 @@ const close = () => {
   padding: 8px;
   text-decoration: none;
   font-size: 25px;
-  color: #818181;
+  color: white;
   display: block;
   transition: 0.3s;
+  text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
 }
 
 .overlay a:hover, .overlay a:focus {

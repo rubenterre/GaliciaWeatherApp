@@ -14170,43 +14170,43 @@ var app = (function () {
   			span1 = element("span");
   			span1.textContent = "MENU";
   			attr_dev(a0, "href", "javascript:void(0)");
-  			attr_dev(a0, "class", "closebtn svelte-wgnw63");
-  			add_location(a0, file, 18, 4, 457);
-  			attr_dev(img, "class", "img_siderbar svelte-wgnw63");
+  			attr_dev(a0, "class", "closebtn svelte-h52umx");
+  			add_location(a0, file, 18, 4, 475);
+  			attr_dev(img, "class", "img_siderbar svelte-h52umx");
   			if (img.src !== (img_src_value = "images/GaliciaWeather.gif")) attr_dev(img, "src", img_src_value);
   			attr_dev(img, "width", "50%");
-  			add_location(img, file, 25, 20, 688);
-  			attr_dev(span0, "class", "logoTEXT_siderbar svelte-wgnw63");
-  			add_location(span0, file, 26, 62, 821);
-  			attr_dev(p, "class", "logoTIT_siderbar svelte-wgnw63");
-  			add_location(p, file, 26, 20, 779);
-  			attr_dev(div0, "class", "user-view svelte-wgnw63");
-  			add_location(div0, file, 24, 16, 644);
-  			add_location(li0, file, 23, 12, 623);
+  			add_location(img, file, 25, 20, 706);
+  			attr_dev(span0, "class", "logoTEXT_siderbar svelte-h52umx");
+  			add_location(span0, file, 26, 62, 839);
+  			attr_dev(p, "class", "logoTIT_siderbar svelte-h52umx");
+  			add_location(p, file, 26, 20, 797);
+  			attr_dev(div0, "class", "user-view svelte-h52umx");
+  			add_location(div0, file, 24, 16, 662);
+  			add_location(li0, file, 23, 12, 641);
   			attr_dev(a1, "href", "/Axustes");
-  			attr_dev(a1, "class", "svelte-wgnw63");
-  			add_location(a1, file, 29, 16, 940);
-  			add_location(li1, file, 29, 12, 936);
+  			attr_dev(a1, "class", "svelte-h52umx");
+  			add_location(a1, file, 29, 16, 958);
+  			add_location(li1, file, 29, 12, 954);
   			attr_dev(a2, "href", "#");
-  			attr_dev(a2, "class", "svelte-wgnw63");
-  			add_location(a2, file, 30, 16, 1002);
-  			add_location(li2, file, 30, 12, 998);
+  			attr_dev(a2, "class", "svelte-h52umx");
+  			add_location(a2, file, 30, 16, 1020);
+  			add_location(li2, file, 30, 12, 1016);
   			attr_dev(a3, "href", "#");
-  			attr_dev(a3, "class", "svelte-wgnw63");
-  			add_location(a3, file, 31, 16, 1055);
-  			add_location(li3, file, 31, 12, 1051);
+  			attr_dev(a3, "class", "svelte-h52umx");
+  			add_location(a3, file, 31, 16, 1073);
+  			add_location(li3, file, 31, 12, 1069);
   			attr_dev(a4, "href", "/Creditos");
-  			attr_dev(a4, "class", "svelte-wgnw63");
-  			add_location(a4, file, 32, 16, 1103);
-  			add_location(li4, file, 32, 12, 1099);
-  			add_location(ul, file, 22, 8, 606);
-  			attr_dev(div1, "class", "overlay-content svelte-wgnw63");
-  			add_location(div1, file, 21, 4, 568);
-  			attr_dev(div2, "id", "myNav");
-  			attr_dev(div2, "class", "overlay svelte-wgnw63");
-  			add_location(div2, file, 15, 0, 367);
-  			attr_dev(span1, "class", "sidenav-trigger svelte-wgnw63");
-  			add_location(span1, file, 41, 2, 1267);
+  			attr_dev(a4, "class", "svelte-h52umx");
+  			add_location(a4, file, 32, 16, 1121);
+  			add_location(li4, file, 32, 12, 1117);
+  			add_location(ul, file, 22, 8, 624);
+  			attr_dev(div1, "class", "overlay-content svelte-h52umx");
+  			add_location(div1, file, 21, 4, 586);
+  			attr_dev(div2, "id", "menuLateral");
+  			attr_dev(div2, "class", "overlay svelte-h52umx");
+  			add_location(div2, file, 15, 0, 379);
+  			attr_dev(span1, "class", "sidenav-trigger svelte-h52umx");
+  			add_location(span1, file, 41, 2, 1285);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -14278,12 +14278,12 @@ var app = (function () {
   	validate_slots("Sidebar", slots, []);
 
   	const open = () => {
-  		document.getElementById("myNav").style.width = "100%";
+  		document.getElementById("menuLateral").style.width = "100%";
   	};
 
   	/* Close when someone clicks on the "x" symbol inside the overlay */
   	const close = () => {
-  		document.getElementById("myNav").style.width = "0%";
+  		document.getElementById("menuLateral").style.width = "0%";
   	};
 
   	const writable_props = [];
@@ -21372,7 +21372,7 @@ var app = (function () {
   const get_left_slot_changes = dirty => ({});
   const get_left_slot_context = ctx => ({});
 
-  // (318:0) {#if visible}
+  // (319:0) {#if visible}
   function create_if_block$4(ctx) {
   	let div6;
   	let div2;
@@ -21422,23 +21422,23 @@ var app = (function () {
   			if (left_slot) left_slot.c();
   			t2 = space();
   			if (right_slot) right_slot.c();
-  			attr_dev(div0, "class", "content svelte-7p4yd0");
-  			add_location(div0, file$a, 330, 8, 9205);
-  			attr_dev(div1, "class", "innercontent svelte-7p4yd0");
-  			add_location(div1, file$a, 329, 6, 9169);
+  			attr_dev(div0, "class", "content svelte-1h4zu3z");
+  			add_location(div0, file$a, 331, 8, 9241);
+  			attr_dev(div1, "class", "innercontent svelte-1h4zu3z");
+  			add_location(div1, file$a, 330, 6, 9205);
   			set_style(div2, "overflow-y", /*overflow*/ ctx[9]);
   			set_style(div2, "min-height", /*minVH*/ ctx[2] + "vh");
   			set_style(div2, "max-height", /*maxVH*/ ctx[1] + "vh");
-  			attr_dev(div2, "class", "inner svelte-7p4yd0");
-  			add_location(div2, file$a, 323, 4, 8944);
-  			attr_dev(div3, "class", "actionsDiv svelte-7p4yd0");
-  			add_location(div3, file$a, 354, 8, 9813);
-  			add_location(div4, file$a, 342, 6, 9478);
-  			attr_dev(div5, "class", "linewrapper svelte-7p4yd0");
+  			attr_dev(div2, "class", "inner svelte-1h4zu3z");
+  			add_location(div2, file$a, 324, 4, 8980);
+  			attr_dev(div3, "class", "actionsDiv svelte-1h4zu3z");
+  			add_location(div3, file$a, 355, 8, 9849);
+  			add_location(div4, file$a, 343, 6, 9514);
+  			attr_dev(div5, "class", "linewrapper svelte-1h4zu3z");
   			attr_dev(div5, "draggable", "true");
-  			add_location(div5, file$a, 336, 4, 9296);
-  			attr_dev(div6, "class", "wrapper svelte-7p4yd0");
-  			add_location(div6, file$a, 318, 2, 8820);
+  			add_location(div5, file$a, 337, 4, 9332);
+  			attr_dev(div6, "class", "wrapper svelte-1h4zu3z");
+  			add_location(div6, file$a, 319, 2, 8856);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div6, anchor);
@@ -21575,22 +21575,22 @@ var app = (function () {
   		block,
   		id: create_if_block$4.name,
   		type: "if",
-  		source: "(318:0) {#if visible}",
+  		source: "(319:0) {#if visible}",
   		ctx
   	});
 
   	return block;
   }
 
-  // (351:8) {:else}
+  // (352:8) {:else}
   function create_else_block$2(ctx) {
   	let div;
 
   	const block = {
   		c: function create() {
   			div = element("div");
-  			attr_dev(div, "class", "line svelte-7p4yd0");
-  			add_location(div, file$a, 351, 10, 9749);
+  			attr_dev(div, "class", "line svelte-1h4zu3z");
+  			add_location(div, file$a, 352, 10, 9785);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div, anchor);
@@ -21607,14 +21607,14 @@ var app = (function () {
   		block,
   		id: create_else_block$2.name,
   		type: "else",
-  		source: "(351:8) {:else}",
+  		source: "(352:8) {:else}",
   		ctx
   	});
 
   	return block;
   }
 
-  // (344:8) {#if undraggeble}
+  // (345:8) {#if undraggeble}
   function create_if_block_1$1(ctx) {
   	let img;
   	let img_src_value;
@@ -21624,9 +21624,9 @@ var app = (function () {
   			img = element("img");
   			if (img.src !== (img_src_value = "/assets/cross_primary.svg")) attr_dev(img, "src", img_src_value);
   			attr_dev(img, "alt", "X");
-  			attr_dev(img, "class", "crossimg svelte-7p4yd0");
+  			attr_dev(img, "class", "crossimg svelte-1h4zu3z");
   			set_style(img, "cursor", /*undraggeble*/ ctx[3] ? "pointer" : "move");
-  			add_location(img, file$a, 344, 10, 9522);
+  			add_location(img, file$a, 345, 10, 9558);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, img, anchor);
@@ -21647,7 +21647,7 @@ var app = (function () {
   		block,
   		id: create_if_block_1$1.name,
   		type: "if",
-  		source: "(344:8) {#if undraggeble}",
+  		source: "(345:8) {#if undraggeble}",
   		ctx
   	});
 
@@ -23276,7 +23276,7 @@ var app = (function () {
   const { console: console_1$7 } = globals;
   const file$c = "src/Componentes/Cardtiempo.svelte";
 
-  // (43:4) {#if datosCard!==null}
+  // (319:4) {#if datosCard!==null}
   function create_if_block$5(ctx) {
   	let div7;
   	let div6;
@@ -23329,28 +23329,28 @@ var app = (function () {
   			t5 = text(/*descripcion*/ ctx[2]);
   			t6 = space();
   			create_component(carddias.$$.fragment);
-  			attr_dev(p0, "class", "svelte-goial3");
-  			add_location(p0, file$c, 48, 24, 1136);
-  			attr_dev(div0, "class", "col s12 location svelte-goial3");
-  			add_location(div0, file$c, 47, 20, 1081);
-  			attr_dev(p1, "class", "svelte-goial3");
-  			add_location(p1, file$c, 51, 24, 1268);
-  			attr_dev(div1, "class", "col s12 temperature-value center svelte-goial3");
-  			add_location(div1, file$c, 50, 20, 1197);
-  			attr_dev(div2, "class", "weather-container svelte-goial3");
-  			add_location(div2, file$c, 46, 16, 1029);
-  			attr_dev(p2, "class", "svelte-goial3");
-  			add_location(p2, file$c, 56, 24, 1494);
-  			attr_dev(div3, "class", "col s12 temperature-description center svelte-goial3");
-  			add_location(div3, file$c, 55, 20, 1417);
-  			attr_dev(div4, "class", "weather-datos svelte-goial3");
-  			add_location(div4, file$c, 54, 16, 1369);
+  			attr_dev(p0, "class", "svelte-1xblg03");
+  			add_location(p0, file$c, 324, 24, 13935);
+  			attr_dev(div0, "class", "col s12 location svelte-1xblg03");
+  			add_location(div0, file$c, 323, 20, 13880);
+  			attr_dev(p1, "class", "svelte-1xblg03");
+  			add_location(p1, file$c, 327, 24, 14067);
+  			attr_dev(div1, "class", "col s12 temperature-value center svelte-1xblg03");
+  			add_location(div1, file$c, 326, 20, 13996);
+  			attr_dev(div2, "class", "weather-container svelte-1xblg03");
+  			add_location(div2, file$c, 322, 16, 13828);
+  			attr_dev(p2, "class", "svelte-1xblg03");
+  			add_location(p2, file$c, 332, 24, 14293);
+  			attr_dev(div3, "class", "col s12 temperature-description center svelte-1xblg03");
+  			add_location(div3, file$c, 331, 20, 14216);
+  			attr_dev(div4, "class", "weather-datos svelte-1xblg03");
+  			add_location(div4, file$c, 330, 16, 14168);
   			attr_dev(div5, "class", "row");
-  			add_location(div5, file$c, 45, 12, 995);
+  			add_location(div5, file$c, 321, 12, 13794);
   			attr_dev(div6, "class", "container");
-  			add_location(div6, file$c, 44, 8, 959);
+  			add_location(div6, file$c, 320, 8, 13758);
   			attr_dev(div7, "class", "white-text PanelPrincipal");
-  			add_location(div7, file$c, 43, 4, 911);
+  			add_location(div7, file$c, 319, 4, 13710);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div7, anchor);
@@ -23403,7 +23403,7 @@ var app = (function () {
   		block,
   		id: create_if_block$5.name,
   		type: "if",
-  		source: "(43:4) {#if datosCard!==null}",
+  		source: "(319:4) {#if datosCard!==null}",
   		ctx
   	});
 
@@ -23419,8 +23419,8 @@ var app = (function () {
   		c: function create() {
   			div = element("div");
   			if (if_block) if_block.c();
-  			attr_dev(div, "class", "center");
-  			add_location(div, file$c, 41, 0, 859);
+  			attr_dev(div, "class", "center PanelCard");
+  			add_location(div, file$c, 317, 0, 13648);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -23491,6 +23491,7 @@ var app = (function () {
   	let descripcion = "";
   	let latitude = "";
   	let longitude = "";
+  	let icon = "";
   	var datosCard = null;
 
   	onMount(async () => {
@@ -23502,6 +23503,250 @@ var app = (function () {
   			$$invalidate(2, descripcion = datosCard.weather[0].description);
   			$$invalidate(3, latitude = datosCard.coord.lat);
   			$$invalidate(4, longitude = datosCard.coord.lon);
+  			icon = datosCard.weather[0].icon;
+
+  			// Cambiar a noche o día el fondo de pantalla
+  			var fondo = document.querySelector(".PanelCard");
+
+  			function cambiarSoleado() {
+  				fondo.classList.add("fondo_soleadoC");
+  				fondo.classList.remove("fondo_noite_claraC");
+  				fondo.classList.remove("fondo_soleado_poucas_nubesC");
+  				fondo.classList.remove("fondo_noite_poucas_nubesC");
+  				fondo.classList.remove("fondo_dia_nubladoC");
+  				fondo.classList.remove("fondo_noite_nubladoC");
+  				fondo.classList.remove("fondo_nubladoC");
+  				fondo.classList.remove("fondo_moita_choivaC");
+  				fondo.classList.remove("fondo_pouca_choivaC");
+  				fondo.classList.remove("fondo_tormentaC");
+  				fondo.classList.remove("fondo_neveC");
+  				fondo.classList.remove("fondo_neboaC");
+  			}
+
+  			function cambiarNoiteClara() {
+  				fondo.classList.remove("fondo_soleadoC");
+  				fondo.classList.add("fondo_noite_claraC");
+  				fondo.classList.remove("fondo_soleado_poucas_nubesC");
+  				fondo.classList.remove("fondo_noite_poucas_nubesC");
+  				fondo.classList.remove("fondo_dia_nubladoC");
+  				fondo.classList.remove("fondo_noite_nubladoC");
+  				fondo.classList.remove("fondo_nubladoC");
+  				fondo.classList.remove("fondo_moita_choivaC");
+  				fondo.classList.remove("fondo_pouca_choivaC");
+  				fondo.classList.remove("fondo_tormentaC");
+  				fondo.classList.remove("fondo_neveC");
+  				fondo.classList.remove("fondo_neboaC");
+  			}
+
+  			function cambiarSoleadoPoucasNubes() {
+  				fondo.classList.remove("fondo_soleadoC");
+  				fondo.classList.remove("fondo_noite_claraC");
+  				fondo.classList.add("fondo_soleado_poucas_nubesC");
+  				fondo.classList.remove("fondo_noite_poucas_nubesC");
+  				fondo.classList.remove("fondo_dia_nubladoC");
+  				fondo.classList.remove("fondo_noite_nubladoC");
+  				fondo.classList.remove("fondo_nubladoC");
+  				fondo.classList.remove("fondo_moita_choivaC");
+  				fondo.classList.remove("fondo_pouca_choivaC");
+  				fondo.classList.remove("fondo_tormentaC");
+  				fondo.classList.remove("fondo_neveC");
+  				fondo.classList.remove("fondo_neboaC");
+  			}
+
+  			function cambiarNoitePoucasNubes() {
+  				fondo.classList.remove("fondo_soleadoC");
+  				fondo.classList.remove("fondo_noite_claraC");
+  				fondo.classList.remove("fondo_soleado_poucas_nubesC");
+  				fondo.classList.add("fondo_noite_poucas_nubesC");
+  				fondo.classList.remove("fondo_dia_nubladoC");
+  				fondo.classList.remove("fondo_noite_nubladoC");
+  				fondo.classList.remove("fondo_nubladoC");
+  				fondo.classList.remove("fondo_moita_choivaC");
+  				fondo.classList.remove("fondo_pouca_choivaC");
+  				fondo.classList.remove("fondo_tormentaC");
+  				fondo.classList.remove("fondo_neveC");
+  				fondo.classList.remove("fondo_neboaC");
+  			}
+
+  			function cambiarDiaNublado() {
+  				fondo.classList.remove("fondo_soleadoC");
+  				fondo.classList.remove("fondo_noite_claraC");
+  				fondo.classList.remove("fondo_soleado_poucas_nubesC");
+  				fondo.classList.remove("fondo_noite_poucas_nubesC");
+  				fondo.classList.add("fondo_dia_nubladoC");
+  				fondo.classList.remove("fondo_noite_nubladoC");
+  				fondo.classList.remove("fondo_nubladoC");
+  				fondo.classList.remove("fondo_moita_choivaC");
+  				fondo.classList.remove("fondo_pouca_choivaC");
+  				fondo.classList.remove("fondo_tormentaC");
+  				fondo.classList.remove("fondo_neveC");
+  				fondo.classList.remove("fondo_neboaC");
+  			}
+
+  			function cambiarNoiteNublada() {
+  				fondo.classList.remove("fondo_soleadoC");
+  				fondo.classList.remove("fondo_noite_claraC");
+  				fondo.classList.remove("fondo_soleado_poucas_nubesC");
+  				fondo.classList.remove("fondo_noite_poucas_nubesC");
+  				fondo.classList.remove("fondo_dia_nubladoC");
+  				fondo.classList.add("fondo_noite_nubladoC");
+  				fondo.classList.remove("fondo_nubladoC");
+  				fondo.classList.remove("fondo_moita_choivaC");
+  				fondo.classList.remove("fondo_pouca_choivaC");
+  				fondo.classList.remove("fondo_tormentaC");
+  				fondo.classList.remove("fondo_neveC");
+  				fondo.classList.remove("fondo_neboaC");
+  			}
+
+  			function cambiarNublado() {
+  				fondo.classList.remove("fondo_soleadoC");
+  				fondo.classList.remove("fondo_noite_claraC");
+  				fondo.classList.remove("fondo_soleado_poucas_nubesC");
+  				fondo.classList.remove("fondo_noite_poucas_nubesC");
+  				fondo.classList.remove("fondo_dia_nubladoC");
+  				fondo.classList.remove("fondo_noite_nubladoC");
+  				fondo.classList.add("fondo_nubladoC");
+  				fondo.classList.remove("fondo_moita_choivaC");
+  				fondo.classList.remove("fondo_pouca_choivaC");
+  				fondo.classList.remove("fondo_tormentaC");
+  				fondo.classList.remove("fondo_neveC");
+  				fondo.classList.remove("fondo_neboaC");
+  			}
+
+  			function cambiarMoitaChoiva() {
+  				fondo.classList.remove("fondo_soleadoC");
+  				fondo.classList.remove("fondo_noite_claraC");
+  				fondo.classList.remove("fondo_soleado_poucas_nubesC");
+  				fondo.classList.remove("fondo_noite_poucas_nubesC");
+  				fondo.classList.remove("fondo_dia_nubladoC");
+  				fondo.classList.remove("fondo_noite_nubladoC");
+  				fondo.classList.remove("fondo_nubladoC");
+  				fondo.classList.add("fondo_moita_choivaC");
+  				fondo.classList.remove("fondo_pouca_choivaC");
+  				fondo.classList.remove("fondo_tormentaC");
+  				fondo.classList.remove("fondo_neveC");
+  				fondo.classList.remove("fondo_neboaC");
+  			}
+
+  			function cambiarPoucaChoiva() {
+  				fondo.classList.remove("fondo_soleadoC");
+  				fondo.classList.remove("fondo_noite_claraC");
+  				fondo.classList.remove("fondo_soleado_poucas_nubesC");
+  				fondo.classList.remove("fondo_noite_poucas_nubesC");
+  				fondo.classList.remove("fondo_dia_nubladoC");
+  				fondo.classList.remove("fondo_noite_nubladoC");
+  				fondo.classList.remove("fondo_nubladoC");
+  				fondo.classList.remove("fondo_moita_choivaC");
+  				fondo.classList.add("fondo_pouca_choivaC");
+  				fondo.classList.remove("fondo_tormentaC");
+  				fondo.classList.remove("fondo_neveC");
+  				fondo.classList.remove("fondo_neboaC");
+  			}
+
+  			function cambiarTormenta() {
+  				fondo.classList.remove("fondo_soleadoC");
+  				fondo.classList.remove("fondo_noite_claraC");
+  				fondo.classList.remove("fondo_soleado_poucas_nubesC");
+  				fondo.classList.remove("fondo_noite_poucas_nubesC");
+  				fondo.classList.remove("fondo_dia_nubladoC");
+  				fondo.classList.remove("fondo_noite_nubladoC");
+  				fondo.classList.remove("fondo_nubladoC");
+  				fondo.classList.remove("fondo_moita_choivaC");
+  				fondo.classList.remove("fondo_pouca_choivaC");
+  				fondo.classList.add("fondo_tormentaC");
+  				fondo.classList.remove("fondo_neveC");
+  				fondo.classList.remove("fondo_neboaC");
+  			}
+
+  			function cambiarNeve() {
+  				fondo.classList.remove("fondo_soleadoC");
+  				fondo.classList.remove("fondo_noite_claraC");
+  				fondo.classList.remove("fondo_soleado_poucas_nubesC");
+  				fondo.classList.remove("fondo_noite_poucas_nubesC");
+  				fondo.classList.remove("fondo_dia_nubladoC");
+  				fondo.classList.remove("fondo_noite_nubladoC");
+  				fondo.classList.remove("fondo_nubladoC");
+  				fondo.classList.remove("fondo_moita_choivaC");
+  				fondo.classList.remove("fondo_pouca_choivaC");
+  				fondo.classList.remove("fondo_tormentaC");
+  				fondo.classList.add("fondo_neveC");
+  				fondo.classList.remove("fondo_neboaC");
+  			}
+
+  			function cambiarNeboa() {
+  				fondo.classList.remove("fondo_soleadoC");
+  				fondo.classList.remove("fondo_noite_claraC");
+  				fondo.classList.remove("fondo_soleado_poucas_nubesC");
+  				fondo.classList.remove("fondo_noite_poucas_nubesC");
+  				fondo.classList.remove("fondo_dia_nubladoC");
+  				fondo.classList.remove("fondo_noite_nubladoC");
+  				fondo.classList.remove("fondo_nubladoC");
+  				fondo.classList.remove("fondo_moita_choivaC");
+  				fondo.classList.remove("fondo_pouca_choivaC");
+  				fondo.classList.remove("fondo_tormentaC");
+  				fondo.classList.remove("fondo_neveC");
+  				fondo.classList.add("fondo_neboaC");
+  			}
+
+  			switch (datosCard.weather[0].icon) {
+  				case "01d":
+  					fondo = cambiarSoleado();
+  					break;
+  				case "01n":
+  					fondo = cambiarNoiteClara();
+  					break;
+  				case "02d":
+  					fondo = cambiarSoleadoPoucasNubes();
+  					break;
+  				case "02n":
+  					fondo = cambiarNoitePoucasNubes();
+  					break;
+  				case "03d":
+  					fondo = cambiarDiaNublado();
+  					break;
+  				case "03n":
+  					fondo = cambiarNoiteNublada();
+  					break;
+  				case "04d":
+  					fondo = cambiarNublado();
+  					break;
+  				case "04n":
+  					fondo = cambiarNublado();
+  					break;
+  				case "09d":
+  					fondo = cambiarMoitaChoiva();
+  					break;
+  				case "09n":
+  					fondo = cambiarMoitaChoiva();
+  					break;
+  				case "10d":
+  					fondo = cambiarPoucaChoiva();
+  					break;
+  				case "10n":
+  					fondo = cambiarPoucaChoiva();
+  					break;
+  				case "11d":
+  					fondo = cambiarTormenta();
+  					break;
+  				case "11n":
+  					fondo = cambiarTormenta();
+  					break;
+  				case "13d":
+  					fondo = cambiarNeve();
+  					break;
+  				case "13n":
+  					fondo = cambiarNeve();
+  					break;
+  				case "50d":
+  					fondo = cambiarNeboa();
+  					break;
+  				case "50n":
+  					fondo = cambiarNeboa();
+  					break;
+  				case "unknown":
+  					fondo = cambiarColorDia();
+  					break;
+  			}
   		});
   	});
 
@@ -23526,6 +23771,7 @@ var app = (function () {
   		descripcion,
   		latitude,
   		longitude,
+  		icon,
   		datosCard
   	});
 
@@ -23536,6 +23782,7 @@ var app = (function () {
   		if ("descripcion" in $$props) $$invalidate(2, descripcion = $$props.descripcion);
   		if ("latitude" in $$props) $$invalidate(3, latitude = $$props.latitude);
   		if ("longitude" in $$props) $$invalidate(4, longitude = $$props.longitude);
+  		if ("icon" in $$props) icon = $$props.icon;
   		if ("datosCard" in $$props) $$invalidate(5, datosCard = $$props.datosCard);
   	};
 
@@ -23810,24 +24057,24 @@ var app = (function () {
   			if_block_anchor = empty();
   			if (img.src !== (img_src_value = "/images/tarxetas/" + /*icon*/ ctx[2] + ".gif")) attr_dev(img, "src", img_src_value);
   			attr_dev(img, "alt", "icono do tempo");
-  			attr_dev(img, "class", "fondo_card svelte-1sxrtz7");
+  			attr_dev(img, "class", "fondo_card svelte-zujxxy");
   			add_location(img, file$d, 39, 24, 792);
   			add_location(br, file$d, 40, 80, 952);
-  			attr_dev(p, "class", "city-name svelte-1sxrtz7");
+  			attr_dev(p, "class", "city-name svelte-zujxxy");
   			add_location(p, file$d, 41, 28, 985);
-  			attr_dev(span, "class", "card-title city-temp svelte-1sxrtz7");
+  			attr_dev(span, "class", "card-title city-temp svelte-zujxxy");
   			add_location(span, file$d, 40, 24, 896);
   			attr_dev(i0, "class", "material-icons");
   			add_location(i0, file$d, 44, 45, 1228);
-  			attr_dev(a0, "class", "btn modal-trigger btn-floating halfway-fab waves-effect waves-light\n                            black verTiempo svelte-1sxrtz7");
+  			attr_dev(a0, "class", "btn modal-trigger btn-floating halfway-fab waves-effect waves-light\n                            black verTiempo svelte-zujxxy");
   			add_location(a0, file$d, 43, 24, 1073);
   			attr_dev(i1, "class", "material-icons");
   			add_location(i1, file$d, 46, 35, 1425);
   			attr_dev(a1, "class", "btn-floating halfway-fab waves-effect waves-light\n                            black");
   			add_location(a1, file$d, 45, 24, 1297);
-  			attr_dev(div0, "class", "card-image svelte-1sxrtz7");
+  			attr_dev(div0, "class", "card-image svelte-zujxxy");
   			add_location(div0, file$d, 38, 20, 743);
-  			attr_dev(div1, "class", "card svelte-1sxrtz7");
+  			attr_dev(div1, "class", "card svelte-zujxxy");
   			add_location(div1, file$d, 37, 16, 704);
   			attr_dev(div2, "class", "col s12 m6");
   			add_location(div2, file$d, 36, 12, 663);
@@ -24130,11 +24377,6 @@ var app = (function () {
           store.put(value, key);
       });
   }
-  function del(key, store = getDefaultStore()) {
-      return store._withIDBStore('readwrite', store => {
-          store.delete(key);
-      });
-  }
 
   /* src/Paginas/Buscar.svelte generated by Svelte v3.25.0 */
 
@@ -24148,7 +24390,7 @@ var app = (function () {
   	return child_ctx;
   }
 
-  // (136:6) {#if loading}
+  // (135:6) {#if loading}
   function create_if_block_1$2(ctx) {
   	let div;
 
@@ -24156,7 +24398,7 @@ var app = (function () {
   		c: function create() {
   			div = element("div");
   			attr_dev(div, "class", "loader svelte-u26sdc");
-  			add_location(div, file$e, 136, 12, 2969);
+  			add_location(div, file$e, 135, 12, 2933);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div, anchor);
@@ -24170,14 +24412,14 @@ var app = (function () {
   		block,
   		id: create_if_block_1$2.name,
   		type: "if",
-  		source: "(136:6) {#if loading}",
+  		source: "(135:6) {#if loading}",
   		ctx
   	});
 
   	return block;
   }
 
-  // (143:8) {#if todos.length}
+  // (142:8) {#if todos.length}
   function create_if_block$7(ctx) {
   	let each_blocks = [];
   	let each_1_lookup = new Map();
@@ -24249,14 +24491,14 @@ var app = (function () {
   		block,
   		id: create_if_block$7.name,
   		type: "if",
-  		source: "(143:8) {#if todos.length}",
+  		source: "(142:8) {#if todos.length}",
   		ctx
   	});
 
   	return block;
   }
 
-  // (144:10) {#each todos as todo, i (todo.id) }
+  // (143:10) {#each todos as todo, i (todo.id) }
   function create_each_block$2(key_2, ctx) {
   	let first;
   	let cardbusqueda;
@@ -24317,7 +24559,7 @@ var app = (function () {
   		block,
   		id: create_each_block$2.name,
   		type: "each",
-  		source: "(144:10) {#each todos as todo, i (todo.id) }",
+  		source: "(143:10) {#each todos as todo, i (todo.id) }",
   		ctx
   	});
 
@@ -24382,32 +24624,32 @@ var app = (function () {
   			attr_dev(input_1, "placeholder", "Busca aquí unha cidade");
   			input_1.required = true;
   			attr_dev(input_1, "class", "svelte-u26sdc");
-  			add_location(input_1, file$e, 127, 10, 2550);
+  			add_location(input_1, file$e, 126, 10, 2514);
   			attr_dev(i0, "class", "material-icons");
-  			add_location(i0, file$e, 129, 49, 2729);
+  			add_location(i0, file$e, 128, 49, 2693);
   			attr_dev(label, "class", "label-icon");
   			attr_dev(label, "for", "search");
-  			add_location(label, file$e, 129, 10, 2690);
+  			add_location(label, file$e, 128, 10, 2654);
   			attr_dev(i1, "class", "material-icons");
-  			add_location(i1, file$e, 130, 10, 2784);
+  			add_location(i1, file$e, 129, 10, 2748);
   			attr_dev(span, "class", "msg");
-  			add_location(span, file$e, 131, 10, 2830);
+  			add_location(span, file$e, 130, 10, 2794);
   			attr_dev(div0, "class", "input-field");
-  			add_location(div0, file$e, 126, 8, 2514);
+  			add_location(div0, file$e, 125, 8, 2478);
   			attr_dev(button, "class", "transparent");
-  			add_location(button, file$e, 133, 8, 2879);
+  			add_location(button, file$e, 132, 8, 2843);
   			attr_dev(form, "class", "forminput");
-  			add_location(form, file$e, 125, 6, 2444);
+  			add_location(form, file$e, 124, 6, 2408);
   			attr_dev(div1, "class", "nav-wrapper");
-  			add_location(div1, file$e, 124, 4, 2412);
+  			add_location(div1, file$e, 123, 4, 2376);
   			attr_dev(nav, "class", "navbar-fixed navbarbaja grey darken-4 svelte-u26sdc");
-  			add_location(nav, file$e, 123, 2, 2356);
+  			add_location(nav, file$e, 122, 2, 2320);
   			toggle_class(ul, "list", /*todos*/ ctx[0].length > 0);
-  			add_location(ul, file$e, 141, 8, 3077);
+  			add_location(ul, file$e, 140, 8, 3041);
   			attr_dev(section, "class", "ajax-section svelte-u26sdc");
-  			add_location(section, file$e, 140, 4, 3038);
+  			add_location(section, file$e, 139, 4, 3002);
   			attr_dev(main, "class", "svelte-u26sdc");
-  			add_location(main, file$e, 122, 0, 2347);
+  			add_location(main, file$e, 121, 0, 2311);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -24597,7 +24839,6 @@ var app = (function () {
   		Cardbusqueda,
   		get,
   		set,
-  		del,
   		loading,
   		id,
   		temp,

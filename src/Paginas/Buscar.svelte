@@ -2,7 +2,6 @@
   import axios from "axios";
   import Cardbusqueda from '../Componentes/Cardbusqueda.svelte'
   import {get,set} from 'idb-keyval';
-  import { del } from 'idb-keyval';
 
 
 

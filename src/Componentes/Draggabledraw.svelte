@@ -277,7 +277,8 @@
     justify-content: center;
     align-items: center;
     transform: translateX(-50%);
-    background: #333;
+    /* background: #333; */
+    background: transparent;
     border-radius: 19px;
     cursor: move;
   }

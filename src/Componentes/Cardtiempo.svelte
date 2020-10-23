@@ -4,10 +4,10 @@
     import {
         onMount
     } from 'svelte';
-import Carddias from "../Componentes/Carddias.svelte";
+
+    import Carddias from "../Componentes/Carddias.svelte";
 
     export let name;
-
 
     // API Key
     const key = "3e867330616c39fa60d18a1af5d82f16";
@@ -17,29 +17,305 @@ import Carddias from "../Componentes/Carddias.svelte";
     let descripcion = "";
     let latitude = "";
     let longitude = "";
+    let icon = "";
     var datosCard = null;
 
 
     onMount(async () => {
 
         axios.get(
-        `http://api.openweathermap.org/data/2.5/weather?q=${name}&appid=${key}&units=metric&lang=gl`
-      )
-      .then(data => {
-        console.log(data)
-        datosCard = data.data;
-        city = datosCard.name;
-        temperature = datosCard.main.temp;
-        descripcion = datosCard.weather[0].description;
-        latitude = datosCard.coord.lat;
-        longitude = datosCard.coord.lon;
-      })
+                `http://api.openweathermap.org/data/2.5/weather?q=${name}&appid=${key}&units=metric&lang=gl`
+            )
+            .then(data => {
+                console.log(data)
+                datosCard = data.data;
+                city = datosCard.name;
+                temperature = datosCard.main.temp;
+                descripcion = datosCard.weather[0].description;
+                latitude = datosCard.coord.lat;
+                longitude = datosCard.coord.lon;
+                icon = datosCard.weather[0].icon;
+
+                // Cambiar a noche o día el fondo de pantalla
+
+                var fondo = document.querySelector(".PanelCard");
+
+                function cambiarSoleado() {
+                    fondo.classList.add("fondo_soleadoC");
+                    fondo.classList.remove("fondo_noite_claraC");
+                    fondo.classList.remove("fondo_soleado_poucas_nubesC");
+                    fondo.classList.remove("fondo_noite_poucas_nubesC");
+                    fondo.classList.remove("fondo_dia_nubladoC");
+                    fondo.classList.remove("fondo_noite_nubladoC");
+                    fondo.classList.remove("fondo_nubladoC");
+                    fondo.classList.remove("fondo_moita_choivaC");
+                    fondo.classList.remove("fondo_pouca_choivaC");
+                    fondo.classList.remove("fondo_tormentaC");
+                    fondo.classList.remove("fondo_neveC");
+                    fondo.classList.remove("fondo_neboaC");
+
+                }
+
+                function cambiarNoiteClara() {
+                    fondo.classList.remove("fondo_soleadoC");
+                    fondo.classList.add("fondo_noite_claraC");
+                    fondo.classList.remove("fondo_soleado_poucas_nubesC");
+                    fondo.classList.remove("fondo_noite_poucas_nubesC");
+                    fondo.classList.remove("fondo_dia_nubladoC");
+                    fondo.classList.remove("fondo_noite_nubladoC");
+                    fondo.classList.remove("fondo_nubladoC");
+                    fondo.classList.remove("fondo_moita_choivaC");
+                    fondo.classList.remove("fondo_pouca_choivaC");
+                    fondo.classList.remove("fondo_tormentaC");
+                    fondo.classList.remove("fondo_neveC");
+                    fondo.classList.remove("fondo_neboaC");
+
+                }
+
+                function cambiarSoleadoPoucasNubes() {
+                    fondo.classList.remove("fondo_soleadoC");
+                    fondo.classList.remove("fondo_noite_claraC");
+                    fondo.classList.add("fondo_soleado_poucas_nubesC");
+                    fondo.classList.remove("fondo_noite_poucas_nubesC");
+                    fondo.classList.remove("fondo_dia_nubladoC");
+                    fondo.classList.remove("fondo_noite_nubladoC");
+                    fondo.classList.remove("fondo_nubladoC");
+                    fondo.classList.remove("fondo_moita_choivaC");
+                    fondo.classList.remove("fondo_pouca_choivaC");
+                    fondo.classList.remove("fondo_tormentaC");
+                    fondo.classList.remove("fondo_neveC");
+                    fondo.classList.remove("fondo_neboaC");
+
+                }
+
+                function cambiarNoitePoucasNubes() {
+                    fondo.classList.remove("fondo_soleadoC");
+                    fondo.classList.remove("fondo_noite_claraC");
+                    fondo.classList.remove("fondo_soleado_poucas_nubesC");
+                    fondo.classList.add("fondo_noite_poucas_nubesC");
+                    fondo.classList.remove("fondo_dia_nubladoC");
+                    fondo.classList.remove("fondo_noite_nubladoC");
+                    fondo.classList.remove("fondo_nubladoC");
+                    fondo.classList.remove("fondo_moita_choivaC");
+                    fondo.classList.remove("fondo_pouca_choivaC");
+                    fondo.classList.remove("fondo_tormentaC");
+                    fondo.classList.remove("fondo_neveC");
+                    fondo.classList.remove("fondo_neboaC");
+
+                }
+
+                function cambiarDiaNublado() {
+                    fondo.classList.remove("fondo_soleadoC");
+                    fondo.classList.remove("fondo_noite_claraC");
+                    fondo.classList.remove("fondo_soleado_poucas_nubesC");
+                    fondo.classList.remove("fondo_noite_poucas_nubesC");
+                    fondo.classList.add("fondo_dia_nubladoC");
+                    fondo.classList.remove("fondo_noite_nubladoC");
+                    fondo.classList.remove("fondo_nubladoC");
+                    fondo.classList.remove("fondo_moita_choivaC");
+                    fondo.classList.remove("fondo_pouca_choivaC");
+                    fondo.classList.remove("fondo_tormentaC");
+                    fondo.classList.remove("fondo_neveC");
+                    fondo.classList.remove("fondo_neboaC");
+
+                }
+
+                function cambiarNoiteNublada() {
+                    fondo.classList.remove("fondo_soleadoC");
+                    fondo.classList.remove("fondo_noite_claraC");
+                    fondo.classList.remove("fondo_soleado_poucas_nubesC");
+                    fondo.classList.remove("fondo_noite_poucas_nubesC");
+                    fondo.classList.remove("fondo_dia_nubladoC");
+                    fondo.classList.add("fondo_noite_nubladoC");
+                    fondo.classList.remove("fondo_nubladoC");
+                    fondo.classList.remove("fondo_moita_choivaC");
+                    fondo.classList.remove("fondo_pouca_choivaC");
+                    fondo.classList.remove("fondo_tormentaC");
+                    fondo.classList.remove("fondo_neveC");
+                    fondo.classList.remove("fondo_neboaC");
+
+                }
+
+                function cambiarNublado() {
+                    fondo.classList.remove("fondo_soleadoC");
+                    fondo.classList.remove("fondo_noite_claraC");
+                    fondo.classList.remove("fondo_soleado_poucas_nubesC");
+                    fondo.classList.remove("fondo_noite_poucas_nubesC");
+                    fondo.classList.remove("fondo_dia_nubladoC");
+                    fondo.classList.remove("fondo_noite_nubladoC");
+                    fondo.classList.add("fondo_nubladoC");
+                    fondo.classList.remove("fondo_moita_choivaC");
+                    fondo.classList.remove("fondo_pouca_choivaC");
+                    fondo.classList.remove("fondo_tormentaC");
+                    fondo.classList.remove("fondo_neveC");
+                    fondo.classList.remove("fondo_neboaC");
+
+                }
+
+                function cambiarMoitaChoiva() {
+                    fondo.classList.remove("fondo_soleadoC");
+                    fondo.classList.remove("fondo_noite_claraC");
+                    fondo.classList.remove("fondo_soleado_poucas_nubesC");
+                    fondo.classList.remove("fondo_noite_poucas_nubesC");
+                    fondo.classList.remove("fondo_dia_nubladoC");
+                    fondo.classList.remove("fondo_noite_nubladoC");
+                    fondo.classList.remove("fondo_nubladoC");
+                    fondo.classList.add("fondo_moita_choivaC");
+                    fondo.classList.remove("fondo_pouca_choivaC");
+                    fondo.classList.remove("fondo_tormentaC");
+                    fondo.classList.remove("fondo_neveC");
+                    fondo.classList.remove("fondo_neboaC");
+
+                }
+
+                function cambiarPoucaChoiva() {
+                    fondo.classList.remove("fondo_soleadoC");
+                    fondo.classList.remove("fondo_noite_claraC");
+                    fondo.classList.remove("fondo_soleado_poucas_nubesC");
+                    fondo.classList.remove("fondo_noite_poucas_nubesC");
+                    fondo.classList.remove("fondo_dia_nubladoC");
+                    fondo.classList.remove("fondo_noite_nubladoC");
+                    fondo.classList.remove("fondo_nubladoC");
+                    fondo.classList.remove("fondo_moita_choivaC");
+                    fondo.classList.add("fondo_pouca_choivaC");
+                    fondo.classList.remove("fondo_tormentaC");
+                    fondo.classList.remove("fondo_neveC");
+                    fondo.classList.remove("fondo_neboaC");
+
+                }
+
+                function cambiarTormenta() {
+                    fondo.classList.remove("fondo_soleadoC");
+                    fondo.classList.remove("fondo_noite_claraC");
+                    fondo.classList.remove("fondo_soleado_poucas_nubesC");
+                    fondo.classList.remove("fondo_noite_poucas_nubesC");
+                    fondo.classList.remove("fondo_dia_nubladoC");
+                    fondo.classList.remove("fondo_noite_nubladoC");
+                    fondo.classList.remove("fondo_nubladoC");
+                    fondo.classList.remove("fondo_moita_choivaC");
+                    fondo.classList.remove("fondo_pouca_choivaC");
+                    fondo.classList.add("fondo_tormentaC");
+                    fondo.classList.remove("fondo_neveC");
+                    fondo.classList.remove("fondo_neboaC");
+
+                }
+
+                function cambiarNeve() {
+                    fondo.classList.remove("fondo_soleadoC");
+                    fondo.classList.remove("fondo_noite_claraC");
+                    fondo.classList.remove("fondo_soleado_poucas_nubesC");
+                    fondo.classList.remove("fondo_noite_poucas_nubesC");
+                    fondo.classList.remove("fondo_dia_nubladoC");
+                    fondo.classList.remove("fondo_noite_nubladoC");
+                    fondo.classList.remove("fondo_nubladoC");
+                    fondo.classList.remove("fondo_moita_choivaC");
+                    fondo.classList.remove("fondo_pouca_choivaC");
+                    fondo.classList.remove("fondo_tormentaC");
+                    fondo.classList.add("fondo_neveC");
+                    fondo.classList.remove("fondo_neboaC");
+
+                }
+
+                function cambiarNeboa() {
+                    fondo.classList.remove("fondo_soleadoC");
+                    fondo.classList.remove("fondo_noite_claraC");
+                    fondo.classList.remove("fondo_soleado_poucas_nubesC");
+                    fondo.classList.remove("fondo_noite_poucas_nubesC");
+                    fondo.classList.remove("fondo_dia_nubladoC");
+                    fondo.classList.remove("fondo_noite_nubladoC");
+                    fondo.classList.remove("fondo_nubladoC");
+                    fondo.classList.remove("fondo_moita_choivaC");
+                    fondo.classList.remove("fondo_pouca_choivaC");
+                    fondo.classList.remove("fondo_tormentaC");
+                    fondo.classList.remove("fondo_neveC");
+                    fondo.classList.add("fondo_neboaC");
+
+                }
+
+                switch (datosCard.weather[0].icon) {
+                    case '01d':
+                        fondo = cambiarSoleado();
+                        break;
+
+                    case '01n':
+                        fondo = cambiarNoiteClara();
+                        break;
+
+                    case '02d':
+                        fondo = cambiarSoleadoPoucasNubes();
+                        break;
+
+                    case '02n':
+                        fondo = cambiarNoitePoucasNubes();
+                        break;
+
+                    case '03d':
+                        fondo = cambiarDiaNublado();
+                        break;
+
+                    case '03n':
+                        fondo = cambiarNoiteNublada();
+                        break;
+
+                    case '04d':
+                        fondo = cambiarNublado();
+                        break;
+
+                    case '04n':
+                        fondo = cambiarNublado();
+                        break;
+
+                    case '09d':
+                        fondo = cambiarMoitaChoiva();
+                        break;
+
+                    case '09n':
+                        fondo = cambiarMoitaChoiva();
+                        break;
+
+                    case '10d':
+                        fondo = cambiarPoucaChoiva();
+                        break;
+
+                    case '10n':
+                        fondo = cambiarPoucaChoiva();
+                        break;
+
+                    case '11d':
+                        fondo = cambiarTormenta();
+                        break;
+
+                    case '11n':
+                        fondo = cambiarTormenta();
+                        break;
+
+                    case '13d':
+                        fondo = cambiarNeve();
+                        break;
+
+                    case '13n':
+                        fondo = cambiarNeve();
+                        break;
+
+                    case '50d':
+                        fondo = cambiarNeboa();
+                        break;
+
+                    case '50n':
+                        fondo = cambiarNeboa();
+                        break;
+
+                    case 'unknown':
+                        fondo = cambiarColorDia();
+                        break;
+                }
+
+            })
 
     });
-
 </script>
 
-<div class="center">
+<div class="center PanelCard">
     {#if datosCard!==null}
     <div class="white-text PanelPrincipal">
         <div class="container">
@@ -65,7 +341,9 @@ import Carddias from "../Componentes/Carddias.svelte";
 </div>
 
 
+
 <style>
+
 
     .weather-container {
         display: flex;
@@ -117,4 +395,6 @@ import Carddias from "../Componentes/Carddias.svelte";
         font-weight: 600;
         text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
     }
+
+
 </style>

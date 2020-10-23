@@ -90,7 +90,7 @@
         margin-top: 0px;
     }
 
-    @media only screen and (min-width: 360px) {
+    @media only screen and (min-width: 365px) {
         .city-name {
             padding-top: 10px;
         }

@@ -112,6 +112,103 @@ body {
 
     }
 
+   /* Fondos tiempo Tarjetas busqueda */
+
+   .fondo_soleadoC {
+    background: url("/images/iconosColor/01d.gif") #333;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 100%;
+}
+
+.fondo_noite_claraC {
+    background: url("/images/iconosColor/01n.gif") #333;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 100%;
+
+}
+
+.fondo_soleado_poucas_nubesC {
+    background: url("/images/iconosColor/02d.gif") #333;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 100%;
+
+}
+
+.fondo_noite_poucas_nubesC {
+    background: url("/images/iconosColor/02n.gif") #333;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 100%;
+
+}
+
+.fondo_dia_nubladoC {
+    background: url("/images/iconosColor/03d.gif") #333;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 100%;
+
+}
+
+.fondo_noite_nubladoC {
+    background: url("/images/iconosColor/03n.gif") #333;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 100%;
+
+}
+
+.fondo_nubladoC {
+    background: url("/images/iconosColor/04d.gif") #333;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 100%;
+
+}
+
+.fondo_moita_choivaC {
+    background: url("/images/iconosColor/09d.gif") #333;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 100%;
+
+}
+
+.fondo_pouca_choivaC {
+    background: url("/images/iconosColor/10d.gif") #333;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 100%;
+
+}
+
+.fondo_tormentaC {
+    background: url("/images/iconosColor/11n.gif") #333;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 100%;
+
+}
+
+.fondo_neveC {
+    background: url("/images/iconosColor/13d.gif") #333;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 100%;
+
+}
+
+.fondo_neboaC {
+    background: url("/images/iconosColor/50n.gif") #333;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 100%;
+
+}
+
 h1,
 h2,
 h3,
