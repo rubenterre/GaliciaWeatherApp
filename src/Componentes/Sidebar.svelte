@@ -1,6 +1,9 @@
 <script>
     import { link } from 'svelte-spa-router'
 
+    import {_} from 'svelte-i18n';
+
+
 /* Open when someone clicks on the span element */
 const open = () => {
   document.getElementById("menuLateral").style.width = "100%";
@@ -27,8 +30,8 @@ const close = () => {
                     <p class="logoTIT_siderbar">GaliciaWeather<span class="logoTEXT_siderbar">O tempo de Galicia</span></p>
                 </div>
             </li>
-            <li><a href="/Axustes" use:link >Axustes</a></li>
-            <li><a href="#">Convidar Amigos</a></li>
+           <!-- <li><a href="/Axustes" use:link >Axustes</a></li> --> 
+            <li><a href="#">{$_('Invite')}</a></li>
             <li><a href="#">Calificar </a></li>
             <li><a href="/Creditos" use:link >Información</a></li>
         </ul>

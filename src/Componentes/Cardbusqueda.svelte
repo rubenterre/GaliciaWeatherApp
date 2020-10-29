@@ -3,16 +3,19 @@
         createEventDispatcher
     } from 'svelte';
 
-    import DraggableDraw from '../Componentes/Draggabledraw.svelte';
+    //import DraggableDraw from '../Componentes/Draggabledraw.svelte';
     import Cardtiempo from '../Componentes/Cardtiempo.svelte';
 
-    let visible = false;
-    let maxVH = 90;
-    let minVH = 85;
 
-    function switchVisible() {
-        visible = !visible;
-    }
+   // let visible = false;
+   // let maxVH = 90;
+   // let minVH = 85;
+
+  //  function switchVisible() {
+   //     visible = !visible;
+   // }
+
+
 
 
     export let id;
@@ -29,6 +32,13 @@
         })
     }
 
+
+let visible = false;
+
+    function abrirModal(){
+        visible = !visible;
+}
+
 </script>
 
 <li class="data">
@@ -41,7 +51,7 @@
                         <span class="card-title city-temp">{Math.round(temp)}°C <br>
                             <p class="city-name">{name}</p>
                         </span>
-                        <a on:click={()=> switchVisible()} class="btn modal-trigger btn-floating halfway-fab waves-effect waves-light
+                        <a on:click={()=> abrirModal()} class="btn modal-trigger btn-floating halfway-fab waves-effect waves-light
                             black verTiempo"><i class="material-icons">visibility</i></a>
                         <a on:click={()=> removeTiempo(id)} class="btn-floating halfway-fab waves-effect waves-light
                             black"><i class="material-icons">delete</i></a>
@@ -53,16 +63,30 @@
 </li>
 
 {#if visible}
+<div>
+    <Cardtiempo name={name} on:click={abrirModal}/>
+</div>
+{/if}
+
+<!-- 
+
+{#if visible}
 <DraggableDraw bind:visible {maxVH} {minVH}>
     <span slot="right" on:click={switchVisible}>Pechar</span>
+    <span slot="left" on:click={switchVisible}>Pechar</span>
+
 
     <Cardtiempo name={name}/>
 
 </DraggableDraw>
 {/if}
 
+-->
 <style>
 
+/* Modals */
+
+/* Tarjetas */
 
     .card {
         border-radius: 20px;
@@ -99,4 +123,5 @@
     .city-temp {
         font-size: 40px;
     }
+
 </style>

@@ -1,6 +1,7 @@
 <script>
   import { link } from 'svelte-spa-router'
 
+
 </script>
 
     <!-- navbar -->
@@ -12,7 +13,7 @@
                         <a href="/" use:link class="left"><img src="images/prev.png" alt="" width="50%" class="prev"></a>
                     </div>
                     <div class="col s6 content-right">
-                        <p class="white-text axustes">AXUSTES</p>
+                        <p class="white-text axustes">Axustes</p>
                     </div>
                 </div>
             </div>
@@ -21,6 +22,7 @@
     <!-- end navbar -->
 
 <style>
+
 
     /*navbar*/
 

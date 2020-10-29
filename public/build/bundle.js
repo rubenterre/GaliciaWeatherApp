@@ -12340,12 +12340,6 @@ var app = (function () {
 
   function noop() { }
   const identity = x => x;
-  function assign(tar, src) {
-      // @ts-ignore
-      for (const k in src)
-          tar[k] = src[k];
-      return tar;
-  }
   function add_location(element, file, line, column, char) {
       element.__svelte_meta = {
           loc: { file, line, column, char }
@@ -12383,42 +12377,6 @@ var app = (function () {
   }
   function component_subscribe(component, store, callback) {
       component.$$.on_destroy.push(subscribe(store, callback));
-  }
-  function create_slot(definition, ctx, $$scope, fn) {
-      if (definition) {
-          const slot_ctx = get_slot_context(definition, ctx, $$scope, fn);
-          return definition[0](slot_ctx);
-      }
-  }
-  function get_slot_context(definition, ctx, $$scope, fn) {
-      return definition[1] && fn
-          ? assign($$scope.ctx.slice(), definition[1](fn(ctx)))
-          : $$scope.ctx;
-  }
-  function get_slot_changes(definition, $$scope, dirty, fn) {
-      if (definition[2] && fn) {
-          const lets = definition[2](fn(dirty));
-          if ($$scope.dirty === undefined) {
-              return lets;
-          }
-          if (typeof lets === 'object') {
-              const merged = [];
-              const len = Math.max($$scope.dirty.length, lets.length);
-              for (let i = 0; i < len; i += 1) {
-                  merged[i] = $$scope.dirty[i] | lets[i];
-              }
-              return merged;
-          }
-          return $$scope.dirty | lets;
-      }
-      return $$scope.dirty;
-  }
-  function update_slot(slot, slot_definition, ctx, $$scope, dirty, get_slot_changes_fn, get_slot_context_fn) {
-      const slot_changes = get_slot_changes(slot_definition, $$scope, dirty, get_slot_changes_fn);
-      if (slot_changes) {
-          const slot_context = get_slot_context(slot_definition, ctx, $$scope, get_slot_context_fn);
-          slot.p(slot_context, slot_changes);
-      }
   }
   function action_destroyer(action_result) {
       return action_result && is_function(action_result.destroy) ? action_result.destroy : noop;
@@ -12597,12 +12555,6 @@ var app = (function () {
   function onMount(fn) {
       get_current_component().$$.on_mount.push(fn);
   }
-  function afterUpdate(fn) {
-      get_current_component().$$.after_update.push(fn);
-  }
-  function onDestroy(fn) {
-      get_current_component().$$.on_destroy.push(fn);
-  }
   function createEventDispatcher() {
       const component = get_current_component();
       return (type, detail) => {
@@ -12645,9 +12597,6 @@ var app = (function () {
   }
   function add_render_callback(fn) {
       render_callbacks.push(fn);
-  }
-  function add_flush_callback(fn) {
-      flush_callbacks.push(fn);
   }
   let flushing = false;
   const seen_callbacks = new Set();
@@ -12749,124 +12698,6 @@ var app = (function () {
       }
   }
   const null_transition = { duration: 0 };
-  function create_in_transition(node, fn, params) {
-      let config = fn(node, params);
-      let running = false;
-      let animation_name;
-      let task;
-      let uid = 0;
-      function cleanup() {
-          if (animation_name)
-              delete_rule(node, animation_name);
-      }
-      function go() {
-          const { delay = 0, duration = 300, easing = identity, tick = noop, css } = config || null_transition;
-          if (css)
-              animation_name = create_rule(node, 0, 1, duration, delay, easing, css, uid++);
-          tick(0, 1);
-          const start_time = now() + delay;
-          const end_time = start_time + duration;
-          if (task)
-              task.abort();
-          running = true;
-          add_render_callback(() => dispatch(node, true, 'start'));
-          task = loop(now => {
-              if (running) {
-                  if (now >= end_time) {
-                      tick(1, 0);
-                      dispatch(node, true, 'end');
-                      cleanup();
-                      return running = false;
-                  }
-                  if (now >= start_time) {
-                      const t = easing((now - start_time) / duration);
-                      tick(t, 1 - t);
-                  }
-              }
-              return running;
-          });
-      }
-      let started = false;
-      return {
-          start() {
-              if (started)
-                  return;
-              delete_rule(node);
-              if (is_function(config)) {
-                  config = config();
-                  wait().then(go);
-              }
-              else {
-                  go();
-              }
-          },
-          invalidate() {
-              started = false;
-          },
-          end() {
-              if (running) {
-                  cleanup();
-                  running = false;
-              }
-          }
-      };
-  }
-  function create_out_transition(node, fn, params) {
-      let config = fn(node, params);
-      let running = true;
-      let animation_name;
-      const group = outros;
-      group.r += 1;
-      function go() {
-          const { delay = 0, duration = 300, easing = identity, tick = noop, css } = config || null_transition;
-          if (css)
-              animation_name = create_rule(node, 1, 0, duration, delay, easing, css);
-          const start_time = now() + delay;
-          const end_time = start_time + duration;
-          add_render_callback(() => dispatch(node, false, 'start'));
-          loop(now => {
-              if (running) {
-                  if (now >= end_time) {
-                      tick(0, 1);
-                      dispatch(node, false, 'end');
-                      if (!--group.r) {
-                          // this will result in `end()` being called,
-                          // so we don't need to clean up here
-                          run_all(group.c);
-                      }
-                      return false;
-                  }
-                  if (now >= start_time) {
-                      const t = easing((now - start_time) / duration);
-                      tick(1 - t, t);
-                  }
-              }
-              return running;
-          });
-      }
-      if (is_function(config)) {
-          wait().then(() => {
-              // @ts-ignore
-              config = config();
-              go();
-          });
-      }
-      else {
-          go();
-      }
-      return {
-          end(reset) {
-              if (reset && config.tick) {
-                  config.tick(1, 0);
-              }
-              if (running) {
-                  if (animation_name)
-                      delete_rule(node, animation_name);
-                  running = false;
-              }
-          }
-      };
-  }
   function create_bidirectional_transition(node, fn, params, intro) {
       let config = fn(node, params);
       let t = intro ? 0 : 1;
@@ -13066,14 +12897,6 @@ var app = (function () {
               throw new Error(`Cannot have duplicate keys in a keyed each`);
           }
           keys.add(key);
-      }
-  }
-
-  function bind(component, name, callback) {
-      const index = component.$$.props[name];
-      if (index !== undefined) {
-          component.$$.bound[index] = callback;
-          callback(component.$$.ctx[index]);
       }
   }
   function create_component(block) {
@@ -14098,6 +13921,3545 @@ var app = (function () {
   	}
   }
 
+  var TYPE;
+  (function (TYPE) {
+      /**
+       * Raw text
+       */
+      TYPE[TYPE["literal"] = 0] = "literal";
+      /**
+       * Variable w/o any format, e.g `var` in `this is a {var}`
+       */
+      TYPE[TYPE["argument"] = 1] = "argument";
+      /**
+       * Variable w/ number format
+       */
+      TYPE[TYPE["number"] = 2] = "number";
+      /**
+       * Variable w/ date format
+       */
+      TYPE[TYPE["date"] = 3] = "date";
+      /**
+       * Variable w/ time format
+       */
+      TYPE[TYPE["time"] = 4] = "time";
+      /**
+       * Variable w/ select format
+       */
+      TYPE[TYPE["select"] = 5] = "select";
+      /**
+       * Variable w/ plural format
+       */
+      TYPE[TYPE["plural"] = 6] = "plural";
+      /**
+       * Only possible within plural argument.
+       * This is the `#` symbol that will be substituted with the count.
+       */
+      TYPE[TYPE["pound"] = 7] = "pound";
+  })(TYPE || (TYPE = {}));
+  /**
+   * Type Guards
+   */
+  function isLiteralElement(el) {
+      return el.type === TYPE.literal;
+  }
+  function isArgumentElement(el) {
+      return el.type === TYPE.argument;
+  }
+  function isNumberElement(el) {
+      return el.type === TYPE.number;
+  }
+  function isDateElement(el) {
+      return el.type === TYPE.date;
+  }
+  function isTimeElement(el) {
+      return el.type === TYPE.time;
+  }
+  function isSelectElement(el) {
+      return el.type === TYPE.select;
+  }
+  function isPluralElement(el) {
+      return el.type === TYPE.plural;
+  }
+  function isPoundElement(el) {
+      return el.type === TYPE.pound;
+  }
+  function isNumberSkeleton(el) {
+      return !!(el && typeof el === 'object' && el.type === 0 /* number */);
+  }
+  function isDateTimeSkeleton(el) {
+      return !!(el && typeof el === 'object' && el.type === 1 /* dateTime */);
+  }
+
+  // tslint:disable:only-arrow-functions
+  // tslint:disable:object-literal-shorthand
+  // tslint:disable:trailing-comma
+  // tslint:disable:object-literal-sort-keys
+  // tslint:disable:one-variable-per-declaration
+  // tslint:disable:max-line-length
+  // tslint:disable:no-consecutive-blank-lines
+  // tslint:disable:align
+  var __extends = (undefined && undefined.__extends) || (function () {
+      var extendStatics = function (d, b) {
+          extendStatics = Object.setPrototypeOf ||
+              ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+              function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+          return extendStatics(d, b);
+      };
+      return function (d, b) {
+          extendStatics(d, b);
+          function __() { this.constructor = d; }
+          d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+      };
+  })();
+  var __assign = (undefined && undefined.__assign) || function () {
+      __assign = Object.assign || function(t) {
+          for (var s, i = 1, n = arguments.length; i < n; i++) {
+              s = arguments[i];
+              for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                  t[p] = s[p];
+          }
+          return t;
+      };
+      return __assign.apply(this, arguments);
+  };
+  var SyntaxError = /** @class */ (function (_super) {
+      __extends(SyntaxError, _super);
+      function SyntaxError(message, expected, found, location) {
+          var _this = _super.call(this) || this;
+          _this.message = message;
+          _this.expected = expected;
+          _this.found = found;
+          _this.location = location;
+          _this.name = "SyntaxError";
+          if (typeof Error.captureStackTrace === "function") {
+              Error.captureStackTrace(_this, SyntaxError);
+          }
+          return _this;
+      }
+      SyntaxError.buildMessage = function (expected, found) {
+          function hex(ch) {
+              return ch.charCodeAt(0).toString(16).toUpperCase();
+          }
+          function literalEscape(s) {
+              return s
+                  .replace(/\\/g, "\\\\")
+                  .replace(/"/g, "\\\"")
+                  .replace(/\0/g, "\\0")
+                  .replace(/\t/g, "\\t")
+                  .replace(/\n/g, "\\n")
+                  .replace(/\r/g, "\\r")
+                  .replace(/[\x00-\x0F]/g, function (ch) { return "\\x0" + hex(ch); })
+                  .replace(/[\x10-\x1F\x7F-\x9F]/g, function (ch) { return "\\x" + hex(ch); });
+          }
+          function classEscape(s) {
+              return s
+                  .replace(/\\/g, "\\\\")
+                  .replace(/\]/g, "\\]")
+                  .replace(/\^/g, "\\^")
+                  .replace(/-/g, "\\-")
+                  .replace(/\0/g, "\\0")
+                  .replace(/\t/g, "\\t")
+                  .replace(/\n/g, "\\n")
+                  .replace(/\r/g, "\\r")
+                  .replace(/[\x00-\x0F]/g, function (ch) { return "\\x0" + hex(ch); })
+                  .replace(/[\x10-\x1F\x7F-\x9F]/g, function (ch) { return "\\x" + hex(ch); });
+          }
+          function describeExpectation(expectation) {
+              switch (expectation.type) {
+                  case "literal":
+                      return "\"" + literalEscape(expectation.text) + "\"";
+                  case "class":
+                      var escapedParts = expectation.parts.map(function (part) {
+                          return Array.isArray(part)
+                              ? classEscape(part[0]) + "-" + classEscape(part[1])
+                              : classEscape(part);
+                      });
+                      return "[" + (expectation.inverted ? "^" : "") + escapedParts + "]";
+                  case "any":
+                      return "any character";
+                  case "end":
+                      return "end of input";
+                  case "other":
+                      return expectation.description;
+              }
+          }
+          function describeExpected(expected1) {
+              var descriptions = expected1.map(describeExpectation);
+              var i;
+              var j;
+              descriptions.sort();
+              if (descriptions.length > 0) {
+                  for (i = 1, j = 1; i < descriptions.length; i++) {
+                      if (descriptions[i - 1] !== descriptions[i]) {
+                          descriptions[j] = descriptions[i];
+                          j++;
+                      }
+                  }
+                  descriptions.length = j;
+              }
+              switch (descriptions.length) {
+                  case 1:
+                      return descriptions[0];
+                  case 2:
+                      return descriptions[0] + " or " + descriptions[1];
+                  default:
+                      return descriptions.slice(0, -1).join(", ")
+                          + ", or "
+                          + descriptions[descriptions.length - 1];
+              }
+          }
+          function describeFound(found1) {
+              return found1 ? "\"" + literalEscape(found1) + "\"" : "end of input";
+          }
+          return "Expected " + describeExpected(expected) + " but " + describeFound(found) + " found.";
+      };
+      return SyntaxError;
+  }(Error));
+  function peg$parse(input, options) {
+      options = options !== undefined ? options : {};
+      var peg$FAILED = {};
+      var peg$startRuleFunctions = { start: peg$parsestart };
+      var peg$startRuleFunction = peg$parsestart;
+      var peg$c0 = function (parts) {
+          return parts.join('');
+      };
+      var peg$c1 = function (messageText) {
+          return __assign({ type: TYPE.literal, value: messageText }, insertLocation());
+      };
+      var peg$c2 = "#";
+      var peg$c3 = peg$literalExpectation("#", false);
+      var peg$c4 = function () {
+          return __assign({ type: TYPE.pound }, insertLocation());
+      };
+      var peg$c5 = peg$otherExpectation("argumentElement");
+      var peg$c6 = "{";
+      var peg$c7 = peg$literalExpectation("{", false);
+      var peg$c8 = "}";
+      var peg$c9 = peg$literalExpectation("}", false);
+      var peg$c10 = function (value) {
+          return __assign({ type: TYPE.argument, value: value }, insertLocation());
+      };
+      var peg$c11 = peg$otherExpectation("numberSkeletonId");
+      var peg$c12 = /^['\/{}]/;
+      var peg$c13 = peg$classExpectation(["'", "/", "{", "}"], false, false);
+      var peg$c14 = peg$anyExpectation();
+      var peg$c15 = peg$otherExpectation("numberSkeletonTokenOption");
+      var peg$c16 = "/";
+      var peg$c17 = peg$literalExpectation("/", false);
+      var peg$c18 = function (option) { return option; };
+      var peg$c19 = peg$otherExpectation("numberSkeletonToken");
+      var peg$c20 = function (stem, options) {
+          return { stem: stem, options: options };
+      };
+      var peg$c21 = function (tokens) {
+          return __assign({ type: 0 /* number */, tokens: tokens }, insertLocation());
+      };
+      var peg$c22 = "::";
+      var peg$c23 = peg$literalExpectation("::", false);
+      var peg$c24 = function (skeleton) { return skeleton; };
+      var peg$c25 = function () { messageCtx.push('numberArgStyle'); return true; };
+      var peg$c26 = function (style) {
+          messageCtx.pop();
+          return style.replace(/\s*$/, '');
+      };
+      var peg$c27 = ",";
+      var peg$c28 = peg$literalExpectation(",", false);
+      var peg$c29 = "number";
+      var peg$c30 = peg$literalExpectation("number", false);
+      var peg$c31 = function (value, type, style) {
+          return __assign({ type: type === 'number' ? TYPE.number : type === 'date' ? TYPE.date : TYPE.time, style: style && style[2], value: value }, insertLocation());
+      };
+      var peg$c32 = "'";
+      var peg$c33 = peg$literalExpectation("'", false);
+      var peg$c34 = /^[^']/;
+      var peg$c35 = peg$classExpectation(["'"], true, false);
+      var peg$c36 = /^[^a-zA-Z'{}]/;
+      var peg$c37 = peg$classExpectation([["a", "z"], ["A", "Z"], "'", "{", "}"], true, false);
+      var peg$c38 = /^[a-zA-Z]/;
+      var peg$c39 = peg$classExpectation([["a", "z"], ["A", "Z"]], false, false);
+      var peg$c40 = function (pattern) {
+          return __assign({ type: 1 /* dateTime */, pattern: pattern }, insertLocation());
+      };
+      var peg$c41 = function () { messageCtx.push('dateOrTimeArgStyle'); return true; };
+      var peg$c42 = "date";
+      var peg$c43 = peg$literalExpectation("date", false);
+      var peg$c44 = "time";
+      var peg$c45 = peg$literalExpectation("time", false);
+      var peg$c46 = "plural";
+      var peg$c47 = peg$literalExpectation("plural", false);
+      var peg$c48 = "selectordinal";
+      var peg$c49 = peg$literalExpectation("selectordinal", false);
+      var peg$c50 = "offset:";
+      var peg$c51 = peg$literalExpectation("offset:", false);
+      var peg$c52 = function (value, pluralType, offset, options) {
+          return __assign({ type: TYPE.plural, pluralType: pluralType === 'plural' ? 'cardinal' : 'ordinal', value: value, offset: offset ? offset[2] : 0, options: options.reduce(function (all, _a) {
+                  var id = _a.id, value = _a.value, optionLocation = _a.location;
+                  if (id in all) {
+                      error("Duplicate option \"" + id + "\" in plural element: \"" + text() + "\"", location());
+                  }
+                  all[id] = {
+                      value: value,
+                      location: optionLocation
+                  };
+                  return all;
+              }, {}) }, insertLocation());
+      };
+      var peg$c53 = "select";
+      var peg$c54 = peg$literalExpectation("select", false);
+      var peg$c55 = function (value, options) {
+          return __assign({ type: TYPE.select, value: value, options: options.reduce(function (all, _a) {
+                  var id = _a.id, value = _a.value, optionLocation = _a.location;
+                  if (id in all) {
+                      error("Duplicate option \"" + id + "\" in select element: \"" + text() + "\"", location());
+                  }
+                  all[id] = {
+                      value: value,
+                      location: optionLocation
+                  };
+                  return all;
+              }, {}) }, insertLocation());
+      };
+      var peg$c56 = "=";
+      var peg$c57 = peg$literalExpectation("=", false);
+      var peg$c58 = function (id) { messageCtx.push('select'); return true; };
+      var peg$c59 = function (id, value) {
+          messageCtx.pop();
+          return __assign({ id: id,
+              value: value }, insertLocation());
+      };
+      var peg$c60 = function (id) { messageCtx.push('plural'); return true; };
+      var peg$c61 = function (id, value) {
+          messageCtx.pop();
+          return __assign({ id: id,
+              value: value }, insertLocation());
+      };
+      var peg$c62 = peg$otherExpectation("whitespace");
+      var peg$c63 = /^[\t-\r \x85\xA0\u1680\u2000-\u200A\u2028\u2029\u202F\u205F\u3000]/;
+      var peg$c64 = peg$classExpectation([["\t", "\r"], " ", "\x85", "\xA0", "\u1680", ["\u2000", "\u200A"], "\u2028", "\u2029", "\u202F", "\u205F", "\u3000"], false, false);
+      var peg$c65 = peg$otherExpectation("syntax pattern");
+      var peg$c66 = /^[!-\/:-@[-\^`{-~\xA1-\xA7\xA9\xAB\xAC\xAE\xB0\xB1\xB6\xBB\xBF\xD7\xF7\u2010-\u2027\u2030-\u203E\u2041-\u2053\u2055-\u205E\u2190-\u245F\u2500-\u2775\u2794-\u2BFF\u2E00-\u2E7F\u3001-\u3003\u3008-\u3020\u3030\uFD3E\uFD3F\uFE45\uFE46]/;
+      var peg$c67 = peg$classExpectation([["!", "/"], [":", "@"], ["[", "^"], "`", ["{", "~"], ["\xA1", "\xA7"], "\xA9", "\xAB", "\xAC", "\xAE", "\xB0", "\xB1", "\xB6", "\xBB", "\xBF", "\xD7", "\xF7", ["\u2010", "\u2027"], ["\u2030", "\u203E"], ["\u2041", "\u2053"], ["\u2055", "\u205E"], ["\u2190", "\u245F"], ["\u2500", "\u2775"], ["\u2794", "\u2BFF"], ["\u2E00", "\u2E7F"], ["\u3001", "\u3003"], ["\u3008", "\u3020"], "\u3030", "\uFD3E", "\uFD3F", "\uFE45", "\uFE46"], false, false);
+      var peg$c68 = peg$otherExpectation("optional whitespace");
+      var peg$c69 = peg$otherExpectation("number");
+      var peg$c70 = "-";
+      var peg$c71 = peg$literalExpectation("-", false);
+      var peg$c72 = function (negative, num) {
+          return num
+              ? negative
+                  ? -num
+                  : num
+              : 0;
+      };
+      var peg$c74 = peg$otherExpectation("double apostrophes");
+      var peg$c75 = "''";
+      var peg$c76 = peg$literalExpectation("''", false);
+      var peg$c77 = function () { return "'"; };
+      var peg$c78 = function (escapedChar, quotedChars) {
+          return escapedChar + quotedChars.replace("''", "'");
+      };
+      var peg$c79 = function (x) {
+          return (x !== '{' &&
+              !(isInPluralOption() && x === '#') &&
+              !(isNestedMessageText() && x === '}'));
+      };
+      var peg$c80 = "\n";
+      var peg$c81 = peg$literalExpectation("\n", false);
+      var peg$c82 = function (x) {
+          return x === '{' || x === '}' || (isInPluralOption() && x === '#');
+      };
+      var peg$c83 = peg$otherExpectation("argNameOrNumber");
+      var peg$c84 = peg$otherExpectation("argNumber");
+      var peg$c85 = "0";
+      var peg$c86 = peg$literalExpectation("0", false);
+      var peg$c87 = function () { return 0; };
+      var peg$c88 = /^[1-9]/;
+      var peg$c89 = peg$classExpectation([["1", "9"]], false, false);
+      var peg$c90 = /^[0-9]/;
+      var peg$c91 = peg$classExpectation([["0", "9"]], false, false);
+      var peg$c92 = function (digits) {
+          return parseInt(digits.join(''), 10);
+      };
+      var peg$c93 = peg$otherExpectation("argName");
+      var peg$currPos = 0;
+      var peg$savedPos = 0;
+      var peg$posDetailsCache = [{ line: 1, column: 1 }];
+      var peg$maxFailPos = 0;
+      var peg$maxFailExpected = [];
+      var peg$silentFails = 0;
+      var peg$result;
+      if (options.startRule !== undefined) {
+          if (!(options.startRule in peg$startRuleFunctions)) {
+              throw new Error("Can't start parsing from rule \"" + options.startRule + "\".");
+          }
+          peg$startRuleFunction = peg$startRuleFunctions[options.startRule];
+      }
+      function text() {
+          return input.substring(peg$savedPos, peg$currPos);
+      }
+      function location() {
+          return peg$computeLocation(peg$savedPos, peg$currPos);
+      }
+      function error(message, location1) {
+          location1 = location1 !== undefined
+              ? location1
+              : peg$computeLocation(peg$savedPos, peg$currPos);
+          throw peg$buildSimpleError(message, location1);
+      }
+      function peg$literalExpectation(text1, ignoreCase) {
+          return { type: "literal", text: text1, ignoreCase: ignoreCase };
+      }
+      function peg$classExpectation(parts, inverted, ignoreCase) {
+          return { type: "class", parts: parts, inverted: inverted, ignoreCase: ignoreCase };
+      }
+      function peg$anyExpectation() {
+          return { type: "any" };
+      }
+      function peg$endExpectation() {
+          return { type: "end" };
+      }
+      function peg$otherExpectation(description) {
+          return { type: "other", description: description };
+      }
+      function peg$computePosDetails(pos) {
+          var details = peg$posDetailsCache[pos];
+          var p;
+          if (details) {
+              return details;
+          }
+          else {
+              p = pos - 1;
+              while (!peg$posDetailsCache[p]) {
+                  p--;
+              }
+              details = peg$posDetailsCache[p];
+              details = {
+                  line: details.line,
+                  column: details.column
+              };
+              while (p < pos) {
+                  if (input.charCodeAt(p) === 10) {
+                      details.line++;
+                      details.column = 1;
+                  }
+                  else {
+                      details.column++;
+                  }
+                  p++;
+              }
+              peg$posDetailsCache[pos] = details;
+              return details;
+          }
+      }
+      function peg$computeLocation(startPos, endPos) {
+          var startPosDetails = peg$computePosDetails(startPos);
+          var endPosDetails = peg$computePosDetails(endPos);
+          return {
+              start: {
+                  offset: startPos,
+                  line: startPosDetails.line,
+                  column: startPosDetails.column
+              },
+              end: {
+                  offset: endPos,
+                  line: endPosDetails.line,
+                  column: endPosDetails.column
+              }
+          };
+      }
+      function peg$fail(expected1) {
+          if (peg$currPos < peg$maxFailPos) {
+              return;
+          }
+          if (peg$currPos > peg$maxFailPos) {
+              peg$maxFailPos = peg$currPos;
+              peg$maxFailExpected = [];
+          }
+          peg$maxFailExpected.push(expected1);
+      }
+      function peg$buildSimpleError(message, location1) {
+          return new SyntaxError(message, [], "", location1);
+      }
+      function peg$buildStructuredError(expected1, found, location1) {
+          return new SyntaxError(SyntaxError.buildMessage(expected1, found), expected1, found, location1);
+      }
+      function peg$parsestart() {
+          var s0;
+          s0 = peg$parsemessage();
+          return s0;
+      }
+      function peg$parsemessage() {
+          var s0, s1;
+          s0 = [];
+          s1 = peg$parsemessageElement();
+          while (s1 !== peg$FAILED) {
+              s0.push(s1);
+              s1 = peg$parsemessageElement();
+          }
+          return s0;
+      }
+      function peg$parsemessageElement() {
+          var s0;
+          s0 = peg$parseliteralElement();
+          if (s0 === peg$FAILED) {
+              s0 = peg$parseargumentElement();
+              if (s0 === peg$FAILED) {
+                  s0 = peg$parsesimpleFormatElement();
+                  if (s0 === peg$FAILED) {
+                      s0 = peg$parsepluralElement();
+                      if (s0 === peg$FAILED) {
+                          s0 = peg$parseselectElement();
+                          if (s0 === peg$FAILED) {
+                              s0 = peg$parsepoundElement();
+                          }
+                      }
+                  }
+              }
+          }
+          return s0;
+      }
+      function peg$parsemessageText() {
+          var s0, s1, s2;
+          s0 = peg$currPos;
+          s1 = [];
+          s2 = peg$parsedoubleApostrophes();
+          if (s2 === peg$FAILED) {
+              s2 = peg$parsequotedString();
+              if (s2 === peg$FAILED) {
+                  s2 = peg$parseunquotedString();
+              }
+          }
+          if (s2 !== peg$FAILED) {
+              while (s2 !== peg$FAILED) {
+                  s1.push(s2);
+                  s2 = peg$parsedoubleApostrophes();
+                  if (s2 === peg$FAILED) {
+                      s2 = peg$parsequotedString();
+                      if (s2 === peg$FAILED) {
+                          s2 = peg$parseunquotedString();
+                      }
+                  }
+              }
+          }
+          else {
+              s1 = peg$FAILED;
+          }
+          if (s1 !== peg$FAILED) {
+              peg$savedPos = s0;
+              s1 = peg$c0(s1);
+          }
+          s0 = s1;
+          return s0;
+      }
+      function peg$parseliteralElement() {
+          var s0, s1;
+          s0 = peg$currPos;
+          s1 = peg$parsemessageText();
+          if (s1 !== peg$FAILED) {
+              peg$savedPos = s0;
+              s1 = peg$c1(s1);
+          }
+          s0 = s1;
+          return s0;
+      }
+      function peg$parsepoundElement() {
+          var s0, s1;
+          s0 = peg$currPos;
+          if (input.charCodeAt(peg$currPos) === 35) {
+              s1 = peg$c2;
+              peg$currPos++;
+          }
+          else {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c3);
+              }
+          }
+          if (s1 !== peg$FAILED) {
+              peg$savedPos = s0;
+              s1 = peg$c4();
+          }
+          s0 = s1;
+          return s0;
+      }
+      function peg$parseargumentElement() {
+          var s0, s1, s2, s3, s4, s5;
+          peg$silentFails++;
+          s0 = peg$currPos;
+          if (input.charCodeAt(peg$currPos) === 123) {
+              s1 = peg$c6;
+              peg$currPos++;
+          }
+          else {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c7);
+              }
+          }
+          if (s1 !== peg$FAILED) {
+              s2 = peg$parse_();
+              if (s2 !== peg$FAILED) {
+                  s3 = peg$parseargNameOrNumber();
+                  if (s3 !== peg$FAILED) {
+                      s4 = peg$parse_();
+                      if (s4 !== peg$FAILED) {
+                          if (input.charCodeAt(peg$currPos) === 125) {
+                              s5 = peg$c8;
+                              peg$currPos++;
+                          }
+                          else {
+                              s5 = peg$FAILED;
+                              if (peg$silentFails === 0) {
+                                  peg$fail(peg$c9);
+                              }
+                          }
+                          if (s5 !== peg$FAILED) {
+                              peg$savedPos = s0;
+                              s1 = peg$c10(s3);
+                              s0 = s1;
+                          }
+                          else {
+                              peg$currPos = s0;
+                              s0 = peg$FAILED;
+                          }
+                      }
+                      else {
+                          peg$currPos = s0;
+                          s0 = peg$FAILED;
+                      }
+                  }
+                  else {
+                      peg$currPos = s0;
+                      s0 = peg$FAILED;
+                  }
+              }
+              else {
+                  peg$currPos = s0;
+                  s0 = peg$FAILED;
+              }
+          }
+          else {
+              peg$currPos = s0;
+              s0 = peg$FAILED;
+          }
+          peg$silentFails--;
+          if (s0 === peg$FAILED) {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c5);
+              }
+          }
+          return s0;
+      }
+      function peg$parsenumberSkeletonId() {
+          var s0, s1, s2, s3, s4;
+          peg$silentFails++;
+          s0 = peg$currPos;
+          s1 = [];
+          s2 = peg$currPos;
+          s3 = peg$currPos;
+          peg$silentFails++;
+          s4 = peg$parsewhiteSpace();
+          if (s4 === peg$FAILED) {
+              if (peg$c12.test(input.charAt(peg$currPos))) {
+                  s4 = input.charAt(peg$currPos);
+                  peg$currPos++;
+              }
+              else {
+                  s4 = peg$FAILED;
+                  if (peg$silentFails === 0) {
+                      peg$fail(peg$c13);
+                  }
+              }
+          }
+          peg$silentFails--;
+          if (s4 === peg$FAILED) {
+              s3 = undefined;
+          }
+          else {
+              peg$currPos = s3;
+              s3 = peg$FAILED;
+          }
+          if (s3 !== peg$FAILED) {
+              if (input.length > peg$currPos) {
+                  s4 = input.charAt(peg$currPos);
+                  peg$currPos++;
+              }
+              else {
+                  s4 = peg$FAILED;
+                  if (peg$silentFails === 0) {
+                      peg$fail(peg$c14);
+                  }
+              }
+              if (s4 !== peg$FAILED) {
+                  s3 = [s3, s4];
+                  s2 = s3;
+              }
+              else {
+                  peg$currPos = s2;
+                  s2 = peg$FAILED;
+              }
+          }
+          else {
+              peg$currPos = s2;
+              s2 = peg$FAILED;
+          }
+          if (s2 !== peg$FAILED) {
+              while (s2 !== peg$FAILED) {
+                  s1.push(s2);
+                  s2 = peg$currPos;
+                  s3 = peg$currPos;
+                  peg$silentFails++;
+                  s4 = peg$parsewhiteSpace();
+                  if (s4 === peg$FAILED) {
+                      if (peg$c12.test(input.charAt(peg$currPos))) {
+                          s4 = input.charAt(peg$currPos);
+                          peg$currPos++;
+                      }
+                      else {
+                          s4 = peg$FAILED;
+                          if (peg$silentFails === 0) {
+                              peg$fail(peg$c13);
+                          }
+                      }
+                  }
+                  peg$silentFails--;
+                  if (s4 === peg$FAILED) {
+                      s3 = undefined;
+                  }
+                  else {
+                      peg$currPos = s3;
+                      s3 = peg$FAILED;
+                  }
+                  if (s3 !== peg$FAILED) {
+                      if (input.length > peg$currPos) {
+                          s4 = input.charAt(peg$currPos);
+                          peg$currPos++;
+                      }
+                      else {
+                          s4 = peg$FAILED;
+                          if (peg$silentFails === 0) {
+                              peg$fail(peg$c14);
+                          }
+                      }
+                      if (s4 !== peg$FAILED) {
+                          s3 = [s3, s4];
+                          s2 = s3;
+                      }
+                      else {
+                          peg$currPos = s2;
+                          s2 = peg$FAILED;
+                      }
+                  }
+                  else {
+                      peg$currPos = s2;
+                      s2 = peg$FAILED;
+                  }
+              }
+          }
+          else {
+              s1 = peg$FAILED;
+          }
+          if (s1 !== peg$FAILED) {
+              s0 = input.substring(s0, peg$currPos);
+          }
+          else {
+              s0 = s1;
+          }
+          peg$silentFails--;
+          if (s0 === peg$FAILED) {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c11);
+              }
+          }
+          return s0;
+      }
+      function peg$parsenumberSkeletonTokenOption() {
+          var s0, s1, s2;
+          peg$silentFails++;
+          s0 = peg$currPos;
+          if (input.charCodeAt(peg$currPos) === 47) {
+              s1 = peg$c16;
+              peg$currPos++;
+          }
+          else {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c17);
+              }
+          }
+          if (s1 !== peg$FAILED) {
+              s2 = peg$parsenumberSkeletonId();
+              if (s2 !== peg$FAILED) {
+                  peg$savedPos = s0;
+                  s1 = peg$c18(s2);
+                  s0 = s1;
+              }
+              else {
+                  peg$currPos = s0;
+                  s0 = peg$FAILED;
+              }
+          }
+          else {
+              peg$currPos = s0;
+              s0 = peg$FAILED;
+          }
+          peg$silentFails--;
+          if (s0 === peg$FAILED) {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c15);
+              }
+          }
+          return s0;
+      }
+      function peg$parsenumberSkeletonToken() {
+          var s0, s1, s2, s3, s4;
+          peg$silentFails++;
+          s0 = peg$currPos;
+          s1 = peg$parse_();
+          if (s1 !== peg$FAILED) {
+              s2 = peg$parsenumberSkeletonId();
+              if (s2 !== peg$FAILED) {
+                  s3 = [];
+                  s4 = peg$parsenumberSkeletonTokenOption();
+                  while (s4 !== peg$FAILED) {
+                      s3.push(s4);
+                      s4 = peg$parsenumberSkeletonTokenOption();
+                  }
+                  if (s3 !== peg$FAILED) {
+                      peg$savedPos = s0;
+                      s1 = peg$c20(s2, s3);
+                      s0 = s1;
+                  }
+                  else {
+                      peg$currPos = s0;
+                      s0 = peg$FAILED;
+                  }
+              }
+              else {
+                  peg$currPos = s0;
+                  s0 = peg$FAILED;
+              }
+          }
+          else {
+              peg$currPos = s0;
+              s0 = peg$FAILED;
+          }
+          peg$silentFails--;
+          if (s0 === peg$FAILED) {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c19);
+              }
+          }
+          return s0;
+      }
+      function peg$parsenumberSkeleton() {
+          var s0, s1, s2;
+          s0 = peg$currPos;
+          s1 = [];
+          s2 = peg$parsenumberSkeletonToken();
+          if (s2 !== peg$FAILED) {
+              while (s2 !== peg$FAILED) {
+                  s1.push(s2);
+                  s2 = peg$parsenumberSkeletonToken();
+              }
+          }
+          else {
+              s1 = peg$FAILED;
+          }
+          if (s1 !== peg$FAILED) {
+              peg$savedPos = s0;
+              s1 = peg$c21(s1);
+          }
+          s0 = s1;
+          return s0;
+      }
+      function peg$parsenumberArgStyle() {
+          var s0, s1, s2;
+          s0 = peg$currPos;
+          if (input.substr(peg$currPos, 2) === peg$c22) {
+              s1 = peg$c22;
+              peg$currPos += 2;
+          }
+          else {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c23);
+              }
+          }
+          if (s1 !== peg$FAILED) {
+              s2 = peg$parsenumberSkeleton();
+              if (s2 !== peg$FAILED) {
+                  peg$savedPos = s0;
+                  s1 = peg$c24(s2);
+                  s0 = s1;
+              }
+              else {
+                  peg$currPos = s0;
+                  s0 = peg$FAILED;
+              }
+          }
+          else {
+              peg$currPos = s0;
+              s0 = peg$FAILED;
+          }
+          if (s0 === peg$FAILED) {
+              s0 = peg$currPos;
+              peg$savedPos = peg$currPos;
+              s1 = peg$c25();
+              if (s1) {
+                  s1 = undefined;
+              }
+              else {
+                  s1 = peg$FAILED;
+              }
+              if (s1 !== peg$FAILED) {
+                  s2 = peg$parsemessageText();
+                  if (s2 !== peg$FAILED) {
+                      peg$savedPos = s0;
+                      s1 = peg$c26(s2);
+                      s0 = s1;
+                  }
+                  else {
+                      peg$currPos = s0;
+                      s0 = peg$FAILED;
+                  }
+              }
+              else {
+                  peg$currPos = s0;
+                  s0 = peg$FAILED;
+              }
+          }
+          return s0;
+      }
+      function peg$parsenumberFormatElement() {
+          var s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12;
+          s0 = peg$currPos;
+          if (input.charCodeAt(peg$currPos) === 123) {
+              s1 = peg$c6;
+              peg$currPos++;
+          }
+          else {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c7);
+              }
+          }
+          if (s1 !== peg$FAILED) {
+              s2 = peg$parse_();
+              if (s2 !== peg$FAILED) {
+                  s3 = peg$parseargNameOrNumber();
+                  if (s3 !== peg$FAILED) {
+                      s4 = peg$parse_();
+                      if (s4 !== peg$FAILED) {
+                          if (input.charCodeAt(peg$currPos) === 44) {
+                              s5 = peg$c27;
+                              peg$currPos++;
+                          }
+                          else {
+                              s5 = peg$FAILED;
+                              if (peg$silentFails === 0) {
+                                  peg$fail(peg$c28);
+                              }
+                          }
+                          if (s5 !== peg$FAILED) {
+                              s6 = peg$parse_();
+                              if (s6 !== peg$FAILED) {
+                                  if (input.substr(peg$currPos, 6) === peg$c29) {
+                                      s7 = peg$c29;
+                                      peg$currPos += 6;
+                                  }
+                                  else {
+                                      s7 = peg$FAILED;
+                                      if (peg$silentFails === 0) {
+                                          peg$fail(peg$c30);
+                                      }
+                                  }
+                                  if (s7 !== peg$FAILED) {
+                                      s8 = peg$parse_();
+                                      if (s8 !== peg$FAILED) {
+                                          s9 = peg$currPos;
+                                          if (input.charCodeAt(peg$currPos) === 44) {
+                                              s10 = peg$c27;
+                                              peg$currPos++;
+                                          }
+                                          else {
+                                              s10 = peg$FAILED;
+                                              if (peg$silentFails === 0) {
+                                                  peg$fail(peg$c28);
+                                              }
+                                          }
+                                          if (s10 !== peg$FAILED) {
+                                              s11 = peg$parse_();
+                                              if (s11 !== peg$FAILED) {
+                                                  s12 = peg$parsenumberArgStyle();
+                                                  if (s12 !== peg$FAILED) {
+                                                      s10 = [s10, s11, s12];
+                                                      s9 = s10;
+                                                  }
+                                                  else {
+                                                      peg$currPos = s9;
+                                                      s9 = peg$FAILED;
+                                                  }
+                                              }
+                                              else {
+                                                  peg$currPos = s9;
+                                                  s9 = peg$FAILED;
+                                              }
+                                          }
+                                          else {
+                                              peg$currPos = s9;
+                                              s9 = peg$FAILED;
+                                          }
+                                          if (s9 === peg$FAILED) {
+                                              s9 = null;
+                                          }
+                                          if (s9 !== peg$FAILED) {
+                                              s10 = peg$parse_();
+                                              if (s10 !== peg$FAILED) {
+                                                  if (input.charCodeAt(peg$currPos) === 125) {
+                                                      s11 = peg$c8;
+                                                      peg$currPos++;
+                                                  }
+                                                  else {
+                                                      s11 = peg$FAILED;
+                                                      if (peg$silentFails === 0) {
+                                                          peg$fail(peg$c9);
+                                                      }
+                                                  }
+                                                  if (s11 !== peg$FAILED) {
+                                                      peg$savedPos = s0;
+                                                      s1 = peg$c31(s3, s7, s9);
+                                                      s0 = s1;
+                                                  }
+                                                  else {
+                                                      peg$currPos = s0;
+                                                      s0 = peg$FAILED;
+                                                  }
+                                              }
+                                              else {
+                                                  peg$currPos = s0;
+                                                  s0 = peg$FAILED;
+                                              }
+                                          }
+                                          else {
+                                              peg$currPos = s0;
+                                              s0 = peg$FAILED;
+                                          }
+                                      }
+                                      else {
+                                          peg$currPos = s0;
+                                          s0 = peg$FAILED;
+                                      }
+                                  }
+                                  else {
+                                      peg$currPos = s0;
+                                      s0 = peg$FAILED;
+                                  }
+                              }
+                              else {
+                                  peg$currPos = s0;
+                                  s0 = peg$FAILED;
+                              }
+                          }
+                          else {
+                              peg$currPos = s0;
+                              s0 = peg$FAILED;
+                          }
+                      }
+                      else {
+                          peg$currPos = s0;
+                          s0 = peg$FAILED;
+                      }
+                  }
+                  else {
+                      peg$currPos = s0;
+                      s0 = peg$FAILED;
+                  }
+              }
+              else {
+                  peg$currPos = s0;
+                  s0 = peg$FAILED;
+              }
+          }
+          else {
+              peg$currPos = s0;
+              s0 = peg$FAILED;
+          }
+          return s0;
+      }
+      function peg$parsedateTimeSkeletonLiteral() {
+          var s0, s1, s2, s3;
+          s0 = peg$currPos;
+          if (input.charCodeAt(peg$currPos) === 39) {
+              s1 = peg$c32;
+              peg$currPos++;
+          }
+          else {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c33);
+              }
+          }
+          if (s1 !== peg$FAILED) {
+              s2 = [];
+              s3 = peg$parsedoubleApostrophes();
+              if (s3 === peg$FAILED) {
+                  if (peg$c34.test(input.charAt(peg$currPos))) {
+                      s3 = input.charAt(peg$currPos);
+                      peg$currPos++;
+                  }
+                  else {
+                      s3 = peg$FAILED;
+                      if (peg$silentFails === 0) {
+                          peg$fail(peg$c35);
+                      }
+                  }
+              }
+              if (s3 !== peg$FAILED) {
+                  while (s3 !== peg$FAILED) {
+                      s2.push(s3);
+                      s3 = peg$parsedoubleApostrophes();
+                      if (s3 === peg$FAILED) {
+                          if (peg$c34.test(input.charAt(peg$currPos))) {
+                              s3 = input.charAt(peg$currPos);
+                              peg$currPos++;
+                          }
+                          else {
+                              s3 = peg$FAILED;
+                              if (peg$silentFails === 0) {
+                                  peg$fail(peg$c35);
+                              }
+                          }
+                      }
+                  }
+              }
+              else {
+                  s2 = peg$FAILED;
+              }
+              if (s2 !== peg$FAILED) {
+                  if (input.charCodeAt(peg$currPos) === 39) {
+                      s3 = peg$c32;
+                      peg$currPos++;
+                  }
+                  else {
+                      s3 = peg$FAILED;
+                      if (peg$silentFails === 0) {
+                          peg$fail(peg$c33);
+                      }
+                  }
+                  if (s3 !== peg$FAILED) {
+                      s1 = [s1, s2, s3];
+                      s0 = s1;
+                  }
+                  else {
+                      peg$currPos = s0;
+                      s0 = peg$FAILED;
+                  }
+              }
+              else {
+                  peg$currPos = s0;
+                  s0 = peg$FAILED;
+              }
+          }
+          else {
+              peg$currPos = s0;
+              s0 = peg$FAILED;
+          }
+          if (s0 === peg$FAILED) {
+              s0 = [];
+              s1 = peg$parsedoubleApostrophes();
+              if (s1 === peg$FAILED) {
+                  if (peg$c36.test(input.charAt(peg$currPos))) {
+                      s1 = input.charAt(peg$currPos);
+                      peg$currPos++;
+                  }
+                  else {
+                      s1 = peg$FAILED;
+                      if (peg$silentFails === 0) {
+                          peg$fail(peg$c37);
+                      }
+                  }
+              }
+              if (s1 !== peg$FAILED) {
+                  while (s1 !== peg$FAILED) {
+                      s0.push(s1);
+                      s1 = peg$parsedoubleApostrophes();
+                      if (s1 === peg$FAILED) {
+                          if (peg$c36.test(input.charAt(peg$currPos))) {
+                              s1 = input.charAt(peg$currPos);
+                              peg$currPos++;
+                          }
+                          else {
+                              s1 = peg$FAILED;
+                              if (peg$silentFails === 0) {
+                                  peg$fail(peg$c37);
+                              }
+                          }
+                      }
+                  }
+              }
+              else {
+                  s0 = peg$FAILED;
+              }
+          }
+          return s0;
+      }
+      function peg$parsedateTimeSkeletonPattern() {
+          var s0, s1;
+          s0 = [];
+          if (peg$c38.test(input.charAt(peg$currPos))) {
+              s1 = input.charAt(peg$currPos);
+              peg$currPos++;
+          }
+          else {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c39);
+              }
+          }
+          if (s1 !== peg$FAILED) {
+              while (s1 !== peg$FAILED) {
+                  s0.push(s1);
+                  if (peg$c38.test(input.charAt(peg$currPos))) {
+                      s1 = input.charAt(peg$currPos);
+                      peg$currPos++;
+                  }
+                  else {
+                      s1 = peg$FAILED;
+                      if (peg$silentFails === 0) {
+                          peg$fail(peg$c39);
+                      }
+                  }
+              }
+          }
+          else {
+              s0 = peg$FAILED;
+          }
+          return s0;
+      }
+      function peg$parsedateTimeSkeleton() {
+          var s0, s1, s2, s3;
+          s0 = peg$currPos;
+          s1 = peg$currPos;
+          s2 = [];
+          s3 = peg$parsedateTimeSkeletonLiteral();
+          if (s3 === peg$FAILED) {
+              s3 = peg$parsedateTimeSkeletonPattern();
+          }
+          if (s3 !== peg$FAILED) {
+              while (s3 !== peg$FAILED) {
+                  s2.push(s3);
+                  s3 = peg$parsedateTimeSkeletonLiteral();
+                  if (s3 === peg$FAILED) {
+                      s3 = peg$parsedateTimeSkeletonPattern();
+                  }
+              }
+          }
+          else {
+              s2 = peg$FAILED;
+          }
+          if (s2 !== peg$FAILED) {
+              s1 = input.substring(s1, peg$currPos);
+          }
+          else {
+              s1 = s2;
+          }
+          if (s1 !== peg$FAILED) {
+              peg$savedPos = s0;
+              s1 = peg$c40(s1);
+          }
+          s0 = s1;
+          return s0;
+      }
+      function peg$parsedateOrTimeArgStyle() {
+          var s0, s1, s2;
+          s0 = peg$currPos;
+          if (input.substr(peg$currPos, 2) === peg$c22) {
+              s1 = peg$c22;
+              peg$currPos += 2;
+          }
+          else {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c23);
+              }
+          }
+          if (s1 !== peg$FAILED) {
+              s2 = peg$parsedateTimeSkeleton();
+              if (s2 !== peg$FAILED) {
+                  peg$savedPos = s0;
+                  s1 = peg$c24(s2);
+                  s0 = s1;
+              }
+              else {
+                  peg$currPos = s0;
+                  s0 = peg$FAILED;
+              }
+          }
+          else {
+              peg$currPos = s0;
+              s0 = peg$FAILED;
+          }
+          if (s0 === peg$FAILED) {
+              s0 = peg$currPos;
+              peg$savedPos = peg$currPos;
+              s1 = peg$c41();
+              if (s1) {
+                  s1 = undefined;
+              }
+              else {
+                  s1 = peg$FAILED;
+              }
+              if (s1 !== peg$FAILED) {
+                  s2 = peg$parsemessageText();
+                  if (s2 !== peg$FAILED) {
+                      peg$savedPos = s0;
+                      s1 = peg$c26(s2);
+                      s0 = s1;
+                  }
+                  else {
+                      peg$currPos = s0;
+                      s0 = peg$FAILED;
+                  }
+              }
+              else {
+                  peg$currPos = s0;
+                  s0 = peg$FAILED;
+              }
+          }
+          return s0;
+      }
+      function peg$parsedateOrTimeFormatElement() {
+          var s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12;
+          s0 = peg$currPos;
+          if (input.charCodeAt(peg$currPos) === 123) {
+              s1 = peg$c6;
+              peg$currPos++;
+          }
+          else {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c7);
+              }
+          }
+          if (s1 !== peg$FAILED) {
+              s2 = peg$parse_();
+              if (s2 !== peg$FAILED) {
+                  s3 = peg$parseargNameOrNumber();
+                  if (s3 !== peg$FAILED) {
+                      s4 = peg$parse_();
+                      if (s4 !== peg$FAILED) {
+                          if (input.charCodeAt(peg$currPos) === 44) {
+                              s5 = peg$c27;
+                              peg$currPos++;
+                          }
+                          else {
+                              s5 = peg$FAILED;
+                              if (peg$silentFails === 0) {
+                                  peg$fail(peg$c28);
+                              }
+                          }
+                          if (s5 !== peg$FAILED) {
+                              s6 = peg$parse_();
+                              if (s6 !== peg$FAILED) {
+                                  if (input.substr(peg$currPos, 4) === peg$c42) {
+                                      s7 = peg$c42;
+                                      peg$currPos += 4;
+                                  }
+                                  else {
+                                      s7 = peg$FAILED;
+                                      if (peg$silentFails === 0) {
+                                          peg$fail(peg$c43);
+                                      }
+                                  }
+                                  if (s7 === peg$FAILED) {
+                                      if (input.substr(peg$currPos, 4) === peg$c44) {
+                                          s7 = peg$c44;
+                                          peg$currPos += 4;
+                                      }
+                                      else {
+                                          s7 = peg$FAILED;
+                                          if (peg$silentFails === 0) {
+                                              peg$fail(peg$c45);
+                                          }
+                                      }
+                                  }
+                                  if (s7 !== peg$FAILED) {
+                                      s8 = peg$parse_();
+                                      if (s8 !== peg$FAILED) {
+                                          s9 = peg$currPos;
+                                          if (input.charCodeAt(peg$currPos) === 44) {
+                                              s10 = peg$c27;
+                                              peg$currPos++;
+                                          }
+                                          else {
+                                              s10 = peg$FAILED;
+                                              if (peg$silentFails === 0) {
+                                                  peg$fail(peg$c28);
+                                              }
+                                          }
+                                          if (s10 !== peg$FAILED) {
+                                              s11 = peg$parse_();
+                                              if (s11 !== peg$FAILED) {
+                                                  s12 = peg$parsedateOrTimeArgStyle();
+                                                  if (s12 !== peg$FAILED) {
+                                                      s10 = [s10, s11, s12];
+                                                      s9 = s10;
+                                                  }
+                                                  else {
+                                                      peg$currPos = s9;
+                                                      s9 = peg$FAILED;
+                                                  }
+                                              }
+                                              else {
+                                                  peg$currPos = s9;
+                                                  s9 = peg$FAILED;
+                                              }
+                                          }
+                                          else {
+                                              peg$currPos = s9;
+                                              s9 = peg$FAILED;
+                                          }
+                                          if (s9 === peg$FAILED) {
+                                              s9 = null;
+                                          }
+                                          if (s9 !== peg$FAILED) {
+                                              s10 = peg$parse_();
+                                              if (s10 !== peg$FAILED) {
+                                                  if (input.charCodeAt(peg$currPos) === 125) {
+                                                      s11 = peg$c8;
+                                                      peg$currPos++;
+                                                  }
+                                                  else {
+                                                      s11 = peg$FAILED;
+                                                      if (peg$silentFails === 0) {
+                                                          peg$fail(peg$c9);
+                                                      }
+                                                  }
+                                                  if (s11 !== peg$FAILED) {
+                                                      peg$savedPos = s0;
+                                                      s1 = peg$c31(s3, s7, s9);
+                                                      s0 = s1;
+                                                  }
+                                                  else {
+                                                      peg$currPos = s0;
+                                                      s0 = peg$FAILED;
+                                                  }
+                                              }
+                                              else {
+                                                  peg$currPos = s0;
+                                                  s0 = peg$FAILED;
+                                              }
+                                          }
+                                          else {
+                                              peg$currPos = s0;
+                                              s0 = peg$FAILED;
+                                          }
+                                      }
+                                      else {
+                                          peg$currPos = s0;
+                                          s0 = peg$FAILED;
+                                      }
+                                  }
+                                  else {
+                                      peg$currPos = s0;
+                                      s0 = peg$FAILED;
+                                  }
+                              }
+                              else {
+                                  peg$currPos = s0;
+                                  s0 = peg$FAILED;
+                              }
+                          }
+                          else {
+                              peg$currPos = s0;
+                              s0 = peg$FAILED;
+                          }
+                      }
+                      else {
+                          peg$currPos = s0;
+                          s0 = peg$FAILED;
+                      }
+                  }
+                  else {
+                      peg$currPos = s0;
+                      s0 = peg$FAILED;
+                  }
+              }
+              else {
+                  peg$currPos = s0;
+                  s0 = peg$FAILED;
+              }
+          }
+          else {
+              peg$currPos = s0;
+              s0 = peg$FAILED;
+          }
+          return s0;
+      }
+      function peg$parsesimpleFormatElement() {
+          var s0;
+          s0 = peg$parsenumberFormatElement();
+          if (s0 === peg$FAILED) {
+              s0 = peg$parsedateOrTimeFormatElement();
+          }
+          return s0;
+      }
+      function peg$parsepluralElement() {
+          var s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15;
+          s0 = peg$currPos;
+          if (input.charCodeAt(peg$currPos) === 123) {
+              s1 = peg$c6;
+              peg$currPos++;
+          }
+          else {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c7);
+              }
+          }
+          if (s1 !== peg$FAILED) {
+              s2 = peg$parse_();
+              if (s2 !== peg$FAILED) {
+                  s3 = peg$parseargNameOrNumber();
+                  if (s3 !== peg$FAILED) {
+                      s4 = peg$parse_();
+                      if (s4 !== peg$FAILED) {
+                          if (input.charCodeAt(peg$currPos) === 44) {
+                              s5 = peg$c27;
+                              peg$currPos++;
+                          }
+                          else {
+                              s5 = peg$FAILED;
+                              if (peg$silentFails === 0) {
+                                  peg$fail(peg$c28);
+                              }
+                          }
+                          if (s5 !== peg$FAILED) {
+                              s6 = peg$parse_();
+                              if (s6 !== peg$FAILED) {
+                                  if (input.substr(peg$currPos, 6) === peg$c46) {
+                                      s7 = peg$c46;
+                                      peg$currPos += 6;
+                                  }
+                                  else {
+                                      s7 = peg$FAILED;
+                                      if (peg$silentFails === 0) {
+                                          peg$fail(peg$c47);
+                                      }
+                                  }
+                                  if (s7 === peg$FAILED) {
+                                      if (input.substr(peg$currPos, 13) === peg$c48) {
+                                          s7 = peg$c48;
+                                          peg$currPos += 13;
+                                      }
+                                      else {
+                                          s7 = peg$FAILED;
+                                          if (peg$silentFails === 0) {
+                                              peg$fail(peg$c49);
+                                          }
+                                      }
+                                  }
+                                  if (s7 !== peg$FAILED) {
+                                      s8 = peg$parse_();
+                                      if (s8 !== peg$FAILED) {
+                                          if (input.charCodeAt(peg$currPos) === 44) {
+                                              s9 = peg$c27;
+                                              peg$currPos++;
+                                          }
+                                          else {
+                                              s9 = peg$FAILED;
+                                              if (peg$silentFails === 0) {
+                                                  peg$fail(peg$c28);
+                                              }
+                                          }
+                                          if (s9 !== peg$FAILED) {
+                                              s10 = peg$parse_();
+                                              if (s10 !== peg$FAILED) {
+                                                  s11 = peg$currPos;
+                                                  if (input.substr(peg$currPos, 7) === peg$c50) {
+                                                      s12 = peg$c50;
+                                                      peg$currPos += 7;
+                                                  }
+                                                  else {
+                                                      s12 = peg$FAILED;
+                                                      if (peg$silentFails === 0) {
+                                                          peg$fail(peg$c51);
+                                                      }
+                                                  }
+                                                  if (s12 !== peg$FAILED) {
+                                                      s13 = peg$parse_();
+                                                      if (s13 !== peg$FAILED) {
+                                                          s14 = peg$parsenumber();
+                                                          if (s14 !== peg$FAILED) {
+                                                              s12 = [s12, s13, s14];
+                                                              s11 = s12;
+                                                          }
+                                                          else {
+                                                              peg$currPos = s11;
+                                                              s11 = peg$FAILED;
+                                                          }
+                                                      }
+                                                      else {
+                                                          peg$currPos = s11;
+                                                          s11 = peg$FAILED;
+                                                      }
+                                                  }
+                                                  else {
+                                                      peg$currPos = s11;
+                                                      s11 = peg$FAILED;
+                                                  }
+                                                  if (s11 === peg$FAILED) {
+                                                      s11 = null;
+                                                  }
+                                                  if (s11 !== peg$FAILED) {
+                                                      s12 = peg$parse_();
+                                                      if (s12 !== peg$FAILED) {
+                                                          s13 = [];
+                                                          s14 = peg$parsepluralOption();
+                                                          if (s14 !== peg$FAILED) {
+                                                              while (s14 !== peg$FAILED) {
+                                                                  s13.push(s14);
+                                                                  s14 = peg$parsepluralOption();
+                                                              }
+                                                          }
+                                                          else {
+                                                              s13 = peg$FAILED;
+                                                          }
+                                                          if (s13 !== peg$FAILED) {
+                                                              s14 = peg$parse_();
+                                                              if (s14 !== peg$FAILED) {
+                                                                  if (input.charCodeAt(peg$currPos) === 125) {
+                                                                      s15 = peg$c8;
+                                                                      peg$currPos++;
+                                                                  }
+                                                                  else {
+                                                                      s15 = peg$FAILED;
+                                                                      if (peg$silentFails === 0) {
+                                                                          peg$fail(peg$c9);
+                                                                      }
+                                                                  }
+                                                                  if (s15 !== peg$FAILED) {
+                                                                      peg$savedPos = s0;
+                                                                      s1 = peg$c52(s3, s7, s11, s13);
+                                                                      s0 = s1;
+                                                                  }
+                                                                  else {
+                                                                      peg$currPos = s0;
+                                                                      s0 = peg$FAILED;
+                                                                  }
+                                                              }
+                                                              else {
+                                                                  peg$currPos = s0;
+                                                                  s0 = peg$FAILED;
+                                                              }
+                                                          }
+                                                          else {
+                                                              peg$currPos = s0;
+                                                              s0 = peg$FAILED;
+                                                          }
+                                                      }
+                                                      else {
+                                                          peg$currPos = s0;
+                                                          s0 = peg$FAILED;
+                                                      }
+                                                  }
+                                                  else {
+                                                      peg$currPos = s0;
+                                                      s0 = peg$FAILED;
+                                                  }
+                                              }
+                                              else {
+                                                  peg$currPos = s0;
+                                                  s0 = peg$FAILED;
+                                              }
+                                          }
+                                          else {
+                                              peg$currPos = s0;
+                                              s0 = peg$FAILED;
+                                          }
+                                      }
+                                      else {
+                                          peg$currPos = s0;
+                                          s0 = peg$FAILED;
+                                      }
+                                  }
+                                  else {
+                                      peg$currPos = s0;
+                                      s0 = peg$FAILED;
+                                  }
+                              }
+                              else {
+                                  peg$currPos = s0;
+                                  s0 = peg$FAILED;
+                              }
+                          }
+                          else {
+                              peg$currPos = s0;
+                              s0 = peg$FAILED;
+                          }
+                      }
+                      else {
+                          peg$currPos = s0;
+                          s0 = peg$FAILED;
+                      }
+                  }
+                  else {
+                      peg$currPos = s0;
+                      s0 = peg$FAILED;
+                  }
+              }
+              else {
+                  peg$currPos = s0;
+                  s0 = peg$FAILED;
+              }
+          }
+          else {
+              peg$currPos = s0;
+              s0 = peg$FAILED;
+          }
+          return s0;
+      }
+      function peg$parseselectElement() {
+          var s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13;
+          s0 = peg$currPos;
+          if (input.charCodeAt(peg$currPos) === 123) {
+              s1 = peg$c6;
+              peg$currPos++;
+          }
+          else {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c7);
+              }
+          }
+          if (s1 !== peg$FAILED) {
+              s2 = peg$parse_();
+              if (s2 !== peg$FAILED) {
+                  s3 = peg$parseargNameOrNumber();
+                  if (s3 !== peg$FAILED) {
+                      s4 = peg$parse_();
+                      if (s4 !== peg$FAILED) {
+                          if (input.charCodeAt(peg$currPos) === 44) {
+                              s5 = peg$c27;
+                              peg$currPos++;
+                          }
+                          else {
+                              s5 = peg$FAILED;
+                              if (peg$silentFails === 0) {
+                                  peg$fail(peg$c28);
+                              }
+                          }
+                          if (s5 !== peg$FAILED) {
+                              s6 = peg$parse_();
+                              if (s6 !== peg$FAILED) {
+                                  if (input.substr(peg$currPos, 6) === peg$c53) {
+                                      s7 = peg$c53;
+                                      peg$currPos += 6;
+                                  }
+                                  else {
+                                      s7 = peg$FAILED;
+                                      if (peg$silentFails === 0) {
+                                          peg$fail(peg$c54);
+                                      }
+                                  }
+                                  if (s7 !== peg$FAILED) {
+                                      s8 = peg$parse_();
+                                      if (s8 !== peg$FAILED) {
+                                          if (input.charCodeAt(peg$currPos) === 44) {
+                                              s9 = peg$c27;
+                                              peg$currPos++;
+                                          }
+                                          else {
+                                              s9 = peg$FAILED;
+                                              if (peg$silentFails === 0) {
+                                                  peg$fail(peg$c28);
+                                              }
+                                          }
+                                          if (s9 !== peg$FAILED) {
+                                              s10 = peg$parse_();
+                                              if (s10 !== peg$FAILED) {
+                                                  s11 = [];
+                                                  s12 = peg$parseselectOption();
+                                                  if (s12 !== peg$FAILED) {
+                                                      while (s12 !== peg$FAILED) {
+                                                          s11.push(s12);
+                                                          s12 = peg$parseselectOption();
+                                                      }
+                                                  }
+                                                  else {
+                                                      s11 = peg$FAILED;
+                                                  }
+                                                  if (s11 !== peg$FAILED) {
+                                                      s12 = peg$parse_();
+                                                      if (s12 !== peg$FAILED) {
+                                                          if (input.charCodeAt(peg$currPos) === 125) {
+                                                              s13 = peg$c8;
+                                                              peg$currPos++;
+                                                          }
+                                                          else {
+                                                              s13 = peg$FAILED;
+                                                              if (peg$silentFails === 0) {
+                                                                  peg$fail(peg$c9);
+                                                              }
+                                                          }
+                                                          if (s13 !== peg$FAILED) {
+                                                              peg$savedPos = s0;
+                                                              s1 = peg$c55(s3, s11);
+                                                              s0 = s1;
+                                                          }
+                                                          else {
+                                                              peg$currPos = s0;
+                                                              s0 = peg$FAILED;
+                                                          }
+                                                      }
+                                                      else {
+                                                          peg$currPos = s0;
+                                                          s0 = peg$FAILED;
+                                                      }
+                                                  }
+                                                  else {
+                                                      peg$currPos = s0;
+                                                      s0 = peg$FAILED;
+                                                  }
+                                              }
+                                              else {
+                                                  peg$currPos = s0;
+                                                  s0 = peg$FAILED;
+                                              }
+                                          }
+                                          else {
+                                              peg$currPos = s0;
+                                              s0 = peg$FAILED;
+                                          }
+                                      }
+                                      else {
+                                          peg$currPos = s0;
+                                          s0 = peg$FAILED;
+                                      }
+                                  }
+                                  else {
+                                      peg$currPos = s0;
+                                      s0 = peg$FAILED;
+                                  }
+                              }
+                              else {
+                                  peg$currPos = s0;
+                                  s0 = peg$FAILED;
+                              }
+                          }
+                          else {
+                              peg$currPos = s0;
+                              s0 = peg$FAILED;
+                          }
+                      }
+                      else {
+                          peg$currPos = s0;
+                          s0 = peg$FAILED;
+                      }
+                  }
+                  else {
+                      peg$currPos = s0;
+                      s0 = peg$FAILED;
+                  }
+              }
+              else {
+                  peg$currPos = s0;
+                  s0 = peg$FAILED;
+              }
+          }
+          else {
+              peg$currPos = s0;
+              s0 = peg$FAILED;
+          }
+          return s0;
+      }
+      function peg$parsepluralRuleSelectValue() {
+          var s0, s1, s2, s3;
+          s0 = peg$currPos;
+          s1 = peg$currPos;
+          if (input.charCodeAt(peg$currPos) === 61) {
+              s2 = peg$c56;
+              peg$currPos++;
+          }
+          else {
+              s2 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c57);
+              }
+          }
+          if (s2 !== peg$FAILED) {
+              s3 = peg$parsenumber();
+              if (s3 !== peg$FAILED) {
+                  s2 = [s2, s3];
+                  s1 = s2;
+              }
+              else {
+                  peg$currPos = s1;
+                  s1 = peg$FAILED;
+              }
+          }
+          else {
+              peg$currPos = s1;
+              s1 = peg$FAILED;
+          }
+          if (s1 !== peg$FAILED) {
+              s0 = input.substring(s0, peg$currPos);
+          }
+          else {
+              s0 = s1;
+          }
+          if (s0 === peg$FAILED) {
+              s0 = peg$parseargName();
+          }
+          return s0;
+      }
+      function peg$parseselectOption() {
+          var s0, s1, s2, s3, s4, s5, s6, s7;
+          s0 = peg$currPos;
+          s1 = peg$parse_();
+          if (s1 !== peg$FAILED) {
+              s2 = peg$parseargName();
+              if (s2 !== peg$FAILED) {
+                  s3 = peg$parse_();
+                  if (s3 !== peg$FAILED) {
+                      if (input.charCodeAt(peg$currPos) === 123) {
+                          s4 = peg$c6;
+                          peg$currPos++;
+                      }
+                      else {
+                          s4 = peg$FAILED;
+                          if (peg$silentFails === 0) {
+                              peg$fail(peg$c7);
+                          }
+                      }
+                      if (s4 !== peg$FAILED) {
+                          peg$savedPos = peg$currPos;
+                          s5 = peg$c58();
+                          if (s5) {
+                              s5 = undefined;
+                          }
+                          else {
+                              s5 = peg$FAILED;
+                          }
+                          if (s5 !== peg$FAILED) {
+                              s6 = peg$parsemessage();
+                              if (s6 !== peg$FAILED) {
+                                  if (input.charCodeAt(peg$currPos) === 125) {
+                                      s7 = peg$c8;
+                                      peg$currPos++;
+                                  }
+                                  else {
+                                      s7 = peg$FAILED;
+                                      if (peg$silentFails === 0) {
+                                          peg$fail(peg$c9);
+                                      }
+                                  }
+                                  if (s7 !== peg$FAILED) {
+                                      peg$savedPos = s0;
+                                      s1 = peg$c59(s2, s6);
+                                      s0 = s1;
+                                  }
+                                  else {
+                                      peg$currPos = s0;
+                                      s0 = peg$FAILED;
+                                  }
+                              }
+                              else {
+                                  peg$currPos = s0;
+                                  s0 = peg$FAILED;
+                              }
+                          }
+                          else {
+                              peg$currPos = s0;
+                              s0 = peg$FAILED;
+                          }
+                      }
+                      else {
+                          peg$currPos = s0;
+                          s0 = peg$FAILED;
+                      }
+                  }
+                  else {
+                      peg$currPos = s0;
+                      s0 = peg$FAILED;
+                  }
+              }
+              else {
+                  peg$currPos = s0;
+                  s0 = peg$FAILED;
+              }
+          }
+          else {
+              peg$currPos = s0;
+              s0 = peg$FAILED;
+          }
+          return s0;
+      }
+      function peg$parsepluralOption() {
+          var s0, s1, s2, s3, s4, s5, s6, s7;
+          s0 = peg$currPos;
+          s1 = peg$parse_();
+          if (s1 !== peg$FAILED) {
+              s2 = peg$parsepluralRuleSelectValue();
+              if (s2 !== peg$FAILED) {
+                  s3 = peg$parse_();
+                  if (s3 !== peg$FAILED) {
+                      if (input.charCodeAt(peg$currPos) === 123) {
+                          s4 = peg$c6;
+                          peg$currPos++;
+                      }
+                      else {
+                          s4 = peg$FAILED;
+                          if (peg$silentFails === 0) {
+                              peg$fail(peg$c7);
+                          }
+                      }
+                      if (s4 !== peg$FAILED) {
+                          peg$savedPos = peg$currPos;
+                          s5 = peg$c60();
+                          if (s5) {
+                              s5 = undefined;
+                          }
+                          else {
+                              s5 = peg$FAILED;
+                          }
+                          if (s5 !== peg$FAILED) {
+                              s6 = peg$parsemessage();
+                              if (s6 !== peg$FAILED) {
+                                  if (input.charCodeAt(peg$currPos) === 125) {
+                                      s7 = peg$c8;
+                                      peg$currPos++;
+                                  }
+                                  else {
+                                      s7 = peg$FAILED;
+                                      if (peg$silentFails === 0) {
+                                          peg$fail(peg$c9);
+                                      }
+                                  }
+                                  if (s7 !== peg$FAILED) {
+                                      peg$savedPos = s0;
+                                      s1 = peg$c61(s2, s6);
+                                      s0 = s1;
+                                  }
+                                  else {
+                                      peg$currPos = s0;
+                                      s0 = peg$FAILED;
+                                  }
+                              }
+                              else {
+                                  peg$currPos = s0;
+                                  s0 = peg$FAILED;
+                              }
+                          }
+                          else {
+                              peg$currPos = s0;
+                              s0 = peg$FAILED;
+                          }
+                      }
+                      else {
+                          peg$currPos = s0;
+                          s0 = peg$FAILED;
+                      }
+                  }
+                  else {
+                      peg$currPos = s0;
+                      s0 = peg$FAILED;
+                  }
+              }
+              else {
+                  peg$currPos = s0;
+                  s0 = peg$FAILED;
+              }
+          }
+          else {
+              peg$currPos = s0;
+              s0 = peg$FAILED;
+          }
+          return s0;
+      }
+      function peg$parsewhiteSpace() {
+          var s0;
+          peg$silentFails++;
+          if (peg$c63.test(input.charAt(peg$currPos))) {
+              s0 = input.charAt(peg$currPos);
+              peg$currPos++;
+          }
+          else {
+              s0 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c64);
+              }
+          }
+          peg$silentFails--;
+          if (s0 === peg$FAILED) {
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c62);
+              }
+          }
+          return s0;
+      }
+      function peg$parsepatternSyntax() {
+          var s0;
+          peg$silentFails++;
+          if (peg$c66.test(input.charAt(peg$currPos))) {
+              s0 = input.charAt(peg$currPos);
+              peg$currPos++;
+          }
+          else {
+              s0 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c67);
+              }
+          }
+          peg$silentFails--;
+          if (s0 === peg$FAILED) {
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c65);
+              }
+          }
+          return s0;
+      }
+      function peg$parse_() {
+          var s0, s1, s2;
+          peg$silentFails++;
+          s0 = peg$currPos;
+          s1 = [];
+          s2 = peg$parsewhiteSpace();
+          while (s2 !== peg$FAILED) {
+              s1.push(s2);
+              s2 = peg$parsewhiteSpace();
+          }
+          if (s1 !== peg$FAILED) {
+              s0 = input.substring(s0, peg$currPos);
+          }
+          else {
+              s0 = s1;
+          }
+          peg$silentFails--;
+          if (s0 === peg$FAILED) {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c68);
+              }
+          }
+          return s0;
+      }
+      function peg$parsenumber() {
+          var s0, s1, s2;
+          peg$silentFails++;
+          s0 = peg$currPos;
+          if (input.charCodeAt(peg$currPos) === 45) {
+              s1 = peg$c70;
+              peg$currPos++;
+          }
+          else {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c71);
+              }
+          }
+          if (s1 === peg$FAILED) {
+              s1 = null;
+          }
+          if (s1 !== peg$FAILED) {
+              s2 = peg$parseargNumber();
+              if (s2 !== peg$FAILED) {
+                  peg$savedPos = s0;
+                  s1 = peg$c72(s1, s2);
+                  s0 = s1;
+              }
+              else {
+                  peg$currPos = s0;
+                  s0 = peg$FAILED;
+              }
+          }
+          else {
+              peg$currPos = s0;
+              s0 = peg$FAILED;
+          }
+          peg$silentFails--;
+          if (s0 === peg$FAILED) {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c69);
+              }
+          }
+          return s0;
+      }
+      function peg$parsedoubleApostrophes() {
+          var s0, s1;
+          peg$silentFails++;
+          s0 = peg$currPos;
+          if (input.substr(peg$currPos, 2) === peg$c75) {
+              s1 = peg$c75;
+              peg$currPos += 2;
+          }
+          else {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c76);
+              }
+          }
+          if (s1 !== peg$FAILED) {
+              peg$savedPos = s0;
+              s1 = peg$c77();
+          }
+          s0 = s1;
+          peg$silentFails--;
+          if (s0 === peg$FAILED) {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c74);
+              }
+          }
+          return s0;
+      }
+      function peg$parsequotedString() {
+          var s0, s1, s2, s3, s4, s5;
+          s0 = peg$currPos;
+          if (input.charCodeAt(peg$currPos) === 39) {
+              s1 = peg$c32;
+              peg$currPos++;
+          }
+          else {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c33);
+              }
+          }
+          if (s1 !== peg$FAILED) {
+              s2 = peg$parseescapedChar();
+              if (s2 !== peg$FAILED) {
+                  s3 = peg$currPos;
+                  s4 = [];
+                  if (input.substr(peg$currPos, 2) === peg$c75) {
+                      s5 = peg$c75;
+                      peg$currPos += 2;
+                  }
+                  else {
+                      s5 = peg$FAILED;
+                      if (peg$silentFails === 0) {
+                          peg$fail(peg$c76);
+                      }
+                  }
+                  if (s5 === peg$FAILED) {
+                      if (peg$c34.test(input.charAt(peg$currPos))) {
+                          s5 = input.charAt(peg$currPos);
+                          peg$currPos++;
+                      }
+                      else {
+                          s5 = peg$FAILED;
+                          if (peg$silentFails === 0) {
+                              peg$fail(peg$c35);
+                          }
+                      }
+                  }
+                  while (s5 !== peg$FAILED) {
+                      s4.push(s5);
+                      if (input.substr(peg$currPos, 2) === peg$c75) {
+                          s5 = peg$c75;
+                          peg$currPos += 2;
+                      }
+                      else {
+                          s5 = peg$FAILED;
+                          if (peg$silentFails === 0) {
+                              peg$fail(peg$c76);
+                          }
+                      }
+                      if (s5 === peg$FAILED) {
+                          if (peg$c34.test(input.charAt(peg$currPos))) {
+                              s5 = input.charAt(peg$currPos);
+                              peg$currPos++;
+                          }
+                          else {
+                              s5 = peg$FAILED;
+                              if (peg$silentFails === 0) {
+                                  peg$fail(peg$c35);
+                              }
+                          }
+                      }
+                  }
+                  if (s4 !== peg$FAILED) {
+                      s3 = input.substring(s3, peg$currPos);
+                  }
+                  else {
+                      s3 = s4;
+                  }
+                  if (s3 !== peg$FAILED) {
+                      if (input.charCodeAt(peg$currPos) === 39) {
+                          s4 = peg$c32;
+                          peg$currPos++;
+                      }
+                      else {
+                          s4 = peg$FAILED;
+                          if (peg$silentFails === 0) {
+                              peg$fail(peg$c33);
+                          }
+                      }
+                      if (s4 === peg$FAILED) {
+                          s4 = null;
+                      }
+                      if (s4 !== peg$FAILED) {
+                          peg$savedPos = s0;
+                          s1 = peg$c78(s2, s3);
+                          s0 = s1;
+                      }
+                      else {
+                          peg$currPos = s0;
+                          s0 = peg$FAILED;
+                      }
+                  }
+                  else {
+                      peg$currPos = s0;
+                      s0 = peg$FAILED;
+                  }
+              }
+              else {
+                  peg$currPos = s0;
+                  s0 = peg$FAILED;
+              }
+          }
+          else {
+              peg$currPos = s0;
+              s0 = peg$FAILED;
+          }
+          return s0;
+      }
+      function peg$parseunquotedString() {
+          var s0, s1, s2, s3;
+          s0 = peg$currPos;
+          s1 = peg$currPos;
+          if (input.length > peg$currPos) {
+              s2 = input.charAt(peg$currPos);
+              peg$currPos++;
+          }
+          else {
+              s2 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c14);
+              }
+          }
+          if (s2 !== peg$FAILED) {
+              peg$savedPos = peg$currPos;
+              s3 = peg$c79(s2);
+              if (s3) {
+                  s3 = undefined;
+              }
+              else {
+                  s3 = peg$FAILED;
+              }
+              if (s3 !== peg$FAILED) {
+                  s2 = [s2, s3];
+                  s1 = s2;
+              }
+              else {
+                  peg$currPos = s1;
+                  s1 = peg$FAILED;
+              }
+          }
+          else {
+              peg$currPos = s1;
+              s1 = peg$FAILED;
+          }
+          if (s1 === peg$FAILED) {
+              if (input.charCodeAt(peg$currPos) === 10) {
+                  s1 = peg$c80;
+                  peg$currPos++;
+              }
+              else {
+                  s1 = peg$FAILED;
+                  if (peg$silentFails === 0) {
+                      peg$fail(peg$c81);
+                  }
+              }
+          }
+          if (s1 !== peg$FAILED) {
+              s0 = input.substring(s0, peg$currPos);
+          }
+          else {
+              s0 = s1;
+          }
+          return s0;
+      }
+      function peg$parseescapedChar() {
+          var s0, s1, s2, s3;
+          s0 = peg$currPos;
+          s1 = peg$currPos;
+          if (input.length > peg$currPos) {
+              s2 = input.charAt(peg$currPos);
+              peg$currPos++;
+          }
+          else {
+              s2 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c14);
+              }
+          }
+          if (s2 !== peg$FAILED) {
+              peg$savedPos = peg$currPos;
+              s3 = peg$c82(s2);
+              if (s3) {
+                  s3 = undefined;
+              }
+              else {
+                  s3 = peg$FAILED;
+              }
+              if (s3 !== peg$FAILED) {
+                  s2 = [s2, s3];
+                  s1 = s2;
+              }
+              else {
+                  peg$currPos = s1;
+                  s1 = peg$FAILED;
+              }
+          }
+          else {
+              peg$currPos = s1;
+              s1 = peg$FAILED;
+          }
+          if (s1 !== peg$FAILED) {
+              s0 = input.substring(s0, peg$currPos);
+          }
+          else {
+              s0 = s1;
+          }
+          return s0;
+      }
+      function peg$parseargNameOrNumber() {
+          var s0, s1;
+          peg$silentFails++;
+          s0 = peg$currPos;
+          s1 = peg$parseargNumber();
+          if (s1 === peg$FAILED) {
+              s1 = peg$parseargName();
+          }
+          if (s1 !== peg$FAILED) {
+              s0 = input.substring(s0, peg$currPos);
+          }
+          else {
+              s0 = s1;
+          }
+          peg$silentFails--;
+          if (s0 === peg$FAILED) {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c83);
+              }
+          }
+          return s0;
+      }
+      function peg$parseargNumber() {
+          var s0, s1, s2, s3, s4;
+          peg$silentFails++;
+          s0 = peg$currPos;
+          if (input.charCodeAt(peg$currPos) === 48) {
+              s1 = peg$c85;
+              peg$currPos++;
+          }
+          else {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c86);
+              }
+          }
+          if (s1 !== peg$FAILED) {
+              peg$savedPos = s0;
+              s1 = peg$c87();
+          }
+          s0 = s1;
+          if (s0 === peg$FAILED) {
+              s0 = peg$currPos;
+              s1 = peg$currPos;
+              if (peg$c88.test(input.charAt(peg$currPos))) {
+                  s2 = input.charAt(peg$currPos);
+                  peg$currPos++;
+              }
+              else {
+                  s2 = peg$FAILED;
+                  if (peg$silentFails === 0) {
+                      peg$fail(peg$c89);
+                  }
+              }
+              if (s2 !== peg$FAILED) {
+                  s3 = [];
+                  if (peg$c90.test(input.charAt(peg$currPos))) {
+                      s4 = input.charAt(peg$currPos);
+                      peg$currPos++;
+                  }
+                  else {
+                      s4 = peg$FAILED;
+                      if (peg$silentFails === 0) {
+                          peg$fail(peg$c91);
+                      }
+                  }
+                  while (s4 !== peg$FAILED) {
+                      s3.push(s4);
+                      if (peg$c90.test(input.charAt(peg$currPos))) {
+                          s4 = input.charAt(peg$currPos);
+                          peg$currPos++;
+                      }
+                      else {
+                          s4 = peg$FAILED;
+                          if (peg$silentFails === 0) {
+                              peg$fail(peg$c91);
+                          }
+                      }
+                  }
+                  if (s3 !== peg$FAILED) {
+                      s2 = [s2, s3];
+                      s1 = s2;
+                  }
+                  else {
+                      peg$currPos = s1;
+                      s1 = peg$FAILED;
+                  }
+              }
+              else {
+                  peg$currPos = s1;
+                  s1 = peg$FAILED;
+              }
+              if (s1 !== peg$FAILED) {
+                  peg$savedPos = s0;
+                  s1 = peg$c92(s1);
+              }
+              s0 = s1;
+          }
+          peg$silentFails--;
+          if (s0 === peg$FAILED) {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c84);
+              }
+          }
+          return s0;
+      }
+      function peg$parseargName() {
+          var s0, s1, s2, s3, s4;
+          peg$silentFails++;
+          s0 = peg$currPos;
+          s1 = [];
+          s2 = peg$currPos;
+          s3 = peg$currPos;
+          peg$silentFails++;
+          s4 = peg$parsewhiteSpace();
+          if (s4 === peg$FAILED) {
+              s4 = peg$parsepatternSyntax();
+          }
+          peg$silentFails--;
+          if (s4 === peg$FAILED) {
+              s3 = undefined;
+          }
+          else {
+              peg$currPos = s3;
+              s3 = peg$FAILED;
+          }
+          if (s3 !== peg$FAILED) {
+              if (input.length > peg$currPos) {
+                  s4 = input.charAt(peg$currPos);
+                  peg$currPos++;
+              }
+              else {
+                  s4 = peg$FAILED;
+                  if (peg$silentFails === 0) {
+                      peg$fail(peg$c14);
+                  }
+              }
+              if (s4 !== peg$FAILED) {
+                  s3 = [s3, s4];
+                  s2 = s3;
+              }
+              else {
+                  peg$currPos = s2;
+                  s2 = peg$FAILED;
+              }
+          }
+          else {
+              peg$currPos = s2;
+              s2 = peg$FAILED;
+          }
+          if (s2 !== peg$FAILED) {
+              while (s2 !== peg$FAILED) {
+                  s1.push(s2);
+                  s2 = peg$currPos;
+                  s3 = peg$currPos;
+                  peg$silentFails++;
+                  s4 = peg$parsewhiteSpace();
+                  if (s4 === peg$FAILED) {
+                      s4 = peg$parsepatternSyntax();
+                  }
+                  peg$silentFails--;
+                  if (s4 === peg$FAILED) {
+                      s3 = undefined;
+                  }
+                  else {
+                      peg$currPos = s3;
+                      s3 = peg$FAILED;
+                  }
+                  if (s3 !== peg$FAILED) {
+                      if (input.length > peg$currPos) {
+                          s4 = input.charAt(peg$currPos);
+                          peg$currPos++;
+                      }
+                      else {
+                          s4 = peg$FAILED;
+                          if (peg$silentFails === 0) {
+                              peg$fail(peg$c14);
+                          }
+                      }
+                      if (s4 !== peg$FAILED) {
+                          s3 = [s3, s4];
+                          s2 = s3;
+                      }
+                      else {
+                          peg$currPos = s2;
+                          s2 = peg$FAILED;
+                      }
+                  }
+                  else {
+                      peg$currPos = s2;
+                      s2 = peg$FAILED;
+                  }
+              }
+          }
+          else {
+              s1 = peg$FAILED;
+          }
+          if (s1 !== peg$FAILED) {
+              s0 = input.substring(s0, peg$currPos);
+          }
+          else {
+              s0 = s1;
+          }
+          peg$silentFails--;
+          if (s0 === peg$FAILED) {
+              s1 = peg$FAILED;
+              if (peg$silentFails === 0) {
+                  peg$fail(peg$c93);
+              }
+          }
+          return s0;
+      }
+      var messageCtx = ['root'];
+      function isNestedMessageText() {
+          return messageCtx.length > 1;
+      }
+      function isInPluralOption() {
+          return messageCtx[messageCtx.length - 1] === 'plural';
+      }
+      function insertLocation() {
+          return options && options.captureLocation ? {
+              location: location()
+          } : {};
+      }
+      peg$result = peg$startRuleFunction();
+      if (peg$result !== peg$FAILED && peg$currPos === input.length) {
+          return peg$result;
+      }
+      else {
+          if (peg$result !== peg$FAILED && peg$currPos < input.length) {
+              peg$fail(peg$endExpectation());
+          }
+          throw peg$buildStructuredError(peg$maxFailExpected, peg$maxFailPos < input.length ? input.charAt(peg$maxFailPos) : null, peg$maxFailPos < input.length
+              ? peg$computeLocation(peg$maxFailPos, peg$maxFailPos + 1)
+              : peg$computeLocation(peg$maxFailPos, peg$maxFailPos));
+      }
+  }
+  var pegParse = peg$parse;
+
+  var __spreadArrays = (undefined && undefined.__spreadArrays) || function () {
+      for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+      for (var r = Array(s), k = 0, i = 0; i < il; i++)
+          for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+              r[k] = a[j];
+      return r;
+  };
+  var PLURAL_HASHTAG_REGEX = /(^|[^\\])#/g;
+  /**
+   * Whether to convert `#` in plural rule options
+   * to `{var, number}`
+   * @param el AST Element
+   * @param pluralStack current plural stack
+   */
+  function normalizeHashtagInPlural(els) {
+      els.forEach(function (el) {
+          // If we're encountering a plural el
+          if (!isPluralElement(el) && !isSelectElement(el)) {
+              return;
+          }
+          // Go down the options and search for # in any literal element
+          Object.keys(el.options).forEach(function (id) {
+              var _a;
+              var opt = el.options[id];
+              // If we got a match, we have to split this
+              // and inject a NumberElement in the middle
+              var matchingLiteralElIndex = -1;
+              var literalEl = undefined;
+              for (var i = 0; i < opt.value.length; i++) {
+                  var el_1 = opt.value[i];
+                  if (isLiteralElement(el_1) && PLURAL_HASHTAG_REGEX.test(el_1.value)) {
+                      matchingLiteralElIndex = i;
+                      literalEl = el_1;
+                      break;
+                  }
+              }
+              if (literalEl) {
+                  var newValue = literalEl.value.replace(PLURAL_HASHTAG_REGEX, "$1{" + el.value + ", number}");
+                  var newEls = pegParse(newValue);
+                  (_a = opt.value).splice.apply(_a, __spreadArrays([matchingLiteralElIndex, 1], newEls));
+              }
+              normalizeHashtagInPlural(opt.value);
+          });
+      });
+  }
+
+  var __assign$1 = (undefined && undefined.__assign) || function () {
+      __assign$1 = Object.assign || function(t) {
+          for (var s, i = 1, n = arguments.length; i < n; i++) {
+              s = arguments[i];
+              for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                  t[p] = s[p];
+          }
+          return t;
+      };
+      return __assign$1.apply(this, arguments);
+  };
+  /**
+   * https://unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table
+   * Credit: https://github.com/caridy/intl-datetimeformat-pattern/blob/master/index.js
+   * with some tweaks
+   */
+  var DATE_TIME_REGEX = /(?:[Eec]{1,6}|G{1,5}|[Qq]{1,5}|(?:[yYur]+|U{1,5})|[ML]{1,5}|d{1,2}|D{1,3}|F{1}|[abB]{1,5}|[hkHK]{1,2}|w{1,2}|W{1}|m{1,2}|s{1,2}|[zZOvVxX]{1,4})(?=([^']*'[^']*')*[^']*$)/g;
+  /**
+   * Parse Date time skeleton into Intl.DateTimeFormatOptions
+   * Ref: https://unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table
+   * @public
+   * @param skeleton skeleton string
+   */
+  function parseDateTimeSkeleton(skeleton) {
+      var result = {};
+      skeleton.replace(DATE_TIME_REGEX, function (match) {
+          var len = match.length;
+          switch (match[0]) {
+              // Era
+              case 'G':
+                  result.era = len === 4 ? 'long' : len === 5 ? 'narrow' : 'short';
+                  break;
+              // Year
+              case 'y':
+                  result.year = len === 2 ? '2-digit' : 'numeric';
+                  break;
+              case 'Y':
+              case 'u':
+              case 'U':
+              case 'r':
+                  throw new RangeError('`Y/u/U/r` (year) patterns are not supported, use `y` instead');
+              // Quarter
+              case 'q':
+              case 'Q':
+                  throw new RangeError('`q/Q` (quarter) patterns are not supported');
+              // Month
+              case 'M':
+              case 'L':
+                  result.month = ['numeric', '2-digit', 'short', 'long', 'narrow'][len - 1];
+                  break;
+              // Week
+              case 'w':
+              case 'W':
+                  throw new RangeError('`w/W` (week) patterns are not supported');
+              case 'd':
+                  result.day = ['numeric', '2-digit'][len - 1];
+                  break;
+              case 'D':
+              case 'F':
+              case 'g':
+                  throw new RangeError('`D/F/g` (day) patterns are not supported, use `d` instead');
+              // Weekday
+              case 'E':
+                  result.weekday = len === 4 ? 'short' : len === 5 ? 'narrow' : 'short';
+                  break;
+              case 'e':
+                  if (len < 4) {
+                      throw new RangeError('`e..eee` (weekday) patterns are not supported');
+                  }
+                  result.weekday = ['short', 'long', 'narrow', 'short'][len - 4];
+                  break;
+              case 'c':
+                  if (len < 4) {
+                      throw new RangeError('`c..ccc` (weekday) patterns are not supported');
+                  }
+                  result.weekday = ['short', 'long', 'narrow', 'short'][len - 4];
+                  break;
+              // Period
+              case 'a': // AM, PM
+                  result.hour12 = true;
+                  break;
+              case 'b': // am, pm, noon, midnight
+              case 'B': // flexible day periods
+                  throw new RangeError('`b/B` (period) patterns are not supported, use `a` instead');
+              // Hour
+              case 'h':
+                  result.hourCycle = 'h12';
+                  result.hour = ['numeric', '2-digit'][len - 1];
+                  break;
+              case 'H':
+                  result.hourCycle = 'h23';
+                  result.hour = ['numeric', '2-digit'][len - 1];
+                  break;
+              case 'K':
+                  result.hourCycle = 'h11';
+                  result.hour = ['numeric', '2-digit'][len - 1];
+                  break;
+              case 'k':
+                  result.hourCycle = 'h24';
+                  result.hour = ['numeric', '2-digit'][len - 1];
+                  break;
+              case 'j':
+              case 'J':
+              case 'C':
+                  throw new RangeError('`j/J/C` (hour) patterns are not supported, use `h/H/K/k` instead');
+              // Minute
+              case 'm':
+                  result.minute = ['numeric', '2-digit'][len - 1];
+                  break;
+              // Second
+              case 's':
+                  result.second = ['numeric', '2-digit'][len - 1];
+                  break;
+              case 'S':
+              case 'A':
+                  throw new RangeError('`S/A` (second) pattenrs are not supported, use `s` instead');
+              // Zone
+              case 'z': // 1..3, 4: specific non-location format
+                  result.timeZoneName = len < 4 ? 'short' : 'long';
+                  break;
+              case 'Z': // 1..3, 4, 5: The ISO8601 varios formats
+              case 'O': // 1, 4: miliseconds in day short, long
+              case 'v': // 1, 4: generic non-location format
+              case 'V': // 1, 2, 3, 4: time zone ID or city
+              case 'X': // 1, 2, 3, 4: The ISO8601 varios formats
+              case 'x': // 1, 2, 3, 4: The ISO8601 varios formats
+                  throw new RangeError('`Z/O/v/V/X/x` (timeZone) pattenrs are not supported, use `z` instead');
+          }
+          return '';
+      });
+      return result;
+  }
+  function icuUnitToEcma(unit) {
+      return unit.replace(/^(.*?)-/, '');
+  }
+  var FRACTION_PRECISION_REGEX = /^\.(?:(0+)(\+|#+)?)?$/g;
+  var SIGNIFICANT_PRECISION_REGEX = /^(@+)?(\+|#+)?$/g;
+  function parseSignificantPrecision(str) {
+      var result = {};
+      str.replace(SIGNIFICANT_PRECISION_REGEX, function (_, g1, g2) {
+          // @@@ case
+          if (typeof g2 !== 'string') {
+              result.minimumSignificantDigits = g1.length;
+              result.maximumSignificantDigits = g1.length;
+          }
+          // @@@+ case
+          else if (g2 === '+') {
+              result.minimumSignificantDigits = g1.length;
+          }
+          // .### case
+          else if (g1[0] === '#') {
+              result.maximumSignificantDigits = g1.length;
+          }
+          // .@@## or .@@@ case
+          else {
+              result.minimumSignificantDigits = g1.length;
+              result.maximumSignificantDigits =
+                  g1.length + (typeof g2 === 'string' ? g2.length : 0);
+          }
+          return '';
+      });
+      return result;
+  }
+  function parseSign(str) {
+      switch (str) {
+          case 'sign-auto':
+              return {
+                  signDisplay: 'auto',
+              };
+          case 'sign-accounting':
+              return {
+                  currencySign: 'accounting',
+              };
+          case 'sign-always':
+              return {
+                  signDisplay: 'always',
+              };
+          case 'sign-accounting-always':
+              return {
+                  signDisplay: 'always',
+                  currencySign: 'accounting',
+              };
+          case 'sign-except-zero':
+              return {
+                  signDisplay: 'exceptZero',
+              };
+          case 'sign-accounting-except-zero':
+              return {
+                  signDisplay: 'exceptZero',
+                  currencySign: 'accounting',
+              };
+          case 'sign-never':
+              return {
+                  signDisplay: 'never',
+              };
+      }
+  }
+  function parseNotationOptions(opt) {
+      var result = {};
+      var signOpts = parseSign(opt);
+      if (signOpts) {
+          return signOpts;
+      }
+      return result;
+  }
+  /**
+   * https://github.com/unicode-org/icu/blob/master/docs/userguide/format_parse/numbers/skeletons.md#skeleton-stems-and-options
+   */
+  function convertNumberSkeletonToNumberFormatOptions(tokens) {
+      var result = {};
+      for (var _i = 0, tokens_1 = tokens; _i < tokens_1.length; _i++) {
+          var token = tokens_1[_i];
+          switch (token.stem) {
+              case 'percent':
+                  result.style = 'percent';
+                  continue;
+              case 'currency':
+                  result.style = 'currency';
+                  result.currency = token.options[0];
+                  continue;
+              case 'group-off':
+                  result.useGrouping = false;
+                  continue;
+              case 'precision-integer':
+                  result.maximumFractionDigits = 0;
+                  continue;
+              case 'measure-unit':
+                  result.style = 'unit';
+                  result.unit = icuUnitToEcma(token.options[0]);
+                  continue;
+              case 'compact-short':
+                  result.notation = 'compact';
+                  result.compactDisplay = 'short';
+                  continue;
+              case 'compact-long':
+                  result.notation = 'compact';
+                  result.compactDisplay = 'long';
+                  continue;
+              case 'scientific':
+                  result = __assign$1(__assign$1(__assign$1({}, result), { notation: 'scientific' }), token.options.reduce(function (all, opt) { return (__assign$1(__assign$1({}, all), parseNotationOptions(opt))); }, {}));
+                  continue;
+              case 'engineering':
+                  result = __assign$1(__assign$1(__assign$1({}, result), { notation: 'engineering' }), token.options.reduce(function (all, opt) { return (__assign$1(__assign$1({}, all), parseNotationOptions(opt))); }, {}));
+                  continue;
+              case 'notation-simple':
+                  result.notation = 'standard';
+                  continue;
+              // https://github.com/unicode-org/icu/blob/master/icu4c/source/i18n/unicode/unumberformatter.h
+              case 'unit-width-narrow':
+                  result.currencyDisplay = 'narrowSymbol';
+                  result.unitDisplay = 'narrow';
+                  continue;
+              case 'unit-width-short':
+                  result.currencyDisplay = 'code';
+                  result.unitDisplay = 'short';
+                  continue;
+              case 'unit-width-full-name':
+                  result.currencyDisplay = 'name';
+                  result.unitDisplay = 'long';
+                  continue;
+              case 'unit-width-iso-code':
+                  result.currencyDisplay = 'symbol';
+                  continue;
+          }
+          // Precision
+          // https://github.com/unicode-org/icu/blob/master/docs/userguide/format_parse/numbers/skeletons.md#fraction-precision
+          if (FRACTION_PRECISION_REGEX.test(token.stem)) {
+              if (token.options.length > 1) {
+                  throw new RangeError('Fraction-precision stems only accept a single optional option');
+              }
+              token.stem.replace(FRACTION_PRECISION_REGEX, function (match, g1, g2) {
+                  // precision-integer case
+                  if (match === '.') {
+                      result.maximumFractionDigits = 0;
+                  }
+                  // .000+ case
+                  else if (g2 === '+') {
+                      result.minimumFractionDigits = g2.length;
+                  }
+                  // .### case
+                  else if (g1[0] === '#') {
+                      result.maximumFractionDigits = g1.length;
+                  }
+                  // .00## or .000 case
+                  else {
+                      result.minimumFractionDigits = g1.length;
+                      result.maximumFractionDigits =
+                          g1.length + (typeof g2 === 'string' ? g2.length : 0);
+                  }
+                  return '';
+              });
+              if (token.options.length) {
+                  result = __assign$1(__assign$1({}, result), parseSignificantPrecision(token.options[0]));
+              }
+              continue;
+          }
+          if (SIGNIFICANT_PRECISION_REGEX.test(token.stem)) {
+              result = __assign$1(__assign$1({}, result), parseSignificantPrecision(token.stem));
+              continue;
+          }
+          var signOpts = parseSign(token.stem);
+          if (signOpts) {
+              result = __assign$1(__assign$1({}, result), signOpts);
+          }
+      }
+      return result;
+  }
+
+  function parse(input, opts) {
+      var els = pegParse(input, opts);
+      if (!opts || opts.normalizeHashtagInPlural !== false) {
+          normalizeHashtagInPlural(els);
+      }
+      return els;
+  }
+
+  /*
+  Copyright (c) 2014, Yahoo! Inc. All rights reserved.
+  Copyrights licensed under the New BSD License.
+  See the accompanying LICENSE file for terms.
+  */
+  var __spreadArrays$1 = (undefined && undefined.__spreadArrays) || function () {
+      for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+      for (var r = Array(s), k = 0, i = 0; i < il; i++)
+          for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+              r[k] = a[j];
+      return r;
+  };
+  // -- Utilities ----------------------------------------------------------------
+  function getCacheId(inputs) {
+      return JSON.stringify(inputs.map(function (input) {
+          return input && typeof input === 'object' ? orderedProps(input) : input;
+      }));
+  }
+  function orderedProps(obj) {
+      return Object.keys(obj)
+          .sort()
+          .map(function (k) {
+          var _a;
+          return (_a = {}, _a[k] = obj[k], _a);
+      });
+  }
+  var memoizeFormatConstructor = function (FormatConstructor, cache) {
+      if (cache === void 0) { cache = {}; }
+      return function () {
+          var _a;
+          var args = [];
+          for (var _i = 0; _i < arguments.length; _i++) {
+              args[_i] = arguments[_i];
+          }
+          var cacheId = getCacheId(args);
+          var format = cacheId && cache[cacheId];
+          if (!format) {
+              format = new ((_a = FormatConstructor).bind.apply(_a, __spreadArrays$1([void 0], args)))();
+              if (cacheId) {
+                  cache[cacheId] = format;
+              }
+          }
+          return format;
+      };
+  };
+
+  var __extends$1 = (undefined && undefined.__extends) || (function () {
+      var extendStatics = function (d, b) {
+          extendStatics = Object.setPrototypeOf ||
+              ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+              function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+          return extendStatics(d, b);
+      };
+      return function (d, b) {
+          extendStatics(d, b);
+          function __() { this.constructor = d; }
+          d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+      };
+  })();
+  var __spreadArrays$2 = (undefined && undefined.__spreadArrays) || function () {
+      for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+      for (var r = Array(s), k = 0, i = 0; i < il; i++)
+          for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+              r[k] = a[j];
+      return r;
+  };
+  var FormatError = /** @class */ (function (_super) {
+      __extends$1(FormatError, _super);
+      function FormatError(msg, variableId) {
+          var _this = _super.call(this, msg) || this;
+          _this.variableId = variableId;
+          return _this;
+      }
+      return FormatError;
+  }(Error));
+  function mergeLiteral(parts) {
+      if (parts.length < 2) {
+          return parts;
+      }
+      return parts.reduce(function (all, part) {
+          var lastPart = all[all.length - 1];
+          if (!lastPart ||
+              lastPart.type !== 0 /* literal */ ||
+              part.type !== 0 /* literal */) {
+              all.push(part);
+          }
+          else {
+              lastPart.value += part.value;
+          }
+          return all;
+      }, []);
+  }
+  // TODO(skeleton): add skeleton support
+  function formatToParts(els, locales, formatters, formats, values, currentPluralValue, 
+  // For debugging
+  originalMessage) {
+      // Hot path for straight simple msg translations
+      if (els.length === 1 && isLiteralElement(els[0])) {
+          return [
+              {
+                  type: 0 /* literal */,
+                  value: els[0].value,
+              },
+          ];
+      }
+      var result = [];
+      for (var _i = 0, els_1 = els; _i < els_1.length; _i++) {
+          var el = els_1[_i];
+          // Exit early for string parts.
+          if (isLiteralElement(el)) {
+              result.push({
+                  type: 0 /* literal */,
+                  value: el.value,
+              });
+              continue;
+          }
+          // TODO: should this part be literal type?
+          // Replace `#` in plural rules with the actual numeric value.
+          if (isPoundElement(el)) {
+              if (typeof currentPluralValue === 'number') {
+                  result.push({
+                      type: 0 /* literal */,
+                      value: formatters.getNumberFormat(locales).format(currentPluralValue),
+                  });
+              }
+              continue;
+          }
+          var varName = el.value;
+          // Enforce that all required values are provided by the caller.
+          if (!(values && varName in values)) {
+              throw new FormatError("The intl string context variable \"" + varName + "\" was not provided to the string \"" + originalMessage + "\"");
+          }
+          var value = values[varName];
+          if (isArgumentElement(el)) {
+              if (!value || typeof value === 'string' || typeof value === 'number') {
+                  value =
+                      typeof value === 'string' || typeof value === 'number'
+                          ? String(value)
+                          : '';
+              }
+              result.push({
+                  type: 1 /* argument */,
+                  value: value,
+              });
+              continue;
+          }
+          // Recursively format plural and select parts' option — which can be a
+          // nested pattern structure. The choosing of the option to use is
+          // abstracted-by and delegated-to the part helper object.
+          if (isDateElement(el)) {
+              var style = typeof el.style === 'string' ? formats.date[el.style] : undefined;
+              result.push({
+                  type: 0 /* literal */,
+                  value: formatters
+                      .getDateTimeFormat(locales, style)
+                      .format(value),
+              });
+              continue;
+          }
+          if (isTimeElement(el)) {
+              var style = typeof el.style === 'string'
+                  ? formats.time[el.style]
+                  : isDateTimeSkeleton(el.style)
+                      ? parseDateTimeSkeleton(el.style.pattern)
+                      : undefined;
+              result.push({
+                  type: 0 /* literal */,
+                  value: formatters
+                      .getDateTimeFormat(locales, style)
+                      .format(value),
+              });
+              continue;
+          }
+          if (isNumberElement(el)) {
+              var style = typeof el.style === 'string'
+                  ? formats.number[el.style]
+                  : isNumberSkeleton(el.style)
+                      ? convertNumberSkeletonToNumberFormatOptions(el.style.tokens)
+                      : undefined;
+              result.push({
+                  type: 0 /* literal */,
+                  value: formatters
+                      .getNumberFormat(locales, style)
+                      .format(value),
+              });
+              continue;
+          }
+          if (isSelectElement(el)) {
+              var opt = el.options[value] || el.options.other;
+              if (!opt) {
+                  throw new RangeError("Invalid values for \"" + el.value + "\": \"" + value + "\". Options are \"" + Object.keys(el.options).join('", "') + "\"");
+              }
+              result.push.apply(result, formatToParts(opt.value, locales, formatters, formats, values));
+              continue;
+          }
+          if (isPluralElement(el)) {
+              var opt = el.options["=" + value];
+              if (!opt) {
+                  if (!Intl.PluralRules) {
+                      throw new FormatError("Intl.PluralRules is not available in this environment.\nTry polyfilling it using \"@formatjs/intl-pluralrules\"\n");
+                  }
+                  var rule = formatters
+                      .getPluralRules(locales, { type: el.pluralType })
+                      .select(value - (el.offset || 0));
+                  opt = el.options[rule] || el.options.other;
+              }
+              if (!opt) {
+                  throw new RangeError("Invalid values for \"" + el.value + "\": \"" + value + "\". Options are \"" + Object.keys(el.options).join('", "') + "\"");
+              }
+              result.push.apply(result, formatToParts(opt.value, locales, formatters, formats, values, value - (el.offset || 0)));
+              continue;
+          }
+      }
+      return mergeLiteral(result);
+  }
+  function formatToString(els, locales, formatters, formats, values, 
+  // For debugging
+  originalMessage) {
+      var parts = formatToParts(els, locales, formatters, formats, values, undefined, originalMessage);
+      // Hot path for straight simple msg translations
+      if (parts.length === 1) {
+          return parts[0].value;
+      }
+      return parts.reduce(function (all, part) { return (all += part.value); }, '');
+  }
+  // Singleton
+  var domParser;
+  var TOKEN_DELIMITER = '@@';
+  var TOKEN_REGEX = /@@(\d+_\d+)@@/g;
+  var counter = 0;
+  function generateId() {
+      return Date.now() + "_" + ++counter;
+  }
+  function restoreRichPlaceholderMessage(text, objectParts) {
+      return text
+          .split(TOKEN_REGEX)
+          .filter(Boolean)
+          .map(function (c) { return (objectParts[c] != null ? objectParts[c] : c); })
+          .reduce(function (all, c) {
+          if (!all.length) {
+              all.push(c);
+          }
+          else if (typeof c === 'string' &&
+              typeof all[all.length - 1] === 'string') {
+              all[all.length - 1] += c;
+          }
+          else {
+              all.push(c);
+          }
+          return all;
+      }, []);
+  }
+  /**
+   * Not exhaustive, just for sanity check
+   */
+  var SIMPLE_XML_REGEX = /(<([0-9a-zA-Z-_]*?)>(.*?)<\/([0-9a-zA-Z-_]*?)>)|(<[0-9a-zA-Z-_]*?\/>)/;
+  var TEMPLATE_ID = Date.now() + '@@';
+  var VOID_ELEMENTS = [
+      'area',
+      'base',
+      'br',
+      'col',
+      'embed',
+      'hr',
+      'img',
+      'input',
+      'link',
+      'meta',
+      'param',
+      'source',
+      'track',
+      'wbr',
+  ];
+  function formatHTMLElement(el, objectParts, values) {
+      var tagName = el.tagName;
+      var outerHTML = el.outerHTML, textContent = el.textContent, childNodes = el.childNodes;
+      // Regular text
+      if (!tagName) {
+          return restoreRichPlaceholderMessage(textContent || '', objectParts);
+      }
+      tagName = tagName.toLowerCase();
+      var isVoidElement = ~VOID_ELEMENTS.indexOf(tagName);
+      var formatFnOrValue = values[tagName];
+      if (formatFnOrValue && isVoidElement) {
+          throw new FormatError(tagName + " is a self-closing tag and can not be used, please use another tag name.");
+      }
+      if (!childNodes.length) {
+          return [outerHTML];
+      }
+      var chunks = Array.prototype.slice.call(childNodes).reduce(function (all, child) {
+          return all.concat(formatHTMLElement(child, objectParts, values));
+      }, []);
+      // Legacy HTML
+      if (!formatFnOrValue) {
+          return __spreadArrays$2(["<" + tagName + ">"], chunks, ["</" + tagName + ">"]);
+      }
+      // HTML Tag replacement
+      if (typeof formatFnOrValue === 'function') {
+          return [formatFnOrValue.apply(void 0, chunks)];
+      }
+      return [formatFnOrValue];
+  }
+  function formatHTMLMessage(els, locales, formatters, formats, values, 
+  // For debugging
+  originalMessage) {
+      var parts = formatToParts(els, locales, formatters, formats, values, undefined, originalMessage);
+      var objectParts = {};
+      var formattedMessage = parts.reduce(function (all, part) {
+          if (part.type === 0 /* literal */) {
+              return (all += part.value);
+          }
+          var id = generateId();
+          objectParts[id] = part.value;
+          return (all += "" + TOKEN_DELIMITER + id + TOKEN_DELIMITER);
+      }, '');
+      // Not designed to filter out aggressively
+      if (!SIMPLE_XML_REGEX.test(formattedMessage)) {
+          return restoreRichPlaceholderMessage(formattedMessage, objectParts);
+      }
+      if (!values) {
+          throw new FormatError('Message has placeholders but no values was given');
+      }
+      if (typeof DOMParser === 'undefined') {
+          throw new FormatError('Cannot format XML message without DOMParser');
+      }
+      if (!domParser) {
+          domParser = new DOMParser();
+      }
+      var content = domParser
+          .parseFromString("<formatted-message id=\"" + TEMPLATE_ID + "\">" + formattedMessage + "</formatted-message>", 'text/html')
+          .getElementById(TEMPLATE_ID);
+      if (!content) {
+          throw new FormatError("Malformed HTML message " + formattedMessage);
+      }
+      var tagsToFormat = Object.keys(values).filter(function (varName) { return !!content.getElementsByTagName(varName).length; });
+      // No tags to format
+      if (!tagsToFormat.length) {
+          return restoreRichPlaceholderMessage(formattedMessage, objectParts);
+      }
+      var caseSensitiveTags = tagsToFormat.filter(function (tagName) { return tagName !== tagName.toLowerCase(); });
+      if (caseSensitiveTags.length) {
+          throw new FormatError("HTML tag must be lowercased but the following tags are not: " + caseSensitiveTags.join(', '));
+      }
+      // We're doing this since top node is `<formatted-message/>` which does not have a formatter
+      return Array.prototype.slice
+          .call(content.childNodes)
+          .reduce(function (all, child) { return all.concat(formatHTMLElement(child, objectParts, values)); }, []);
+  }
+
+  /*
+  Copyright (c) 2014, Yahoo! Inc. All rights reserved.
+  Copyrights licensed under the New BSD License.
+  See the accompanying LICENSE file for terms.
+  */
+  var __assign$2 = (undefined && undefined.__assign) || function () {
+      __assign$2 = Object.assign || function(t) {
+          for (var s, i = 1, n = arguments.length; i < n; i++) {
+              s = arguments[i];
+              for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                  t[p] = s[p];
+          }
+          return t;
+      };
+      return __assign$2.apply(this, arguments);
+  };
+  // -- MessageFormat --------------------------------------------------------
+  function mergeConfig(c1, c2) {
+      if (!c2) {
+          return c1;
+      }
+      return __assign$2(__assign$2(__assign$2({}, (c1 || {})), (c2 || {})), Object.keys(c1).reduce(function (all, k) {
+          all[k] = __assign$2(__assign$2({}, c1[k]), (c2[k] || {}));
+          return all;
+      }, {}));
+  }
+  function mergeConfigs(defaultConfig, configs) {
+      if (!configs) {
+          return defaultConfig;
+      }
+      return Object.keys(defaultConfig).reduce(function (all, k) {
+          all[k] = mergeConfig(defaultConfig[k], configs[k]);
+          return all;
+      }, __assign$2({}, defaultConfig));
+  }
+  function createDefaultFormatters(cache) {
+      if (cache === void 0) { cache = {
+          number: {},
+          dateTime: {},
+          pluralRules: {},
+      }; }
+      return {
+          getNumberFormat: memoizeFormatConstructor(Intl.NumberFormat, cache.number),
+          getDateTimeFormat: memoizeFormatConstructor(Intl.DateTimeFormat, cache.dateTime),
+          getPluralRules: memoizeFormatConstructor(Intl.PluralRules, cache.pluralRules),
+      };
+  }
+  var IntlMessageFormat = /** @class */ (function () {
+      function IntlMessageFormat(message, locales, overrideFormats, opts) {
+          var _this = this;
+          if (locales === void 0) { locales = IntlMessageFormat.defaultLocale; }
+          this.formatterCache = {
+              number: {},
+              dateTime: {},
+              pluralRules: {},
+          };
+          this.format = function (values) {
+              return formatToString(_this.ast, _this.locales, _this.formatters, _this.formats, values, _this.message);
+          };
+          this.formatToParts = function (values) {
+              return formatToParts(_this.ast, _this.locales, _this.formatters, _this.formats, values, undefined, _this.message);
+          };
+          this.formatHTMLMessage = function (values) {
+              return formatHTMLMessage(_this.ast, _this.locales, _this.formatters, _this.formats, values, _this.message);
+          };
+          this.resolvedOptions = function () { return ({
+              locale: Intl.NumberFormat.supportedLocalesOf(_this.locales)[0],
+          }); };
+          this.getAst = function () { return _this.ast; };
+          if (typeof message === 'string') {
+              this.message = message;
+              if (!IntlMessageFormat.__parse) {
+                  throw new TypeError('IntlMessageFormat.__parse must be set to process `message` of type `string`');
+              }
+              // Parse string messages into an AST.
+              this.ast = IntlMessageFormat.__parse(message, {
+                  normalizeHashtagInPlural: false,
+              });
+          }
+          else {
+              this.ast = message;
+          }
+          if (!Array.isArray(this.ast)) {
+              throw new TypeError('A message must be provided as a String or AST.');
+          }
+          // Creates a new object with the specified `formats` merged with the default
+          // formats.
+          this.formats = mergeConfigs(IntlMessageFormat.formats, overrideFormats);
+          // Defined first because it's used to build the format pattern.
+          this.locales = locales;
+          this.formatters =
+              (opts && opts.formatters) || createDefaultFormatters(this.formatterCache);
+      }
+      IntlMessageFormat.defaultLocale = new Intl.NumberFormat().resolvedOptions().locale;
+      IntlMessageFormat.__parse = parse;
+      // Default format options used as the prototype of the `formats` provided to the
+      // constructor. These are used when constructing the internal Intl.NumberFormat
+      // and Intl.DateTimeFormat instances.
+      IntlMessageFormat.formats = {
+          number: {
+              currency: {
+                  style: 'currency',
+              },
+              percent: {
+                  style: 'percent',
+              },
+          },
+          date: {
+              short: {
+                  month: 'numeric',
+                  day: 'numeric',
+                  year: '2-digit',
+              },
+              medium: {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+              },
+              long: {
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+              },
+              full: {
+                  weekday: 'long',
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+              },
+          },
+          time: {
+              short: {
+                  hour: 'numeric',
+                  minute: 'numeric',
+              },
+              medium: {
+                  hour: 'numeric',
+                  minute: 'numeric',
+                  second: 'numeric',
+              },
+              long: {
+                  hour: 'numeric',
+                  minute: 'numeric',
+                  second: 'numeric',
+                  timeZoneName: 'short',
+              },
+              full: {
+                  hour: 'numeric',
+                  minute: 'numeric',
+                  second: 'numeric',
+                  timeZoneName: 'short',
+              },
+          },
+      };
+      return IntlMessageFormat;
+  }());
+
+  /*
+  Copyright (c) 2014, Yahoo! Inc. All rights reserved.
+  Copyrights licensed under the New BSD License.
+  See the accompanying LICENSE file for terms.
+  */
+
+  const o=(n,e="")=>{const t={};for(const r in n){const i=e+r;"object"==typeof n[r]?Object.assign(t,o(n[r],i+".")):t[i]=n[r];}return t};let r;const i=writable({});function a(n){return n in r}function l(n,e){if(a(n)){const t=function(n){return r[n]||null}(n);if(e in t)return t[e]}return null}function s(n){return null==n||a(n)?n:s(D(n))}function c(n,...e){const t=e.map(n=>o(n));i.update(e=>(e[n]=Object.assign(e[n]||{},...t),e));}const u=derived([i],([n])=>Object.keys(n));i.subscribe(n=>r=n);const m={};function f(n){return m[n]}function d(n){return I(n).reverse().some(n=>{var e;return null===(e=f(n))||void 0===e?void 0:e.size})}function w(n,e){return Promise.all(e.map(e=>(function(n,e){m[n].delete(e),0===m[n].size&&delete m[n];}(n,e),e().then(n=>n.default||n)))).then(e=>c(n,...e))}const g={};function b(n){if(!d(n))return n in g?g[n]:void 0;const e=function(n){return I(n).reverse().map(n=>{const e=f(n);return [n,e?[...e]:[]]}).filter(([,n])=>n.length>0)}(n);return g[n]=Promise.all(e.map(([n,e])=>w(n,e))).then(()=>{if(d(n))return b(n);delete g[n];}),g[n]}/*! *****************************************************************************
+  Copyright (c) Microsoft Corporation.
+
+  Permission to use, copy, modify, and/or distribute this software for any
+  purpose with or without fee is hereby granted.
+
+  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+  REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+  AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+  INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+  LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+  OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+  PERFORMANCE OF THIS SOFTWARE.
+  ***************************************************************************** */function h(n,e){var t={};for(var o in n)Object.prototype.hasOwnProperty.call(n,o)&&e.indexOf(o)<0&&(t[o]=n[o]);if(null!=n&&"function"==typeof Object.getOwnPropertySymbols){var r=0;for(o=Object.getOwnPropertySymbols(n);r<o.length;r++)e.indexOf(o[r])<0&&Object.prototype.propertyIsEnumerable.call(n,o[r])&&(t[o[r]]=n[o[r]]);}return t}const y={fallbackLocale:null,initialLocale:null,loadingDelay:200,formats:{number:{scientific:{notation:"scientific"},engineering:{notation:"engineering"},compactLong:{notation:"compact",compactDisplay:"long"},compactShort:{notation:"compact",compactDisplay:"short"}},date:{short:{month:"numeric",day:"numeric",year:"2-digit"},medium:{month:"short",day:"numeric",year:"numeric"},long:{month:"long",day:"numeric",year:"numeric"},full:{weekday:"long",month:"long",day:"numeric",year:"numeric"}},time:{short:{hour:"numeric",minute:"numeric"},medium:{hour:"numeric",minute:"numeric",second:"numeric"},long:{hour:"numeric",minute:"numeric",second:"numeric",timeZoneName:"short"},full:{hour:"numeric",minute:"numeric",second:"numeric",timeZoneName:"short"}}},warnOnMissingMessages:!0};function O(){return y}const j=writable(!1);let L;const k=writable(null);function x(n,e){return 0===e.indexOf(n)&&n!==e}function E(n,e){return n===e||x(n,e)||x(e,n)}function D(n){const e=n.lastIndexOf("-");if(e>0)return n.slice(0,e);const{fallbackLocale:t}=O();return t&&!E(n,t)?t:null}function I(n){const e=n.split("-").map((n,e,t)=>t.slice(0,e+1).join("-")),{fallbackLocale:t}=O();return t&&!E(n,t)?e.concat(I(t)):e}function N(){return L}k.subscribe(n=>{L=n,"undefined"!=typeof window&&document.documentElement.setAttribute("lang",n);});const P=k.set;k.set=n=>{if(s(n)&&d(n)){const{loadingDelay:e}=O();let t;return "undefined"!=typeof window&&null!=N()&&e?t=window.setTimeout(()=>j.set(!0),e):j.set(!0),b(n).then(()=>{P(n);}).finally(()=>{clearTimeout(t),j.set(!1);})}return P(n)},k.update=n=>P(n(L));const Z={},C=(n,e)=>{if(null==e)return null;const t=l(e,n);return t||C(n,D(e))},J=(n,e)=>{if(e in Z&&n in Z[e])return Z[e][n];const t=C(n,e);return t?((n,e,t)=>t?(e in Z||(Z[e]={}),n in Z[e]||(Z[e][n]=t),t):t)(n,e,t):null},U=n=>{const e=Object.create(null);return t=>{const o=JSON.stringify(t);return o in e?e[o]:e[o]=n(t)}},_=(n,e)=>{const{formats:t}=O();if(n in t&&e in t[n])return t[n][e];throw new Error(`[svelte-i18n] Unknown "${e}" ${n} format.`)},q=U(n=>{var{locale:e,format:t}=n,o=h(n,["locale","format"]);if(null==e)throw new Error('[svelte-i18n] A "locale" must be set to format numbers');return t&&(o=_("number",t)),new Intl.NumberFormat(e,o)}),B=U(n=>{var{locale:e,format:t}=n,o=h(n,["locale","format"]);if(null==e)throw new Error('[svelte-i18n] A "locale" must be set to format dates');return t?o=_("date",t):0===Object.keys(o).length&&(o=_("date","short")),new Intl.DateTimeFormat(e,o)}),G=U(n=>{var{locale:e,format:t}=n,o=h(n,["locale","format"]);if(null==e)throw new Error('[svelte-i18n] A "locale" must be set to format time values');return t?o=_("time",t):0===Object.keys(o).length&&(o=_("time","short")),new Intl.DateTimeFormat(e,o)}),H=(n={})=>{var{locale:e=N()}=n,t=h(n,["locale"]);return q(Object.assign({locale:e},t))},K=(n={})=>{var{locale:e=N()}=n,t=h(n,["locale"]);return B(Object.assign({locale:e},t))},Q=(n={})=>{var{locale:e=N()}=n,t=h(n,["locale"]);return G(Object.assign({locale:e},t))},R=U((n,e=N())=>new IntlMessageFormat(n,e,O().formats)),V=(n,e={})=>{"object"==typeof n&&(n=(e=n).id);const{values:t,locale:o=N(),default:r}=e;if(null==o)throw new Error("[svelte-i18n] Cannot format a message without first setting the initial locale.");const i=J(n,o);return i?t?R(i,o).format(t):i:(O().warnOnMissingMessages&&console.warn(`[svelte-i18n] The message "${n}" was not found in "${I(o).join('", "')}".${d(N())?"\n\nNote: there are at least one loader still registered to this locale that wasn't executed.":""}`),r||n)},W=(n,e)=>Q(e).format(n),X=(n,e)=>K(e).format(n),Y=(n,e)=>H(e).format(n),nn=derived([k,i],()=>V),en=derived([k],()=>W),tn=derived([k],()=>X),on=derived([k],()=>Y);
+
   /* src/Componentes/Sidebar.svelte generated by Svelte v3.25.0 */
   const file = "src/Componentes/Sidebar.svelte";
 
@@ -14118,18 +17480,16 @@ var app = (function () {
   	let t5;
   	let li1;
   	let a1;
-  	let link_action;
+  	let t6_value = /*$_*/ ctx[0]("Invite") + "";
+  	let t6;
   	let t7;
   	let li2;
   	let a2;
   	let t9;
   	let li3;
   	let a3;
+  	let link_action;
   	let t11;
-  	let li4;
-  	let a4;
-  	let link_action_1;
-  	let t13;
   	let span1;
   	let mounted;
   	let dispose;
@@ -14153,60 +17513,52 @@ var app = (function () {
   			t5 = space();
   			li1 = element("li");
   			a1 = element("a");
-  			a1.textContent = "Axustes";
+  			t6 = text(t6_value);
   			t7 = space();
   			li2 = element("li");
   			a2 = element("a");
-  			a2.textContent = "Convidar Amigos";
+  			a2.textContent = "Calificar";
   			t9 = space();
   			li3 = element("li");
   			a3 = element("a");
-  			a3.textContent = "Calificar";
+  			a3.textContent = "Información";
   			t11 = space();
-  			li4 = element("li");
-  			a4 = element("a");
-  			a4.textContent = "Información";
-  			t13 = space();
   			span1 = element("span");
   			span1.textContent = "MENU";
   			attr_dev(a0, "href", "javascript:void(0)");
   			attr_dev(a0, "class", "closebtn svelte-h52umx");
-  			add_location(a0, file, 18, 4, 475);
+  			add_location(a0, file, 21, 4, 512);
   			attr_dev(img, "class", "img_siderbar svelte-h52umx");
   			if (img.src !== (img_src_value = "images/GaliciaWeather.gif")) attr_dev(img, "src", img_src_value);
   			attr_dev(img, "width", "50%");
-  			add_location(img, file, 25, 20, 706);
+  			add_location(img, file, 28, 20, 743);
   			attr_dev(span0, "class", "logoTEXT_siderbar svelte-h52umx");
-  			add_location(span0, file, 26, 62, 839);
+  			add_location(span0, file, 29, 62, 876);
   			attr_dev(p, "class", "logoTIT_siderbar svelte-h52umx");
-  			add_location(p, file, 26, 20, 797);
+  			add_location(p, file, 29, 20, 834);
   			attr_dev(div0, "class", "user-view svelte-h52umx");
-  			add_location(div0, file, 24, 16, 662);
-  			add_location(li0, file, 23, 12, 641);
-  			attr_dev(a1, "href", "/Axustes");
+  			add_location(div0, file, 27, 16, 699);
+  			add_location(li0, file, 26, 12, 678);
+  			attr_dev(a1, "href", "#");
   			attr_dev(a1, "class", "svelte-h52umx");
-  			add_location(a1, file, 29, 16, 958);
-  			add_location(li1, file, 29, 12, 954);
+  			add_location(a1, file, 33, 16, 1066);
+  			add_location(li1, file, 33, 12, 1062);
   			attr_dev(a2, "href", "#");
   			attr_dev(a2, "class", "svelte-h52umx");
-  			add_location(a2, file, 30, 16, 1020);
-  			add_location(li2, file, 30, 12, 1016);
-  			attr_dev(a3, "href", "#");
+  			add_location(a2, file, 34, 16, 1118);
+  			add_location(li2, file, 34, 12, 1114);
+  			attr_dev(a3, "href", "/Creditos");
   			attr_dev(a3, "class", "svelte-h52umx");
-  			add_location(a3, file, 31, 16, 1073);
-  			add_location(li3, file, 31, 12, 1069);
-  			attr_dev(a4, "href", "/Creditos");
-  			attr_dev(a4, "class", "svelte-h52umx");
-  			add_location(a4, file, 32, 16, 1121);
-  			add_location(li4, file, 32, 12, 1117);
-  			add_location(ul, file, 22, 8, 624);
+  			add_location(a3, file, 35, 16, 1166);
+  			add_location(li3, file, 35, 12, 1162);
+  			add_location(ul, file, 25, 8, 661);
   			attr_dev(div1, "class", "overlay-content svelte-h52umx");
-  			add_location(div1, file, 21, 4, 586);
+  			add_location(div1, file, 24, 4, 623);
   			attr_dev(div2, "id", "menuLateral");
   			attr_dev(div2, "class", "overlay svelte-h52umx");
-  			add_location(div2, file, 15, 0, 379);
+  			add_location(div2, file, 18, 0, 416);
   			attr_dev(span1, "class", "sidenav-trigger svelte-h52umx");
-  			add_location(span1, file, 41, 2, 1285);
+  			add_location(span1, file, 44, 2, 1330);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -14227,35 +17579,34 @@ var app = (function () {
   			append_dev(ul, t5);
   			append_dev(ul, li1);
   			append_dev(li1, a1);
+  			append_dev(a1, t6);
   			append_dev(ul, t7);
   			append_dev(ul, li2);
   			append_dev(li2, a2);
   			append_dev(ul, t9);
   			append_dev(ul, li3);
   			append_dev(li3, a3);
-  			append_dev(ul, t11);
-  			append_dev(ul, li4);
-  			append_dev(li4, a4);
-  			insert_dev(target, t13, anchor);
+  			insert_dev(target, t11, anchor);
   			insert_dev(target, span1, anchor);
 
   			if (!mounted) {
   				dispose = [
-  					listen_dev(a0, "click", /*close*/ ctx[1], false, false, false),
-  					action_destroyer(link_action = link.call(null, a1)),
-  					action_destroyer(link_action_1 = link.call(null, a4)),
-  					listen_dev(span1, "click", /*open*/ ctx[0], false, false, false)
+  					listen_dev(a0, "click", /*close*/ ctx[2], false, false, false),
+  					action_destroyer(link_action = link.call(null, a3)),
+  					listen_dev(span1, "click", /*open*/ ctx[1], false, false, false)
   				];
 
   				mounted = true;
   			}
   		},
-  		p: noop,
+  		p: function update(ctx, [dirty]) {
+  			if (dirty & /*$_*/ 1 && t6_value !== (t6_value = /*$_*/ ctx[0]("Invite") + "")) set_data_dev(t6, t6_value);
+  		},
   		i: noop,
   		o: noop,
   		d: function destroy(detaching) {
   			if (detaching) detach_dev(div2);
-  			if (detaching) detach_dev(t13);
+  			if (detaching) detach_dev(t11);
   			if (detaching) detach_dev(span1);
   			mounted = false;
   			run_all(dispose);
@@ -14274,6 +17625,9 @@ var app = (function () {
   }
 
   function instance$1($$self, $$props, $$invalidate) {
+  	let $_;
+  	validate_store(nn, "_");
+  	component_subscribe($$self, nn, $$value => $$invalidate(0, $_ = $$value));
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("Sidebar", slots, []);
 
@@ -14292,8 +17646,8 @@ var app = (function () {
   		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<Sidebar> was created with unknown prop '${key}'`);
   	});
 
-  	$$self.$capture_state = () => ({ link, open, close });
-  	return [open, close];
+  	$$self.$capture_state = () => ({ link, _: nn, open, close, $_ });
+  	return [$_, open, close];
   }
 
   class Sidebar extends SvelteComponentDev {
@@ -14310,7 +17664,7 @@ var app = (function () {
   	}
   }
 
-  var bind$1 = function bind(fn, thisArg) {
+  var bind = function bind(fn, thisArg) {
     return function wrap() {
       var args = new Array(arguments.length);
       for (var i = 0; i < args.length; i++) {
@@ -14622,7 +17976,7 @@ var app = (function () {
   function extend(a, b, thisArg) {
     forEach(b, function assignValue(val, key) {
       if (thisArg && typeof val === 'function') {
-        a[key] = bind$1(val, thisArg);
+        a[key] = bind(val, thisArg);
       } else {
         a[key] = val;
       }
@@ -15450,7 +18804,7 @@ var app = (function () {
    * @param {Object} config2
    * @returns {Object} New object resulting from merging config2 to config1
    */
-  var mergeConfig = function mergeConfig(config1, config2) {
+  var mergeConfig$1 = function mergeConfig(config1, config2) {
     // eslint-disable-next-line no-param-reassign
     config2 = config2 || {};
     var config = {};
@@ -15554,7 +18908,7 @@ var app = (function () {
       config = config || {};
     }
 
-    config = mergeConfig(this.defaults, config);
+    config = mergeConfig$1(this.defaults, config);
 
     // Set config.method
     if (config.method) {
@@ -15585,7 +18939,7 @@ var app = (function () {
   };
 
   Axios.prototype.getUri = function getUri(config) {
-    config = mergeConfig(this.defaults, config);
+    config = mergeConfig$1(this.defaults, config);
     return buildURL(config.url, config.params, config.paramsSerializer).replace(/^\?/, '');
   };
 
@@ -15593,7 +18947,7 @@ var app = (function () {
   utils.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData(method) {
     /*eslint func-names:0*/
     Axios.prototype[method] = function(url, config) {
-      return this.request(mergeConfig(config || {}, {
+      return this.request(mergeConfig$1(config || {}, {
         method: method,
         url: url
       }));
@@ -15603,7 +18957,7 @@ var app = (function () {
   utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
     /*eslint func-names:0*/
     Axios.prototype[method] = function(url, data, config) {
-      return this.request(mergeConfig(config || {}, {
+      return this.request(mergeConfig$1(config || {}, {
         method: method,
         url: url,
         data: data
@@ -15719,7 +19073,7 @@ var app = (function () {
    */
   function createInstance(defaultConfig) {
     var context = new Axios_1(defaultConfig);
-    var instance = bind$1(Axios_1.prototype.request, context);
+    var instance = bind(Axios_1.prototype.request, context);
 
     // Copy axios.prototype to instance
     utils.extend(instance, Axios_1.prototype, context);
@@ -15738,7 +19092,7 @@ var app = (function () {
 
   // Factory for creating new instances
   axios.create = function create(instanceConfig) {
-    return createInstance(mergeConfig(axios.defaults, instanceConfig));
+    return createInstance(mergeConfig$1(axios.defaults, instanceConfig));
   };
 
   // Expose Cancel & CancelToken
@@ -15969,7 +19323,7 @@ var app = (function () {
   const { console: console_1$1 } = globals;
   const file$2 = "src/Componentes/Panelprincipal.svelte";
 
-  // (355:4) {:else}
+  // (356:4) {:else}
   function create_else_block$1(ctx) {
   	let div;
   	let pulse;
@@ -15984,8 +19338,8 @@ var app = (function () {
   		c: function create() {
   			div = element("div");
   			create_component(pulse.$$.fragment);
-  			attr_dev(div, "class", "loading center svelte-3oizyv");
-  			add_location(div, file$2, 355, 4, 15657);
+  			attr_dev(div, "class", "loading center svelte-1738x1f");
+  			add_location(div, file$2, 356, 4, 15678);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div, anchor);
@@ -16012,14 +19366,14 @@ var app = (function () {
   		block,
   		id: create_else_block$1.name,
   		type: "else",
-  		source: "(355:4) {:else}",
+  		source: "(356:4) {:else}",
   		ctx
   	});
 
   	return block;
   }
 
-  // (335:4) {#if datosPrincipal!==null}
+  // (336:4) {#if datosPrincipal!==null}
   function create_if_block$1(ctx) {
   	let div7;
   	let div6;
@@ -16059,28 +19413,28 @@ var app = (function () {
   			div3 = element("div");
   			p2 = element("p");
   			t5 = text(/*descripcion*/ ctx[2]);
-  			attr_dev(p0, "class", "svelte-3oizyv");
-  			add_location(p0, file$2, 340, 24, 15167);
-  			attr_dev(div0, "class", "col s12 location svelte-3oizyv");
-  			add_location(div0, file$2, 339, 20, 15112);
-  			attr_dev(p1, "class", "svelte-3oizyv");
-  			add_location(p1, file$2, 343, 24, 15299);
-  			attr_dev(div1, "class", "col s12 temperature-value center svelte-3oizyv");
-  			add_location(div1, file$2, 342, 20, 15228);
-  			attr_dev(div2, "class", "weather-container svelte-3oizyv");
-  			add_location(div2, file$2, 338, 16, 15060);
-  			attr_dev(p2, "class", "svelte-3oizyv");
-  			add_location(p2, file$2, 348, 24, 15525);
-  			attr_dev(div3, "class", "col s12 temperature-description center svelte-3oizyv");
-  			add_location(div3, file$2, 347, 20, 15448);
-  			attr_dev(div4, "class", "weather-datos svelte-3oizyv");
-  			add_location(div4, file$2, 346, 16, 15400);
+  			attr_dev(p0, "class", "svelte-1738x1f");
+  			add_location(p0, file$2, 341, 24, 15188);
+  			attr_dev(div0, "class", "col s12 location svelte-1738x1f");
+  			add_location(div0, file$2, 340, 20, 15133);
+  			attr_dev(p1, "class", "svelte-1738x1f");
+  			add_location(p1, file$2, 344, 24, 15320);
+  			attr_dev(div1, "class", "col s12 temperature-value center svelte-1738x1f");
+  			add_location(div1, file$2, 343, 20, 15249);
+  			attr_dev(div2, "class", "weather-container svelte-1738x1f");
+  			add_location(div2, file$2, 339, 16, 15081);
+  			attr_dev(p2, "class", "svelte-1738x1f");
+  			add_location(p2, file$2, 349, 24, 15546);
+  			attr_dev(div3, "class", "col s12 temperature-description center svelte-1738x1f");
+  			add_location(div3, file$2, 348, 20, 15469);
+  			attr_dev(div4, "class", "weather-datos svelte-1738x1f");
+  			add_location(div4, file$2, 347, 16, 15421);
   			attr_dev(div5, "class", "row");
-  			add_location(div5, file$2, 337, 12, 15026);
+  			add_location(div5, file$2, 338, 12, 15047);
   			attr_dev(div6, "class", "container");
-  			add_location(div6, file$2, 336, 8, 14990);
+  			add_location(div6, file$2, 337, 8, 15011);
   			attr_dev(div7, "class", "white-text PanelPrincipal");
-  			add_location(div7, file$2, 335, 4, 14942);
+  			add_location(div7, file$2, 336, 4, 14963);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div7, anchor);
@@ -16117,7 +19471,7 @@ var app = (function () {
   		block,
   		id: create_if_block$1.name,
   		type: "if",
-  		source: "(335:4) {#if datosPrincipal!==null}",
+  		source: "(336:4) {#if datosPrincipal!==null}",
   		ctx
   	});
 
@@ -16145,7 +19499,7 @@ var app = (function () {
   			div = element("div");
   			if_block.c();
   			attr_dev(div, "class", "center");
-  			add_location(div, file$2, 333, 0, 14885);
+  			add_location(div, file$2, 334, 0, 14906);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -18018,6 +21372,8 @@ var app = (function () {
   	let div6;
   	let div1;
   	let p0;
+  	let t0_value = /*$_*/ ctx[41]("tomorrow") + "";
+  	let t0;
   	let t1;
   	let div0;
   	let p1;
@@ -18215,7 +21571,7 @@ var app = (function () {
   			div6 = element("div");
   			div1 = element("div");
   			p0 = element("p");
-  			p0.textContent = "Mañá";
+  			t0 = text(t0_value);
   			t1 = space();
   			div0 = element("div");
   			p1 = element("p");
@@ -18385,170 +21741,170 @@ var app = (function () {
   			p29 = element("p");
   			t87 = text(t87_value);
   			t88 = text("°C");
-  			add_location(p0, file$4, 195, 24, 6849);
-  			add_location(p1, file$4, 198, 28, 6945);
+  			add_location(p0, file$4, 197, 24, 6865);
+  			add_location(p1, file$4, 200, 28, 6973);
   			attr_dev(div0, "class", "tit-mes font-mes svelte-1iezcjf");
-  			add_location(div0, file$4, 197, 24, 6886);
+  			add_location(div0, file$4, 199, 24, 6914);
   			attr_dev(div1, "class", "col s3 tit-diario");
-  			add_location(div1, file$4, 194, 20, 6793);
+  			add_location(div1, file$4, 196, 20, 6809);
   			if (img0.src !== (img0_src_value = "images/icons/" + /*DiconElementManana*/ ctx[2] + ".gif")) attr_dev(img0, "src", img0_src_value);
   			attr_dev(img0, "alt", "");
   			attr_dev(img0, "class", "svelte-1iezcjf");
-  			add_location(img0, file$4, 202, 24, 7159);
+  			add_location(img0, file$4, 204, 24, 7187);
   			attr_dev(div2, "class", "col s2 weather-icon-manana  weather-icon center svelte-1iezcjf");
-  			add_location(div2, file$4, 201, 20, 7073);
+  			add_location(div2, file$4, 203, 20, 7101);
   			attr_dev(span0, "class", "svelte-1iezcjf");
-  			add_location(span0, file$4, 206, 24, 7378);
+  			add_location(span0, file$4, 208, 24, 7406);
   			attr_dev(p2, "class", "descripcionManana descripcion svelte-1iezcjf");
-  			add_location(p2, file$4, 205, 20, 7312);
+  			add_location(p2, file$4, 207, 20, 7340);
   			attr_dev(div3, "class", "col s3 wrapper svelte-1iezcjf");
-  			add_location(div3, file$4, 204, 20, 7263);
-  			add_location(p3, file$4, 210, 24, 7565);
+  			add_location(div3, file$4, 206, 20, 7291);
+  			add_location(p3, file$4, 212, 24, 7593);
   			attr_dev(div4, "class", "col s2 tempmaxD tempmax-manana temp_font svelte-1iezcjf");
-  			add_location(div4, file$4, 209, 20, 7486);
-  			add_location(p4, file$4, 213, 24, 7724);
+  			add_location(div4, file$4, 211, 20, 7514);
+  			add_location(p4, file$4, 215, 24, 7752);
   			attr_dev(div5, "class", "col s2 tempminD tempmin-manana temp_font svelte-1iezcjf");
-  			add_location(div5, file$4, 212, 20, 7645);
+  			add_location(div5, file$4, 214, 20, 7673);
   			attr_dev(div6, "class", "col s12 mas_una prox_dias centrarItems svelte-1iezcjf");
-  			add_location(div6, file$4, 193, 16, 6720);
-  			add_location(p5, file$4, 219, 24, 7953);
-  			add_location(p6, file$4, 221, 28, 8077);
+  			add_location(div6, file$4, 195, 16, 6736);
+  			add_location(p5, file$4, 221, 24, 7981);
+  			add_location(p6, file$4, 223, 28, 8105);
   			attr_dev(div7, "class", "tit-mes_pasado font-mes svelte-1iezcjf");
-  			add_location(div7, file$4, 220, 24, 8011);
+  			add_location(div7, file$4, 222, 24, 8039);
   			attr_dev(div8, "class", "col s3 tit-pasado");
-  			add_location(div8, file$4, 218, 20, 7897);
+  			add_location(div8, file$4, 220, 20, 7925);
   			if (img1.src !== (img1_src_value = "images/icons/" + /*DiconElementPasado*/ ctx[5] + ".gif")) attr_dev(img1, "src", img1_src_value);
   			attr_dev(img1, "alt", "");
   			attr_dev(img1, "class", "svelte-1iezcjf");
-  			add_location(img1, file$4, 225, 24, 8296);
+  			add_location(img1, file$4, 227, 24, 8324);
   			attr_dev(div9, "class", "col s2 weather-icon-pasado weather-icon center svelte-1iezcjf");
-  			add_location(div9, file$4, 224, 20, 8211);
+  			add_location(div9, file$4, 226, 20, 8239);
   			attr_dev(span1, "class", "svelte-1iezcjf");
-  			add_location(span1, file$4, 229, 24, 8519);
+  			add_location(span1, file$4, 231, 24, 8547);
   			attr_dev(p7, "class", "descripcionPasado descripcion svelte-1iezcjf");
-  			add_location(p7, file$4, 228, 24, 8453);
+  			add_location(p7, file$4, 230, 24, 8481);
   			attr_dev(div10, "class", "col s3 wrapper svelte-1iezcjf");
-  			add_location(div10, file$4, 227, 20, 8400);
-  			add_location(p8, file$4, 233, 24, 8709);
+  			add_location(div10, file$4, 229, 20, 8428);
+  			add_location(p8, file$4, 235, 24, 8737);
   			attr_dev(div11, "class", "col s2 tempmaxD tempmax-pasado temp_font svelte-1iezcjf");
-  			add_location(div11, file$4, 232, 20, 8630);
-  			add_location(p9, file$4, 236, 24, 8868);
+  			add_location(div11, file$4, 234, 20, 8658);
+  			add_location(p9, file$4, 238, 24, 8896);
   			attr_dev(div12, "class", "col s2 tempminD tempmin-pasado temp_font svelte-1iezcjf");
-  			add_location(div12, file$4, 235, 20, 8789);
+  			add_location(div12, file$4, 237, 20, 8817);
   			attr_dev(div13, "class", "col s12 mas_dos prox_dias centrarItems svelte-1iezcjf");
-  			add_location(div13, file$4, 217, 16, 7824);
-  			add_location(p10, file$4, 241, 24, 9102);
-  			add_location(p11, file$4, 243, 28, 9225);
+  			add_location(div13, file$4, 219, 16, 7852);
+  			add_location(p10, file$4, 243, 24, 9130);
+  			add_location(p11, file$4, 245, 28, 9253);
   			attr_dev(div14, "class", "tit-mes_en_dos_dias font-mes svelte-1iezcjf");
-  			add_location(div14, file$4, 242, 24, 9154);
+  			add_location(div14, file$4, 244, 24, 9182);
   			attr_dev(div15, "class", "col s3 tit-en_dos_dias");
-  			add_location(div15, file$4, 240, 20, 9041);
+  			add_location(div15, file$4, 242, 20, 9069);
   			if (img2.src !== (img2_src_value = "images/icons/" + /*DiconElementEnDosDias*/ ctx[8] + ".gif")) attr_dev(img2, "src", img2_src_value);
   			attr_dev(img2, "alt", "");
   			attr_dev(img2, "class", "svelte-1iezcjf");
-  			add_location(img2, file$4, 247, 24, 9437);
+  			add_location(img2, file$4, 249, 24, 9465);
   			attr_dev(div16, "class", "col s2 weather-icon-en_dos_dias weather-icon center svelte-1iezcjf");
-  			add_location(div16, file$4, 246, 20, 9347);
+  			add_location(div16, file$4, 248, 20, 9375);
   			attr_dev(span2, "class", "svelte-1iezcjf");
-  			add_location(span2, file$4, 251, 28, 9673);
+  			add_location(span2, file$4, 253, 28, 9701);
   			attr_dev(p12, "class", "descripcion-en_dos_dias descripcion svelte-1iezcjf");
-  			add_location(p12, file$4, 250, 24, 9597);
+  			add_location(p12, file$4, 252, 24, 9625);
   			attr_dev(div17, "class", "col s3 wrapper svelte-1iezcjf");
-  			add_location(div17, file$4, 249, 20, 9544);
-  			add_location(p13, file$4, 256, 24, 9896);
+  			add_location(div17, file$4, 251, 20, 9572);
+  			add_location(p13, file$4, 258, 24, 9924);
   			attr_dev(div18, "class", "col s2 tempmaxD tempmax-en_dos_dias temp_font svelte-1iezcjf");
-  			add_location(div18, file$4, 255, 20, 9812);
-  			add_location(p14, file$4, 259, 24, 10068);
+  			add_location(div18, file$4, 257, 20, 9840);
+  			add_location(p14, file$4, 261, 24, 10096);
   			attr_dev(div19, "class", "col s2 tempminD tempmin-en_dos_dias temp_font svelte-1iezcjf");
-  			add_location(div19, file$4, 258, 20, 9984);
+  			add_location(div19, file$4, 260, 20, 10012);
   			attr_dev(div20, "class", "col s12 mas_tres prox_dias centrarItems svelte-1iezcjf");
-  			add_location(div20, file$4, 239, 16, 8967);
-  			add_location(p15, file$4, 264, 24, 10313);
-  			add_location(p16, file$4, 266, 28, 10438);
+  			add_location(div20, file$4, 241, 16, 8995);
+  			add_location(p15, file$4, 266, 24, 10341);
+  			add_location(p16, file$4, 268, 28, 10466);
   			attr_dev(div21, "class", "tit-mes_en_tres_dias font-mes svelte-1iezcjf");
-  			add_location(div21, file$4, 265, 24, 10366);
+  			add_location(div21, file$4, 267, 24, 10394);
   			attr_dev(div22, "class", "col s3 tit-en_tres_dias");
-  			add_location(div22, file$4, 263, 20, 10251);
+  			add_location(div22, file$4, 265, 20, 10279);
   			if (img3.src !== (img3_src_value = "images/icons/" + /*DiconElementEnTresDias*/ ctx[11] + ".gif")) attr_dev(img3, "src", img3_src_value);
   			attr_dev(img3, "alt", "");
   			attr_dev(img3, "class", "svelte-1iezcjf");
-  			add_location(img3, file$4, 270, 24, 10653);
+  			add_location(img3, file$4, 272, 24, 10681);
   			attr_dev(div23, "class", "col s2 weather-icon-en_tres_dias weather-icon center svelte-1iezcjf");
-  			add_location(div23, file$4, 269, 20, 10562);
+  			add_location(div23, file$4, 271, 20, 10590);
   			attr_dev(span3, "class", "svelte-1iezcjf");
-  			add_location(span3, file$4, 274, 28, 10891);
+  			add_location(span3, file$4, 276, 28, 10919);
   			attr_dev(p17, "class", "descripcion-en_tres_dias descripcion svelte-1iezcjf");
-  			add_location(p17, file$4, 273, 24, 10814);
+  			add_location(p17, file$4, 275, 24, 10842);
   			attr_dev(div24, "class", "col s3 wrapper svelte-1iezcjf");
-  			add_location(div24, file$4, 272, 20, 10761);
-  			add_location(p18, file$4, 278, 24, 11091);
+  			add_location(div24, file$4, 274, 20, 10789);
+  			add_location(p18, file$4, 280, 24, 11119);
   			attr_dev(div25, "class", "col s2 tempmaxD tempmax-en_tres_dias temp_font svelte-1iezcjf");
-  			add_location(div25, file$4, 277, 20, 11006);
-  			add_location(p19, file$4, 281, 24, 11265);
+  			add_location(div25, file$4, 279, 20, 11034);
+  			add_location(p19, file$4, 283, 24, 11293);
   			attr_dev(div26, "class", "col s2 tempminD tempmin-en_tres_dias temp_font svelte-1iezcjf");
-  			add_location(div26, file$4, 280, 20, 11180);
+  			add_location(div26, file$4, 282, 20, 11208);
   			attr_dev(div27, "class", "col s12 mas_cuatro prox_dias centrarItems svelte-1iezcjf");
-  			add_location(div27, file$4, 262, 16, 10175);
-  			add_location(p20, file$4, 286, 24, 11512);
-  			add_location(p21, file$4, 288, 28, 11641);
+  			add_location(div27, file$4, 264, 16, 10203);
+  			add_location(p20, file$4, 288, 24, 11540);
+  			add_location(p21, file$4, 290, 28, 11669);
   			attr_dev(div28, "class", "tit-mes_en_cuatro_dias font-mes svelte-1iezcjf");
-  			add_location(div28, file$4, 287, 24, 11567);
+  			add_location(div28, file$4, 289, 24, 11595);
   			attr_dev(div29, "class", "col s3 tit-en_cuatro_dias");
-  			add_location(div29, file$4, 285, 20, 11448);
+  			add_location(div29, file$4, 287, 20, 11476);
   			if (img4.src !== (img4_src_value = "images/icons/" + /*DiconElementEnCuatroDias*/ ctx[14] + ".gif")) attr_dev(img4, "src", img4_src_value);
   			attr_dev(img4, "alt", "");
   			attr_dev(img4, "class", "svelte-1iezcjf");
-  			add_location(img4, file$4, 292, 24, 11862);
+  			add_location(img4, file$4, 294, 24, 11890);
   			attr_dev(div30, "class", "col s2 weather-icon-en_cuatro_dias weather-icon center svelte-1iezcjf");
-  			add_location(div30, file$4, 291, 20, 11769);
+  			add_location(div30, file$4, 293, 20, 11797);
   			attr_dev(span4, "class", "svelte-1iezcjf");
-  			add_location(span4, file$4, 296, 28, 12104);
+  			add_location(span4, file$4, 298, 28, 12132);
   			attr_dev(p22, "class", "descripcion-en_cuatro_dias descripcion svelte-1iezcjf");
-  			add_location(p22, file$4, 295, 24, 12025);
+  			add_location(p22, file$4, 297, 24, 12053);
   			attr_dev(div31, "class", "col s3 wrapper svelte-1iezcjf");
-  			add_location(div31, file$4, 294, 20, 11972);
-  			add_location(p23, file$4, 300, 24, 12308);
+  			add_location(div31, file$4, 296, 20, 12000);
+  			add_location(p23, file$4, 302, 24, 12336);
   			attr_dev(div32, "class", "col s2 tempmaxD tempmax-en_cuatro_dias temp_font svelte-1iezcjf");
-  			add_location(div32, file$4, 299, 20, 12221);
-  			add_location(p24, file$4, 303, 24, 12486);
+  			add_location(div32, file$4, 301, 20, 12249);
+  			add_location(p24, file$4, 305, 24, 12514);
   			attr_dev(div33, "class", "col s2 tempminD tempmin-en_cuatro_dias temp_font svelte-1iezcjf");
-  			add_location(div33, file$4, 302, 20, 12399);
+  			add_location(div33, file$4, 304, 20, 12427);
   			attr_dev(div34, "class", "col s12 mas_cinco prox_dias centrarItems svelte-1iezcjf");
-  			add_location(div34, file$4, 284, 16, 11373);
-  			add_location(p25, file$4, 308, 24, 12733);
-  			add_location(p26, file$4, 310, 28, 12860);
+  			add_location(div34, file$4, 286, 16, 11401);
+  			add_location(p25, file$4, 310, 24, 12761);
+  			add_location(p26, file$4, 312, 28, 12888);
   			attr_dev(div35, "class", "tit-mes_en_cinco_dias font-mes svelte-1iezcjf");
-  			add_location(div35, file$4, 309, 24, 12787);
+  			add_location(div35, file$4, 311, 24, 12815);
   			attr_dev(div36, "class", "col s3 tit-en_cinco_dias");
-  			add_location(div36, file$4, 307, 20, 12670);
+  			add_location(div36, file$4, 309, 20, 12698);
   			if (img5.src !== (img5_src_value = "images/icons/" + /*DiconElementEnCincoDias*/ ctx[17] + ".gif")) attr_dev(img5, "src", img5_src_value);
   			attr_dev(img5, "alt", "");
   			attr_dev(img5, "class", "svelte-1iezcjf");
-  			add_location(img5, file$4, 314, 24, 13078);
+  			add_location(img5, file$4, 316, 24, 13106);
   			attr_dev(div37, "class", "col s2 weather-icon-en_cinco_dias weather-icon center svelte-1iezcjf");
-  			add_location(div37, file$4, 313, 20, 12986);
+  			add_location(div37, file$4, 315, 20, 13014);
   			attr_dev(span5, "class", "svelte-1iezcjf");
-  			add_location(span5, file$4, 318, 28, 13318);
+  			add_location(span5, file$4, 320, 28, 13346);
   			attr_dev(p27, "class", "descripcion-en_cinco_dias descripcion svelte-1iezcjf");
-  			add_location(p27, file$4, 317, 24, 13240);
+  			add_location(p27, file$4, 319, 24, 13268);
   			attr_dev(div38, "class", "col s3 wrapper svelte-1iezcjf");
-  			add_location(div38, file$4, 316, 20, 13187);
-  			add_location(p28, file$4, 322, 24, 13520);
+  			add_location(div38, file$4, 318, 20, 13215);
+  			add_location(p28, file$4, 324, 24, 13548);
   			attr_dev(div39, "class", "col s2 tempmaxD tempmax-en_cinco_dias temp_font svelte-1iezcjf");
-  			add_location(div39, file$4, 321, 20, 13434);
-  			add_location(p29, file$4, 325, 24, 13696);
+  			add_location(div39, file$4, 323, 20, 13462);
+  			add_location(p29, file$4, 327, 24, 13724);
   			attr_dev(div40, "class", "col s2 tempminD tempmin-en_cinco_dias temp_font svelte-1iezcjf");
-  			add_location(div40, file$4, 324, 20, 13610);
+  			add_location(div40, file$4, 326, 20, 13638);
   			attr_dev(div41, "class", "col s12 mas_seis prox_dias centrarItems svelte-1iezcjf");
-  			add_location(div41, file$4, 306, 16, 12596);
+  			add_location(div41, file$4, 308, 16, 12624);
   			attr_dev(div42, "class", "row");
-  			add_location(div42, file$4, 191, 12, 6685);
+  			add_location(div42, file$4, 193, 12, 6701);
   			attr_dev(div43, "class", "pronos_dias svelte-1iezcjf");
-  			add_location(div43, file$4, 190, 8, 6647);
+  			add_location(div43, file$4, 192, 8, 6663);
   			attr_dev(div44, "class", "container");
-  			add_location(div44, file$4, 189, 4, 6615);
+  			add_location(div44, file$4, 191, 4, 6631);
   			attr_dev(div45, "class", "col s12 datosTecnicosCard svelte-1iezcjf");
-  			add_location(div45, file$4, 187, 0, 6570);
+  			add_location(div45, file$4, 189, 0, 6586);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -18561,6 +21917,7 @@ var app = (function () {
   			append_dev(div42, div6);
   			append_dev(div6, div1);
   			append_dev(div1, p0);
+  			append_dev(p0, t0);
   			append_dev(div1, t1);
   			append_dev(div1, div0);
   			append_dev(div0, p1);
@@ -18732,6 +22089,7 @@ var app = (function () {
   			append_dev(p29, t88);
   		},
   		p: function update(ctx, dirty) {
+  			if (dirty[1] & /*$_*/ 1024 && t0_value !== (t0_value = /*$_*/ ctx[41]("tomorrow") + "")) set_data_dev(t0, t0_value);
   			if (dirty[0] & /*diatimesdiaManana*/ 16777216) set_data_dev(t2, /*diatimesdiaManana*/ ctx[24]);
   			if (dirty[0] & /*mestimesdiaManana*/ 33554432) set_data_dev(t4, /*mestimesdiaManana*/ ctx[25]);
 
@@ -18827,6 +22185,9 @@ var app = (function () {
   }
 
   function instance$5($$self, $$props, $$invalidate) {
+  	let $_;
+  	validate_store(nn, "_");
+  	component_subscribe($$self, nn, $$value => $$invalidate(41, $_ = $$value));
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("Paneldias", slots, []);
   	let COORDS = "";
@@ -18886,6 +22247,7 @@ var app = (function () {
   	$$self.$capture_state = () => ({
   		axios: axios$1,
   		onMount,
+  		_: nn,
   		COORDS,
   		DtempmaxM,
   		DtempminM,
@@ -18929,11 +22291,12 @@ var app = (function () {
   		diatimesdiacinco,
   		mestimesdiacinco,
   		KEY: KEY$2,
-  		positionPromise: positionPromise$2
+  		positionPromise: positionPromise$2,
+  		$_
   	});
 
   	$$self.$inject_state = $$props => {
-  		if ("COORDS" in $$props) $$invalidate(41, COORDS = $$props.COORDS);
+  		if ("COORDS" in $$props) $$invalidate(42, COORDS = $$props.COORDS);
   		if ("DtempmaxM" in $$props) $$invalidate(0, DtempmaxM = $$props.DtempmaxM);
   		if ("DtempminM" in $$props) $$invalidate(1, DtempminM = $$props.DtempminM);
   		if ("DiconElementManana" in $$props) $$invalidate(2, DiconElementManana = $$props.DiconElementManana);
@@ -18982,16 +22345,16 @@ var app = (function () {
   	}
 
   	$$self.$$.update = () => {
-  		if ($$self.$$.dirty[1] & /*COORDS*/ 1024) {
+  		if ($$self.$$.dirty[1] & /*COORDS*/ 2048) {
   			 {
   				onMount(async () => {
   					const coordenadas = await positionPromise$2();
-  					$$invalidate(41, COORDS = coordenadas);
+  					$$invalidate(42, COORDS = coordenadas);
   					console.log(coordenadas);
   					let latitude = coordenadas.coords.latitude;
   					let longitude = coordenadas.coords.longitude;
   					console.log(latitude);
-  					$$invalidate(41, COORDS = `?lat=${latitude}&lon=${longitude}`);
+  					$$invalidate(42, COORDS = `?lat=${latitude}&lon=${longitude}`);
   					console.log(COORDS);
 
   					axios$1.get(`https://api.openweathermap.org/data/2.5/onecall${COORDS}&exclude=minutely&appid=${KEY$2}&units=metric&lang=gl`).then(data => {
@@ -19124,7 +22487,8 @@ var app = (function () {
   		mestimesdiacuatro,
   		nombresemanadiacinco,
   		diatimesdiacinco,
-  		mestimesdiacinco
+  		mestimesdiacinco,
+  		$_
   	];
   }
 
@@ -19143,7 +22507,6 @@ var app = (function () {
   }
 
   /* src/Componentes/Faseslunares.svelte generated by Svelte v3.25.0 */
-
   const file$5 = "src/Componentes/Faseslunares.svelte";
 
   function create_fragment$6(ctx) {
@@ -19152,6 +22515,8 @@ var app = (function () {
   	let div2;
   	let div1;
   	let p;
+  	let t0_value = /*$_*/ ctx[0]("PhasesMoon") + "";
+  	let t0;
   	let t1;
   	let div0;
 
@@ -19162,21 +22527,21 @@ var app = (function () {
   			div2 = element("div");
   			div1 = element("div");
   			p = element("p");
-  			p.textContent = "Fases lunares do mes";
+  			t0 = text(t0_value);
   			t1 = space();
   			div0 = element("div");
-  			add_location(p, file$5, 57, 12, 1637);
+  			add_location(p, file$5, 58, 12, 1607);
   			attr_dev(div0, "id", "ex2");
   			attr_dev(div0, "class", "svelte-1ply16x");
-  			add_location(div0, file$5, 58, 12, 1677);
+  			add_location(div0, file$5, 59, 12, 1645);
   			attr_dev(div1, "class", "fases_lunares col s12");
-  			add_location(div1, file$5, 56, 8, 1589);
+  			add_location(div1, file$5, 57, 8, 1559);
   			attr_dev(div2, "class", "row svelte-1ply16x");
-  			add_location(div2, file$5, 55, 4, 1563);
+  			add_location(div2, file$5, 56, 4, 1533);
   			attr_dev(div3, "class", "container svelte-1ply16x");
-  			add_location(div3, file$5, 54, 0, 1535);
+  			add_location(div3, file$5, 55, 0, 1505);
   			attr_dev(div4, "class", "white-text svelte-1ply16x");
-  			add_location(div4, file$5, 53, 0, 1510);
+  			add_location(div4, file$5, 54, 0, 1480);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -19187,10 +22552,13 @@ var app = (function () {
   			append_dev(div3, div2);
   			append_dev(div2, div1);
   			append_dev(div1, p);
+  			append_dev(p, t0);
   			append_dev(div1, t1);
   			append_dev(div1, div0);
   		},
-  		p: noop,
+  		p: function update(ctx, [dirty]) {
+  			if (dirty & /*$_*/ 1 && t0_value !== (t0_value = /*$_*/ ctx[0]("PhasesMoon") + "")) set_data_dev(t0, t0_value);
+  		},
   		i: noop,
   		o: noop,
   		d: function destroy(detaching) {
@@ -19235,7 +22603,7 @@ var app = (function () {
 
   	for (var nDay in moon.phase) {
   		if (moon.phase[nDay].isPhaseLimit) {
-  			phMax.push("<div>" + "<span>" + nDay + "</span>" + moon.phase[nDay].svg + "<div>" + moon.phase[nDay].phaseName + "</div>" + "</div>");
+  			phMax.push("<div>" + "<span>" + nDay + "</span>" + moon.phase[nDay].svg + "</div>");
   		}
   	}
 
@@ -19250,6 +22618,9 @@ var app = (function () {
   }
 
   function instance$6($$self, $$props, $$invalidate) {
+  	let $_;
+  	validate_store(nn, "_");
+  	component_subscribe($$self, nn, $$value => $$invalidate(0, $_ = $$value));
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("Faseslunares", slots, []);
 
@@ -19270,7 +22641,13 @@ var app = (function () {
   		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<Faseslunares> was created with unknown prop '${key}'`);
   	});
 
-  	$$self.$capture_state = () => ({ load_moon_phases, example_2, configMoon });
+  	$$self.$capture_state = () => ({
+  		_: nn,
+  		load_moon_phases,
+  		example_2,
+  		configMoon,
+  		$_
+  	});
 
   	$$self.$inject_state = $$props => {
   		if ("configMoon" in $$props) configMoon = $$props.configMoon;
@@ -19280,7 +22657,7 @@ var app = (function () {
   		$$self.$inject_state($$props.$$inject);
   	}
 
-  	return [];
+  	return [$_];
   }
 
   class Faseslunares extends SvelteComponentDev {
@@ -19302,7 +22679,7 @@ var app = (function () {
   const { console: console_1$4 } = globals;
   const file$6 = "src/Componentes/Datostecnicos.svelte";
 
-  // (104:24) {#if datosGlobal!==null}
+  // (106:24) {#if datosGlobal!==null}
   function create_if_block_7(ctx) {
   	let p;
   	let t0;
@@ -19314,7 +22691,7 @@ var app = (function () {
   			t0 = text(/*tempmax*/ ctx[0]);
   			t1 = text("°C");
   			attr_dev(p, "class", "svelte-14e9h54");
-  			add_location(p, file$6, 104, 24, 3199);
+  			add_location(p, file$6, 106, 24, 3240);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, p, anchor);
@@ -19333,14 +22710,14 @@ var app = (function () {
   		block,
   		id: create_if_block_7.name,
   		type: "if",
-  		source: "(104:24) {#if datosGlobal!==null}",
+  		source: "(106:24) {#if datosGlobal!==null}",
   		ctx
   	});
 
   	return block;
   }
 
-  // (115:24) {#if datosGlobal!==null}
+  // (117:24) {#if datosGlobal!==null}
   function create_if_block_6(ctx) {
   	let p;
   	let t0;
@@ -19352,7 +22729,7 @@ var app = (function () {
   			t0 = text(/*tempmin*/ ctx[1]);
   			t1 = text("°C");
   			attr_dev(p, "class", "svelte-14e9h54");
-  			add_location(p, file$6, 115, 24, 3668);
+  			add_location(p, file$6, 117, 24, 3714);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, p, anchor);
@@ -19371,14 +22748,14 @@ var app = (function () {
   		block,
   		id: create_if_block_6.name,
   		type: "if",
-  		source: "(115:24) {#if datosGlobal!==null}",
+  		source: "(117:24) {#if datosGlobal!==null}",
   		ctx
   	});
 
   	return block;
   }
 
-  // (126:24) {#if datosGlobal!==null}
+  // (128:24) {#if datosGlobal!==null}
   function create_if_block_5(ctx) {
   	let p;
   	let t0;
@@ -19390,7 +22767,7 @@ var app = (function () {
   			t0 = text(/*wind*/ ctx[2]);
   			t1 = text(" km/h");
   			attr_dev(p, "class", "svelte-14e9h54");
-  			add_location(p, file$6, 126, 24, 4140);
+  			add_location(p, file$6, 128, 24, 4193);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, p, anchor);
@@ -19409,14 +22786,14 @@ var app = (function () {
   		block,
   		id: create_if_block_5.name,
   		type: "if",
-  		source: "(126:24) {#if datosGlobal!==null}",
+  		source: "(128:24) {#if datosGlobal!==null}",
   		ctx
   	});
 
   	return block;
   }
 
-  // (137:24) {#if datosGlobal!==null}
+  // (139:24) {#if datosGlobal!==null}
   function create_if_block_4(ctx) {
   	let p;
   	let t0;
@@ -19428,7 +22805,7 @@ var app = (function () {
   			t0 = text(/*feel*/ ctx[3]);
   			t1 = text(" °C");
   			attr_dev(p, "class", "svelte-14e9h54");
-  			add_location(p, file$6, 137, 24, 4646);
+  			add_location(p, file$6, 139, 24, 4698);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, p, anchor);
@@ -19447,14 +22824,14 @@ var app = (function () {
   		block,
   		id: create_if_block_4.name,
   		type: "if",
-  		source: "(137:24) {#if datosGlobal!==null}",
+  		source: "(139:24) {#if datosGlobal!==null}",
   		ctx
   	});
 
   	return block;
   }
 
-  // (148:24) {#if datosGlobal!==null}
+  // (150:24) {#if datosGlobal!==null}
   function create_if_block_3(ctx) {
   	let p;
   	let t0;
@@ -19466,7 +22843,7 @@ var app = (function () {
   			t0 = text(/*humidity*/ ctx[4]);
   			t1 = text("%");
   			attr_dev(p, "class", "svelte-14e9h54");
-  			add_location(p, file$6, 148, 24, 5093);
+  			add_location(p, file$6, 150, 24, 5154);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, p, anchor);
@@ -19485,14 +22862,14 @@ var app = (function () {
   		block,
   		id: create_if_block_3.name,
   		type: "if",
-  		source: "(148:24) {#if datosGlobal!==null}",
+  		source: "(150:24) {#if datosGlobal!==null}",
   		ctx
   	});
 
   	return block;
   }
 
-  // (159:24) {#if datosGlobal!==null}
+  // (161:24) {#if datosGlobal!==null}
   function create_if_block_2(ctx) {
   	let p;
   	let t0;
@@ -19504,7 +22881,7 @@ var app = (function () {
   			t0 = text(/*pressure*/ ctx[5]);
   			t1 = text("hPa");
   			attr_dev(p, "class", "svelte-14e9h54");
-  			add_location(p, file$6, 159, 24, 5554);
+  			add_location(p, file$6, 161, 24, 5624);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, p, anchor);
@@ -19523,14 +22900,14 @@ var app = (function () {
   		block,
   		id: create_if_block_2.name,
   		type: "if",
-  		source: "(159:24) {#if datosGlobal!==null}",
+  		source: "(161:24) {#if datosGlobal!==null}",
   		ctx
   	});
 
   	return block;
   }
 
-  // (170:24) {#if datosGlobal!==null}
+  // (172:24) {#if datosGlobal!==null}
   function create_if_block_1(ctx) {
   	let p;
   	let t0;
@@ -19542,7 +22919,7 @@ var app = (function () {
   			t0 = text(/*uvi*/ ctx[7]);
   			t1 = text("/10");
   			attr_dev(p, "class", "svelte-14e9h54");
-  			add_location(p, file$6, 170, 24, 6000);
+  			add_location(p, file$6, 172, 24, 6071);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, p, anchor);
@@ -19561,14 +22938,14 @@ var app = (function () {
   		block,
   		id: create_if_block_1.name,
   		type: "if",
-  		source: "(170:24) {#if datosGlobal!==null}",
+  		source: "(172:24) {#if datosGlobal!==null}",
   		ctx
   	});
 
   	return block;
   }
 
-  // (181:24) {#if datosGlobal!==null}
+  // (183:24) {#if datosGlobal!==null}
   function create_if_block$2(ctx) {
   	let p;
   	let t0;
@@ -19580,7 +22957,7 @@ var app = (function () {
   			t0 = text(/*visibilidad*/ ctx[6]);
   			t1 = text("m");
   			attr_dev(p, "class", "svelte-14e9h54");
-  			add_location(p, file$6, 181, 24, 6460);
+  			add_location(p, file$6, 183, 24, 6538);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, p, anchor);
@@ -19599,7 +22976,7 @@ var app = (function () {
   		block,
   		id: create_if_block$2.name,
   		type: "if",
-  		source: "(181:24) {#if datosGlobal!==null}",
+  		source: "(183:24) {#if datosGlobal!==null}",
   		ctx
   	});
 
@@ -19616,6 +22993,8 @@ var app = (function () {
   	let img0_src_value;
   	let t0;
   	let p0;
+  	let t1_value = /*$_*/ ctx[9]("TempMax") + "";
+  	let t1;
   	let t2;
   	let div0;
   	let t3;
@@ -19624,6 +23003,8 @@ var app = (function () {
   	let img1_src_value;
   	let t4;
   	let p1;
+  	let t5_value = /*$_*/ ctx[9]("TempMin") + "";
+  	let t5;
   	let t6;
   	let div2;
   	let t7;
@@ -19632,6 +23013,8 @@ var app = (function () {
   	let img2_src_value;
   	let t8;
   	let p2;
+  	let t9_value = /*$_*/ ctx[9]("Wind") + "";
+  	let t9;
   	let t10;
   	let div4;
   	let t11;
@@ -19640,6 +23023,8 @@ var app = (function () {
   	let img3_src_value;
   	let t12;
   	let p3;
+  	let t13_value = /*$_*/ ctx[9]("Feellike") + "";
+  	let t13;
   	let t14;
   	let div6;
   	let t15;
@@ -19648,6 +23033,8 @@ var app = (function () {
   	let img4_src_value;
   	let t16;
   	let p4;
+  	let t17_value = /*$_*/ ctx[9]("Humidity") + "";
+  	let t17;
   	let t18;
   	let div8;
   	let t19;
@@ -19656,6 +23043,8 @@ var app = (function () {
   	let img5_src_value;
   	let t20;
   	let p5;
+  	let t21_value = /*$_*/ ctx[9]("Pressure") + "";
+  	let t21;
   	let t22;
   	let div10;
   	let t23;
@@ -19664,6 +23053,8 @@ var app = (function () {
   	let img6_src_value;
   	let t24;
   	let p6;
+  	let t25_value = /*$_*/ ctx[9]("UV") + "";
+  	let t25;
   	let t26;
   	let div12;
   	let t27;
@@ -19672,6 +23063,8 @@ var app = (function () {
   	let img7_src_value;
   	let t28;
   	let p7;
+  	let t29_value = /*$_*/ ctx[9]("Visibility") + "";
+  	let t29;
   	let t30;
   	let div14;
   	let t31;
@@ -19680,6 +23073,8 @@ var app = (function () {
   	let img8_src_value;
   	let t32;
   	let p8;
+  	let t33_value = /*$_*/ ctx[9]("Sunrise") + "";
+  	let t33;
   	let t34;
   	let div16;
   	let p9;
@@ -19689,6 +23084,8 @@ var app = (function () {
   	let img9_src_value;
   	let t36;
   	let p10;
+  	let t37_value = /*$_*/ ctx[9]("Sunset") + "";
+  	let t37;
   	let t38;
   	let div18;
   	let p11;
@@ -19715,7 +23112,7 @@ var app = (function () {
   			img0 = element("img");
   			t0 = space();
   			p0 = element("p");
-  			p0.textContent = "Temp. Máx.";
+  			t1 = text(t1_value);
   			t2 = space();
   			div0 = element("div");
   			if (if_block0) if_block0.c();
@@ -19724,7 +23121,7 @@ var app = (function () {
   			img1 = element("img");
   			t4 = space();
   			p1 = element("p");
-  			p1.textContent = "Temp. Min.";
+  			t5 = text(t5_value);
   			t6 = space();
   			div2 = element("div");
   			if (if_block1) if_block1.c();
@@ -19733,7 +23130,7 @@ var app = (function () {
   			img2 = element("img");
   			t8 = space();
   			p2 = element("p");
-  			p2.textContent = "Vento";
+  			t9 = text(t9_value);
   			t10 = space();
   			div4 = element("div");
   			if (if_block2) if_block2.c();
@@ -19742,7 +23139,7 @@ var app = (function () {
   			img3 = element("img");
   			t12 = space();
   			p3 = element("p");
-  			p3.textContent = "Sensación térmica";
+  			t13 = text(t13_value);
   			t14 = space();
   			div6 = element("div");
   			if (if_block3) if_block3.c();
@@ -19751,7 +23148,7 @@ var app = (function () {
   			img4 = element("img");
   			t16 = space();
   			p4 = element("p");
-  			p4.textContent = "Humedad";
+  			t17 = text(t17_value);
   			t18 = space();
   			div8 = element("div");
   			if (if_block4) if_block4.c();
@@ -19760,7 +23157,7 @@ var app = (function () {
   			img5 = element("img");
   			t20 = space();
   			p5 = element("p");
-  			p5.textContent = "Presión";
+  			t21 = text(t21_value);
   			t22 = space();
   			div10 = element("div");
   			if (if_block5) if_block5.c();
@@ -19769,7 +23166,7 @@ var app = (function () {
   			img6 = element("img");
   			t24 = space();
   			p6 = element("p");
-  			p6.textContent = "Índice UV";
+  			t25 = text(t25_value);
   			t26 = space();
   			div12 = element("div");
   			if (if_block6) if_block6.c();
@@ -19778,7 +23175,7 @@ var app = (function () {
   			img7 = element("img");
   			t28 = space();
   			p7 = element("p");
-  			p7.textContent = "Visibilidad";
+  			t29 = text(t29_value);
   			t30 = space();
   			div14 = element("div");
   			if (if_block7) if_block7.c();
@@ -19787,7 +23184,7 @@ var app = (function () {
   			img8 = element("img");
   			t32 = space();
   			p8 = element("p");
-  			p8.textContent = "Amancer";
+  			t33 = text(t33_value);
   			t34 = space();
   			div16 = element("div");
   			p9 = element("p");
@@ -19796,7 +23193,7 @@ var app = (function () {
   			img9 = element("img");
   			t36 = space();
   			p10 = element("p");
-  			p10.textContent = "Solpor";
+  			t37 = text(t37_value);
   			t38 = space();
   			div18 = element("div");
   			p11 = element("p");
@@ -19805,116 +23202,116 @@ var app = (function () {
   			if (img0.src !== (img0_src_value = "images/temperMax.png")) attr_dev(img0, "src", img0_src_value);
   			attr_dev(img0, "width", "20%");
   			attr_dev(img0, "alt", "Temperatura máxima");
-  			add_location(img0, file$6, 98, 20, 2908);
+  			add_location(img0, file$6, 100, 20, 2944);
   			attr_dev(p0, "class", "tit_icon");
-  			add_location(p0, file$6, 99, 20, 2998);
+  			add_location(p0, file$6, 101, 20, 3034);
   			attr_dev(div0, "class", "chip tempmax svelte-14e9h54");
-  			add_location(div0, file$6, 102, 20, 3099);
+  			add_location(div0, file$6, 104, 20, 3140);
   			attr_dev(div1, "class", "col s6 DatosEsencialesInicio svelte-14e9h54");
-  			add_location(div1, file$6, 97, 16, 2845);
+  			add_location(div1, file$6, 99, 16, 2881);
   			if (img1.src !== (img1_src_value = "images/temperMin.png")) attr_dev(img1, "src", img1_src_value);
   			attr_dev(img1, "width", "20%");
   			attr_dev(img1, "alt", "Temperatura mínima");
-  			add_location(img1, file$6, 109, 20, 3377);
+  			add_location(img1, file$6, 111, 20, 3418);
   			attr_dev(p1, "class", "tit_icon");
-  			add_location(p1, file$6, 110, 20, 3467);
+  			add_location(p1, file$6, 112, 20, 3508);
   			attr_dev(div2, "class", "chip tempmin svelte-14e9h54");
-  			add_location(div2, file$6, 113, 20, 3568);
+  			add_location(div2, file$6, 115, 20, 3614);
   			attr_dev(div3, "class", "col s6 DatosEsencialesInicio svelte-14e9h54");
-  			add_location(div3, file$6, 108, 16, 3314);
+  			add_location(div3, file$6, 110, 16, 3355);
   			if (img2.src !== (img2_src_value = "images/wind.png")) attr_dev(img2, "src", img2_src_value);
   			attr_dev(img2, "width", "20%");
   			attr_dev(img2, "alt", "Velocidad del viento");
-  			add_location(img2, file$6, 120, 20, 3860);
+  			add_location(img2, file$6, 122, 20, 3906);
   			attr_dev(p2, "class", "tit_icon");
-  			add_location(p2, file$6, 121, 20, 3947);
+  			add_location(p2, file$6, 123, 20, 3993);
   			attr_dev(div4, "class", "chip wind svelte-14e9h54");
-  			add_location(div4, file$6, 124, 20, 4043);
+  			add_location(div4, file$6, 126, 20, 4096);
   			attr_dev(div5, "class", "col s6 DatosEsenciales svelte-14e9h54");
-  			add_location(div5, file$6, 119, 16, 3803);
+  			add_location(div5, file$6, 121, 16, 3849);
   			if (img3.src !== (img3_src_value = "images/feel_like.png")) attr_dev(img3, "src", img3_src_value);
   			attr_dev(img3, "width", "20%");
   			attr_dev(img3, "class", "center");
   			attr_dev(img3, "alt", "Sensación térmica");
-  			add_location(img3, file$6, 131, 20, 4332);
+  			add_location(img3, file$6, 133, 20, 4385);
   			attr_dev(p3, "class", "tit_icon");
-  			add_location(p3, file$6, 132, 20, 4436);
+  			add_location(p3, file$6, 134, 20, 4489);
   			attr_dev(div6, "class", "chip feel-like svelte-14e9h54");
-  			add_location(div6, file$6, 135, 20, 4544);
+  			add_location(div6, file$6, 137, 20, 4596);
   			attr_dev(div7, "class", "col s6 DatosEsenciales svelte-14e9h54");
-  			add_location(div7, file$6, 130, 16, 4275);
+  			add_location(div7, file$6, 132, 16, 4328);
   			if (img4.src !== (img4_src_value = "images/humidity.png")) attr_dev(img4, "src", img4_src_value);
   			attr_dev(img4, "width", "20%");
   			attr_dev(img4, "alt", "Humedad");
-  			add_location(img4, file$6, 142, 20, 4816);
+  			add_location(img4, file$6, 144, 20, 4868);
   			attr_dev(p4, "class", "tit_icon");
-  			add_location(p4, file$6, 143, 20, 4894);
+  			add_location(p4, file$6, 145, 20, 4946);
   			attr_dev(div8, "class", "chip humidity svelte-14e9h54");
-  			add_location(div8, file$6, 146, 20, 4992);
+  			add_location(div8, file$6, 148, 20, 5053);
   			attr_dev(div9, "class", "col s6 DatosEsenciales svelte-14e9h54");
-  			add_location(div9, file$6, 141, 16, 4759);
+  			add_location(div9, file$6, 143, 16, 4811);
   			if (img5.src !== (img5_src_value = "images/pressure.png")) attr_dev(img5, "src", img5_src_value);
   			attr_dev(img5, "width", "20%");
   			attr_dev(img5, "alt", "Presión atmosférica");
-  			add_location(img5, file$6, 153, 20, 5265);
+  			add_location(img5, file$6, 155, 20, 5326);
   			attr_dev(p5, "class", "tit_icon");
-  			add_location(p5, file$6, 154, 20, 5355);
+  			add_location(p5, file$6, 156, 20, 5416);
   			attr_dev(div10, "class", "chip pressure svelte-14e9h54");
-  			add_location(div10, file$6, 157, 20, 5453);
+  			add_location(div10, file$6, 159, 20, 5523);
   			attr_dev(div11, "class", "col s6 DatosEsenciales svelte-14e9h54");
-  			add_location(div11, file$6, 152, 16, 5208);
+  			add_location(div11, file$6, 154, 16, 5269);
   			if (img6.src !== (img6_src_value = "images/uvi.png")) attr_dev(img6, "src", img6_src_value);
   			attr_dev(img6, "width", "20%");
   			attr_dev(img6, "alt", "Índice UVI");
-  			add_location(img6, file$6, 164, 20, 5728);
+  			add_location(img6, file$6, 166, 20, 5798);
   			attr_dev(p6, "class", "tit_icon");
-  			add_location(p6, file$6, 165, 20, 5804);
+  			add_location(p6, file$6, 167, 20, 5874);
   			attr_dev(div12, "class", "chip uvi svelte-14e9h54");
-  			add_location(div12, file$6, 168, 20, 5904);
+  			add_location(div12, file$6, 170, 20, 5975);
   			attr_dev(div13, "class", "col s6 DatosEsenciales svelte-14e9h54");
-  			add_location(div13, file$6, 163, 16, 5671);
+  			add_location(div13, file$6, 165, 16, 5741);
   			if (img7.src !== (img7_src_value = "images/visibilidad.png")) attr_dev(img7, "src", img7_src_value);
   			attr_dev(img7, "width", "20%");
   			attr_dev(img7, "alt", "Visibilidad");
-  			add_location(img7, file$6, 175, 20, 6169);
+  			add_location(img7, file$6, 177, 20, 6240);
   			attr_dev(p7, "class", "tit_icon");
-  			add_location(p7, file$6, 176, 20, 6254);
+  			add_location(p7, file$6, 178, 20, 6325);
   			attr_dev(div14, "class", "chip visibilidad svelte-14e9h54");
-  			add_location(div14, file$6, 179, 20, 6356);
+  			add_location(div14, file$6, 181, 20, 6434);
   			attr_dev(div15, "class", "col s6 DatosEsenciales svelte-14e9h54");
-  			add_location(div15, file$6, 174, 16, 6112);
+  			add_location(div15, file$6, 176, 16, 6183);
   			if (img8.src !== (img8_src_value = "images/sunrise.png")) attr_dev(img8, "src", img8_src_value);
   			attr_dev(img8, "width", "20%");
   			attr_dev(img8, "alt", "Amancer");
-  			add_location(img8, file$6, 186, 20, 6635);
+  			add_location(img8, file$6, 188, 20, 6713);
   			attr_dev(p8, "class", "tit_icon");
-  			add_location(p8, file$6, 187, 20, 6712);
+  			add_location(p8, file$6, 189, 20, 6790);
   			attr_dev(p9, "class", "svelte-14e9h54");
-  			add_location(p9, file$6, 191, 24, 6861);
+  			add_location(p9, file$6, 193, 24, 6947);
   			attr_dev(div16, "class", "chip sunrise svelte-14e9h54");
-  			add_location(div16, file$6, 190, 20, 6810);
+  			add_location(div16, file$6, 192, 20, 6896);
   			attr_dev(div17, "class", "col s6 DatosEsenciales svelte-14e9h54");
-  			add_location(div17, file$6, 185, 16, 6578);
+  			add_location(div17, file$6, 187, 16, 6656);
   			if (img9.src !== (img9_src_value = "images/sunset.png")) attr_dev(img9, "src", img9_src_value);
   			attr_dev(img9, "width", "20%");
   			attr_dev(img9, "alt", "Solpor");
-  			add_location(img9, file$6, 195, 20, 6992);
+  			add_location(img9, file$6, 197, 20, 7078);
   			attr_dev(p10, "class", "tit_icon");
-  			add_location(p10, file$6, 196, 20, 7067);
+  			add_location(p10, file$6, 198, 20, 7153);
   			attr_dev(p11, "class", "svelte-14e9h54");
-  			add_location(p11, file$6, 200, 24, 7214);
+  			add_location(p11, file$6, 202, 24, 7308);
   			attr_dev(div18, "class", "chip sunset svelte-14e9h54");
-  			add_location(div18, file$6, 199, 20, 7164);
+  			add_location(div18, file$6, 201, 20, 7258);
   			attr_dev(div19, "class", "col s6 DatosEsenciales svelte-14e9h54");
-  			add_location(div19, file$6, 194, 16, 6935);
+  			add_location(div19, file$6, 196, 16, 7021);
   			attr_dev(div20, "class", "row svelte-14e9h54");
-  			add_location(div20, file$6, 96, 12, 2811);
+  			add_location(div20, file$6, 98, 12, 2847);
   			attr_dev(div21, "class", "container");
-  			add_location(div21, file$6, 95, 8, 2775);
+  			add_location(div21, file$6, 97, 8, 2811);
   			attr_dev(div22, "class", "PanelDatosInicio svelte-14e9h54");
-  			add_location(div22, file$6, 94, 4, 2736);
+  			add_location(div22, file$6, 96, 4, 2772);
   			attr_dev(div23, "class", "PanelXeral center svelte-14e9h54");
-  			add_location(div23, file$6, 93, 0, 2700);
+  			add_location(div23, file$6, 95, 0, 2736);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -19928,6 +23325,7 @@ var app = (function () {
   			append_dev(div1, img0);
   			append_dev(div1, t0);
   			append_dev(div1, p0);
+  			append_dev(p0, t1);
   			append_dev(div1, t2);
   			append_dev(div1, div0);
   			if (if_block0) if_block0.m(div0, null);
@@ -19936,6 +23334,7 @@ var app = (function () {
   			append_dev(div3, img1);
   			append_dev(div3, t4);
   			append_dev(div3, p1);
+  			append_dev(p1, t5);
   			append_dev(div3, t6);
   			append_dev(div3, div2);
   			if (if_block1) if_block1.m(div2, null);
@@ -19944,6 +23343,7 @@ var app = (function () {
   			append_dev(div5, img2);
   			append_dev(div5, t8);
   			append_dev(div5, p2);
+  			append_dev(p2, t9);
   			append_dev(div5, t10);
   			append_dev(div5, div4);
   			if (if_block2) if_block2.m(div4, null);
@@ -19952,6 +23352,7 @@ var app = (function () {
   			append_dev(div7, img3);
   			append_dev(div7, t12);
   			append_dev(div7, p3);
+  			append_dev(p3, t13);
   			append_dev(div7, t14);
   			append_dev(div7, div6);
   			if (if_block3) if_block3.m(div6, null);
@@ -19960,6 +23361,7 @@ var app = (function () {
   			append_dev(div9, img4);
   			append_dev(div9, t16);
   			append_dev(div9, p4);
+  			append_dev(p4, t17);
   			append_dev(div9, t18);
   			append_dev(div9, div8);
   			if (if_block4) if_block4.m(div8, null);
@@ -19968,6 +23370,7 @@ var app = (function () {
   			append_dev(div11, img5);
   			append_dev(div11, t20);
   			append_dev(div11, p5);
+  			append_dev(p5, t21);
   			append_dev(div11, t22);
   			append_dev(div11, div10);
   			if (if_block5) if_block5.m(div10, null);
@@ -19976,6 +23379,7 @@ var app = (function () {
   			append_dev(div13, img6);
   			append_dev(div13, t24);
   			append_dev(div13, p6);
+  			append_dev(p6, t25);
   			append_dev(div13, t26);
   			append_dev(div13, div12);
   			if (if_block6) if_block6.m(div12, null);
@@ -19984,6 +23388,7 @@ var app = (function () {
   			append_dev(div15, img7);
   			append_dev(div15, t28);
   			append_dev(div15, p7);
+  			append_dev(p7, t29);
   			append_dev(div15, t30);
   			append_dev(div15, div14);
   			if (if_block7) if_block7.m(div14, null);
@@ -19992,6 +23397,7 @@ var app = (function () {
   			append_dev(div17, img8);
   			append_dev(div17, t32);
   			append_dev(div17, p8);
+  			append_dev(p8, t33);
   			append_dev(div17, t34);
   			append_dev(div17, div16);
   			append_dev(div16, p9);
@@ -20000,6 +23406,7 @@ var app = (function () {
   			append_dev(div19, img9);
   			append_dev(div19, t36);
   			append_dev(div19, p10);
+  			append_dev(p10, t37);
   			append_dev(div19, t38);
   			append_dev(div19, div18);
   			append_dev(div18, p11);
@@ -20008,6 +23415,8 @@ var app = (function () {
   			current = true;
   		},
   		p: function update(ctx, [dirty]) {
+  			if ((!current || dirty & /*$_*/ 512) && t1_value !== (t1_value = /*$_*/ ctx[9]("TempMax") + "")) set_data_dev(t1, t1_value);
+
   			if (/*datosGlobal*/ ctx[8] !== null) {
   				if (if_block0) {
   					if_block0.p(ctx, dirty);
@@ -20020,6 +23429,8 @@ var app = (function () {
   				if_block0.d(1);
   				if_block0 = null;
   			}
+
+  			if ((!current || dirty & /*$_*/ 512) && t5_value !== (t5_value = /*$_*/ ctx[9]("TempMin") + "")) set_data_dev(t5, t5_value);
 
   			if (/*datosGlobal*/ ctx[8] !== null) {
   				if (if_block1) {
@@ -20034,6 +23445,8 @@ var app = (function () {
   				if_block1 = null;
   			}
 
+  			if ((!current || dirty & /*$_*/ 512) && t9_value !== (t9_value = /*$_*/ ctx[9]("Wind") + "")) set_data_dev(t9, t9_value);
+
   			if (/*datosGlobal*/ ctx[8] !== null) {
   				if (if_block2) {
   					if_block2.p(ctx, dirty);
@@ -20046,6 +23459,8 @@ var app = (function () {
   				if_block2.d(1);
   				if_block2 = null;
   			}
+
+  			if ((!current || dirty & /*$_*/ 512) && t13_value !== (t13_value = /*$_*/ ctx[9]("Feellike") + "")) set_data_dev(t13, t13_value);
 
   			if (/*datosGlobal*/ ctx[8] !== null) {
   				if (if_block3) {
@@ -20060,6 +23475,8 @@ var app = (function () {
   				if_block3 = null;
   			}
 
+  			if ((!current || dirty & /*$_*/ 512) && t17_value !== (t17_value = /*$_*/ ctx[9]("Humidity") + "")) set_data_dev(t17, t17_value);
+
   			if (/*datosGlobal*/ ctx[8] !== null) {
   				if (if_block4) {
   					if_block4.p(ctx, dirty);
@@ -20072,6 +23489,8 @@ var app = (function () {
   				if_block4.d(1);
   				if_block4 = null;
   			}
+
+  			if ((!current || dirty & /*$_*/ 512) && t21_value !== (t21_value = /*$_*/ ctx[9]("Pressure") + "")) set_data_dev(t21, t21_value);
 
   			if (/*datosGlobal*/ ctx[8] !== null) {
   				if (if_block5) {
@@ -20086,6 +23505,8 @@ var app = (function () {
   				if_block5 = null;
   			}
 
+  			if ((!current || dirty & /*$_*/ 512) && t25_value !== (t25_value = /*$_*/ ctx[9]("UV") + "")) set_data_dev(t25, t25_value);
+
   			if (/*datosGlobal*/ ctx[8] !== null) {
   				if (if_block6) {
   					if_block6.p(ctx, dirty);
@@ -20099,6 +23520,8 @@ var app = (function () {
   				if_block6 = null;
   			}
 
+  			if ((!current || dirty & /*$_*/ 512) && t29_value !== (t29_value = /*$_*/ ctx[9]("Visibility") + "")) set_data_dev(t29, t29_value);
+
   			if (/*datosGlobal*/ ctx[8] !== null) {
   				if (if_block7) {
   					if_block7.p(ctx, dirty);
@@ -20111,6 +23534,9 @@ var app = (function () {
   				if_block7.d(1);
   				if_block7 = null;
   			}
+
+  			if ((!current || dirty & /*$_*/ 512) && t33_value !== (t33_value = /*$_*/ ctx[9]("Sunrise") + "")) set_data_dev(t33, t33_value);
+  			if ((!current || dirty & /*$_*/ 512) && t37_value !== (t37_value = /*$_*/ ctx[9]("Sunset") + "")) set_data_dev(t37, t37_value);
   		},
   		i: function intro(local) {
   			if (current) return;
@@ -20157,6 +23583,9 @@ var app = (function () {
   }
 
   function instance$7($$self, $$props, $$invalidate) {
+  	let $_;
+  	validate_store(nn, "_");
+  	component_subscribe($$self, nn, $$value => $$invalidate(9, $_ = $$value));
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("Datostecnicos", slots, []);
   	let COORDS = "";
@@ -20178,6 +23607,7 @@ var app = (function () {
   	$$self.$capture_state = () => ({
   		Faseslunares,
   		axios: axios$1,
+  		_: nn,
   		onMount,
   		KEY: KEY$3,
   		COORDS,
@@ -20190,11 +23620,12 @@ var app = (function () {
   		visibilidad,
   		uvi,
   		datosGlobal,
-  		positionPromise: positionPromise$3
+  		positionPromise: positionPromise$3,
+  		$_
   	});
 
   	$$self.$inject_state = $$props => {
-  		if ("COORDS" in $$props) $$invalidate(9, COORDS = $$props.COORDS);
+  		if ("COORDS" in $$props) $$invalidate(10, COORDS = $$props.COORDS);
   		if ("tempmax" in $$props) $$invalidate(0, tempmax = $$props.tempmax);
   		if ("tempmin" in $$props) $$invalidate(1, tempmin = $$props.tempmin);
   		if ("wind" in $$props) $$invalidate(2, wind = $$props.wind);
@@ -20211,16 +23642,16 @@ var app = (function () {
   	}
 
   	$$self.$$.update = () => {
-  		if ($$self.$$.dirty & /*COORDS, datosGlobal*/ 768) {
+  		if ($$self.$$.dirty & /*COORDS, datosGlobal*/ 1280) {
   			 {
   				onMount(async () => {
   					const coordenadas = await positionPromise$3();
-  					$$invalidate(9, COORDS = coordenadas);
+  					$$invalidate(10, COORDS = coordenadas);
   					console.log(coordenadas);
   					let latitude = coordenadas.coords.latitude;
   					let longitude = coordenadas.coords.longitude;
   					console.log(latitude);
-  					$$invalidate(9, COORDS = `?lat=${latitude}&lon=${longitude}`);
+  					$$invalidate(10, COORDS = `?lat=${latitude}&lon=${longitude}`);
   					console.log(COORDS);
 
   					axios$1.get(`https://api.openweathermap.org/data/2.5/onecall${COORDS}&exclude=minutely&appid=${KEY$3}&units=metric&lang=gl`).then(data => {
@@ -20263,7 +23694,8 @@ var app = (function () {
   		pressure,
   		visibilidad,
   		uvi,
-  		datosGlobal
+  		datosGlobal,
+  		$_
   	];
   }
 
@@ -20372,23 +23804,70 @@ var app = (function () {
   	}
   }
 
+  const translations = {
+      gl: {
+          tomorrow: 'Mañá',
+          TempMax: 'Temp. Max.',
+          TempMin: 'Temp. Min.',
+          Wind: 'Vento',
+          Feellike: 'Sensación térmica',
+          Humidity:'Humidade',
+          Pressure: 'Presión',
+          UV:'Índice UV',
+          Visibility: 'Visibilidade',
+          Sunrise:'Amancer',
+          Sunset:'Solpor',
+          Invite:'Convidar amigos',
+          PhasesMoon:'Fases luares do mes'
+
+      },
+      es: {
+          tomorrow: 'Mañana',
+          TempMax: 'Temp. Max.',
+          TempMin: 'Temp. Min.',
+          Wind: 'Viento',
+          Feellike: 'Sensación térmica',
+          Humidity: 'Humedad',
+          Pressure:'Presión',
+          UV:'Índice UV',
+          Visibility:'Visibilidad',
+          Sunrise:'Amanecer',
+          Sunset:'Ocaso',
+          Invite:'Invitar amigos',
+          PhasesMoon:'Fases lunares del mes'
+
+      },
+  };
+
   /* src/Paginas/Inicio.svelte generated by Svelte v3.25.0 */
   const file$8 = "src/Paginas/Inicio.svelte";
 
   function create_fragment$9(ctx) {
   	let main;
-  	let sidebar;
-  	let t0;
-  	let panelprincipal;
+  	let a0;
+  	let i;
   	let t1;
-  	let panelhoras;
-  	let t2;
-  	let paneldias;
+  	let ul;
+  	let li0;
+  	let a1;
   	let t3;
+  	let li1;
+  	let a2;
+  	let t5;
+  	let sidebar;
+  	let t6;
+  	let panelprincipal;
+  	let t7;
+  	let panelhoras;
+  	let t8;
+  	let paneldias;
+  	let t9;
   	let datostecnicos;
-  	let t4;
+  	let t10;
   	let footer;
   	let current;
+  	let mounted;
+  	let dispose;
   	sidebar = new Sidebar({ $$inline: true });
   	panelprincipal = new Panelprincipal({ $$inline: true });
   	panelhoras = new Panelhoras({ $$inline: true });
@@ -20399,36 +23878,82 @@ var app = (function () {
   	const block = {
   		c: function create() {
   			main = element("main");
-  			create_component(sidebar.$$.fragment);
-  			t0 = space();
-  			create_component(panelprincipal.$$.fragment);
+  			a0 = element("a");
+  			i = element("i");
+  			i.textContent = "settings";
   			t1 = space();
-  			create_component(panelhoras.$$.fragment);
-  			t2 = space();
-  			create_component(paneldias.$$.fragment);
+  			ul = element("ul");
+  			li0 = element("li");
+  			a1 = element("a");
+  			a1.textContent = "GL";
   			t3 = space();
+  			li1 = element("li");
+  			a2 = element("a");
+  			a2.textContent = "ESP";
+  			t5 = space();
+  			create_component(sidebar.$$.fragment);
+  			t6 = space();
+  			create_component(panelprincipal.$$.fragment);
+  			t7 = space();
+  			create_component(panelhoras.$$.fragment);
+  			t8 = space();
+  			create_component(paneldias.$$.fragment);
+  			t9 = space();
   			create_component(datostecnicos.$$.fragment);
-  			t4 = space();
+  			t10 = space();
   			create_component(footer.$$.fragment);
-  			add_location(main, file$8, 9, 0, 390);
+  			attr_dev(i, "class", "material-icons white-text");
+  			add_location(i, file$8, 33, 79, 955);
+  			attr_dev(a0, "class", "dropdown-trigger transparent idioma right svelte-8maehs");
+  			attr_dev(a0, "data-target", "dropdown1");
+  			add_location(a0, file$8, 33, 2, 878);
+  			attr_dev(a1, "class", "black-text");
+  			add_location(a1, file$8, 37, 8, 1097);
+  			add_location(li0, file$8, 37, 4, 1093);
+  			attr_dev(a2, "class", "black-text");
+  			add_location(a2, file$8, 38, 8, 1163);
+  			add_location(li1, file$8, 38, 4, 1159);
+  			attr_dev(ul, "id", "dropdown1");
+  			attr_dev(ul, "class", "dropdown-content");
+  			add_location(ul, file$8, 36, 2, 1044);
+  			add_location(main, file$8, 30, 0, 840);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, main, anchor);
-  			mount_component(sidebar, main, null);
-  			append_dev(main, t0);
-  			mount_component(panelprincipal, main, null);
+  			append_dev(main, a0);
+  			append_dev(a0, i);
   			append_dev(main, t1);
+  			append_dev(main, ul);
+  			append_dev(ul, li0);
+  			append_dev(li0, a1);
+  			append_dev(ul, t3);
+  			append_dev(ul, li1);
+  			append_dev(li1, a2);
+  			append_dev(main, t5);
+  			mount_component(sidebar, main, null);
+  			append_dev(main, t6);
+  			mount_component(panelprincipal, main, null);
+  			append_dev(main, t7);
   			mount_component(panelhoras, main, null);
-  			append_dev(main, t2);
+  			append_dev(main, t8);
   			mount_component(paneldias, main, null);
-  			append_dev(main, t3);
+  			append_dev(main, t9);
   			mount_component(datostecnicos, main, null);
-  			append_dev(main, t4);
+  			append_dev(main, t10);
   			mount_component(footer, main, null);
   			current = true;
+
+  			if (!mounted) {
+  				dispose = [
+  					listen_dev(a1, "click", /*click_handler*/ ctx[2], false, false, false),
+  					listen_dev(a2, "click", /*click_handler_1*/ ctx[3], false, false, false)
+  				];
+
+  				mounted = true;
+  			}
   		},
   		p: noop,
   		i: function intro(local) {
@@ -20458,6 +23983,8 @@ var app = (function () {
   			destroy_component(paneldias);
   			destroy_component(datostecnicos);
   			destroy_component(footer);
+  			mounted = false;
+  			run_all(dispose);
   		}
   	};
 
@@ -20475,11 +24002,31 @@ var app = (function () {
   function instance$9($$self, $$props, $$invalidate) {
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("Inicio", slots, []);
+  	i.set(translations);
+
+  	function toEs() {
+  		k.set("es");
+  	}
+
+  	function toGl() {
+  		k.set("gl");
+  	}
+
+  	toGl();
+
+  	document.addEventListener("DOMContentLoaded", function () {
+  		var elems = document.querySelectorAll(".dropdown-trigger");
+  		var instances = M.Dropdown.init(elems);
+  	});
+
   	const writable_props = [];
 
   	Object.keys($$props).forEach(key => {
   		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<Inicio> was created with unknown prop '${key}'`);
   	});
+
+  	const click_handler = () => toGl();
+  	const click_handler_1 = () => toEs();
 
   	$$self.$capture_state = () => ({
   		Sidebar,
@@ -20487,10 +24034,15 @@ var app = (function () {
   		Panelhoras,
   		Paneldias,
   		Datostecnicos,
-  		Footer
+  		Footer,
+  		dictionary: i,
+  		locale: k,
+  		translations,
+  		toEs,
+  		toGl
   	});
 
-  	return [];
+  	return [toEs, toGl, click_handler, click_handler_1];
   }
 
   class Inicio extends SvelteComponentDev {
@@ -20507,11 +24059,6 @@ var app = (function () {
   	}
   }
 
-  function cubicOut(t) {
-      const f = t - 1.0;
-      return f * f * f + 1.0;
-  }
-
   function fade(node, { delay = 0, duration = 400, easing = identity }) {
       const o = +getComputedStyle(node).opacity;
       return {
@@ -20519,20 +24066,6 @@ var app = (function () {
           duration,
           easing,
           css: t => `opacity: ${t * o}`
-      };
-  }
-  function fly(node, { delay = 0, duration = 400, easing = cubicOut, x = 0, y = 0, opacity = 0 }) {
-      const style = getComputedStyle(node);
-      const target_opacity = +style.opacity;
-      const transform = style.transform === 'none' ? '' : style.transform;
-      const od = target_opacity * (1 - opacity);
-      return {
-          delay,
-          duration,
-          easing,
-          css: (t, u) => `
-			transform: ${transform} translate(${(1 - t) * x}px, ${(1 - t) * y}px);
-			opacity: ${target_opacity - (od * u)}`
       };
   }
 
@@ -20547,7 +24080,7 @@ var app = (function () {
   	return child_ctx;
   }
 
-  // (167:16) {#if visibleFiltro}
+  // (184:16) {#if visibleFiltro}
   function create_if_block$3(ctx) {
   	let each_1_anchor;
   	let current;
@@ -20636,44 +24169,44 @@ var app = (function () {
   		block,
   		id: create_if_block$3.name,
   		type: "if",
-  		source: "(167:16) {#if visibleFiltro}",
+  		source: "(184:16) {#if visibleFiltro}",
   		ctx
   	});
 
   	return block;
   }
 
-  // (168:16) {#each selectedCheckbox as cidade }
+  // (185:16) {#each selectedCheckbox as cidade }
   function create_each_block$1(ctx) {
   	let div7;
   	let div6;
   	let div0;
-  	let p0;
-  	let t0_value = /*cidade*/ ctx[16].name + "";
-  	let t0;
-  	let span;
-  	let t1_value = /*cidade*/ ctx[16].lugar + "";
-  	let t1;
-  	let t2;
-  	let div1;
   	let img;
   	let img_src_value;
+  	let t0;
+  	let div5;
+  	let div3;
+  	let p0;
+  	let t1_value = /*cidade*/ ctx[16].name + "";
+  	let t1;
+  	let span;
+  	let t2_value = /*cidade*/ ctx[16].lugar + "";
+  	let t2;
   	let t3;
-  	let div4;
-  	let div2;
+  	let div1;
   	let p1;
   	let t4_value = /*cidade*/ ctx[16].etiqueta + "";
   	let t4;
   	let t5;
-  	let div3;
+  	let div2;
   	let p2;
   	let t6_value = /*cidade*/ ctx[16].precio + "";
   	let t6;
   	let t7;
-  	let div5;
+  	let div4;
   	let a;
-  	let div6_transition;
   	let t9;
+  	let div7_transition;
   	let current;
 
   	const block = {
@@ -20681,87 +24214,88 @@ var app = (function () {
   			div7 = element("div");
   			div6 = element("div");
   			div0 = element("div");
-  			p0 = element("p");
-  			t0 = text(t0_value);
-  			span = element("span");
-  			t1 = text(t1_value);
-  			t2 = space();
-  			div1 = element("div");
   			img = element("img");
+  			t0 = space();
+  			div5 = element("div");
+  			div3 = element("div");
+  			p0 = element("p");
+  			t1 = text(t1_value);
+  			span = element("span");
+  			t2 = text(t2_value);
   			t3 = space();
-  			div4 = element("div");
-  			div2 = element("div");
+  			div1 = element("div");
   			p1 = element("p");
   			t4 = text(t4_value);
   			t5 = space();
-  			div3 = element("div");
+  			div2 = element("div");
   			p2 = element("p");
   			t6 = text(t6_value);
   			t7 = space();
-  			div5 = element("div");
+  			div4 = element("div");
   			a = element("a");
   			a.textContent = "DESCARGAR";
   			t9 = space();
-  			set_style(span, "display", "block");
-  			add_location(span, file$9, 172, 44, 5252);
-  			add_location(p0, file$9, 172, 28, 5236);
-  			attr_dev(div0, "class", "nombre_cidade col s12 center-align svelte-jbn3k3");
-  			add_location(div0, file$9, 171, 26, 5159);
   			if (img.src !== (img_src_value = "/images/descargar/" + /*cidade*/ ctx[16].imagen + ".png")) attr_dev(img, "src", img_src_value);
-  			add_location(img, file$9, 175, 26, 5415);
-  			attr_dev(div1, "class", "card-image svelte-jbn3k3");
-  			add_location(div1, file$9, 174, 24, 5364);
-  			add_location(p1, file$9, 179, 32, 5648);
-  			attr_dev(div2, "class", "etiqueta col s6 svelte-jbn3k3");
-  			add_location(div2, file$9, 178, 28, 5586);
-  			add_location(p2, file$9, 182, 32, 5796);
-  			attr_dev(div3, "class", "precio col s6 svelte-jbn3k3");
-  			add_location(div3, file$9, 181, 28, 5736);
-  			attr_dev(div4, "class", "card-content black-text svelte-jbn3k3");
-  			add_location(div4, file$9, 177, 24, 5520);
-  			attr_dev(a, "class", "waves-effect waves-light btn-small svelte-jbn3k3");
-  			add_location(a, file$9, 186, 26, 5961);
-  			attr_dev(div5, "class", "card-action svelte-jbn3k3");
-  			add_location(div5, file$9, 185, 24, 5909);
-  			attr_dev(div6, "class", "card svelte-jbn3k3");
-  			add_location(div6, file$9, 170, 22, 5066);
-  			attr_dev(div7, "class", "col s6 m7");
-  			add_location(div7, file$9, 169, 20, 5020);
+  			add_location(img, file$9, 211, 28, 6819);
+  			attr_dev(div0, "class", "card-image svelte-vm2lr");
+  			add_location(div0, file$9, 210, 26, 6766);
+  			set_style(span, "display", "block");
+  			attr_dev(span, "class", "svelte-vm2lr");
+  			add_location(span, file$9, 215, 77, 7096);
+  			attr_dev(p0, "class", "header nombre_cidade svelte-vm2lr");
+  			add_location(p0, file$9, 215, 32, 7051);
+  			add_location(p1, file$9, 217, 36, 7249);
+  			attr_dev(div1, "class", "etiqueta col s6 svelte-vm2lr");
+  			add_location(div1, file$9, 216, 32, 7183);
+  			add_location(p2, file$9, 220, 36, 7409);
+  			attr_dev(div2, "class", "precio col s6 svelte-vm2lr");
+  			add_location(div2, file$9, 219, 32, 7345);
+  			attr_dev(div3, "class", "card-content black-text svelte-vm2lr");
+  			add_location(div3, file$9, 214, 28, 6981);
+  			attr_dev(a, "class", "waves-effect waves-light btn-small svelte-vm2lr");
+  			add_location(a, file$9, 224, 32, 7594);
+  			attr_dev(div4, "class", "card-action svelte-vm2lr");
+  			add_location(div4, file$9, 223, 28, 7536);
+  			attr_dev(div5, "class", "card-stacked");
+  			add_location(div5, file$9, 213, 26, 6926);
+  			attr_dev(div6, "class", "card horizontal svelte-vm2lr");
+  			add_location(div6, file$9, 209, 24, 6710);
+  			attr_dev(div7, "class", "col s12 m7");
+  			add_location(div7, file$9, 208, 20, 6613);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div7, anchor);
   			append_dev(div7, div6);
   			append_dev(div6, div0);
-  			append_dev(div0, p0);
-  			append_dev(p0, t0);
-  			append_dev(p0, span);
-  			append_dev(span, t1);
-  			append_dev(div6, t2);
-  			append_dev(div6, div1);
-  			append_dev(div1, img);
-  			append_dev(div6, t3);
-  			append_dev(div6, div4);
-  			append_dev(div4, div2);
-  			append_dev(div2, p1);
-  			append_dev(p1, t4);
-  			append_dev(div4, t5);
-  			append_dev(div4, div3);
-  			append_dev(div3, p2);
-  			append_dev(p2, t6);
-  			append_dev(div6, t7);
+  			append_dev(div0, img);
+  			append_dev(div6, t0);
   			append_dev(div6, div5);
-  			append_dev(div5, a);
+  			append_dev(div5, div3);
+  			append_dev(div3, p0);
+  			append_dev(p0, t1);
+  			append_dev(p0, span);
+  			append_dev(span, t2);
+  			append_dev(div3, t3);
+  			append_dev(div3, div1);
+  			append_dev(div1, p1);
+  			append_dev(p1, t4);
+  			append_dev(div3, t5);
+  			append_dev(div3, div2);
+  			append_dev(div2, p2);
+  			append_dev(p2, t6);
+  			append_dev(div5, t7);
+  			append_dev(div5, div4);
+  			append_dev(div4, a);
   			append_dev(div7, t9);
   			current = true;
   		},
   		p: function update(ctx, dirty) {
-  			if ((!current || dirty & /*selectedCheckbox*/ 2) && t0_value !== (t0_value = /*cidade*/ ctx[16].name + "")) set_data_dev(t0, t0_value);
-  			if ((!current || dirty & /*selectedCheckbox*/ 2) && t1_value !== (t1_value = /*cidade*/ ctx[16].lugar + "")) set_data_dev(t1, t1_value);
-
   			if (!current || dirty & /*selectedCheckbox*/ 2 && img.src !== (img_src_value = "/images/descargar/" + /*cidade*/ ctx[16].imagen + ".png")) {
   				attr_dev(img, "src", img_src_value);
   			}
 
+  			if ((!current || dirty & /*selectedCheckbox*/ 2) && t1_value !== (t1_value = /*cidade*/ ctx[16].name + "")) set_data_dev(t1, t1_value);
+  			if ((!current || dirty & /*selectedCheckbox*/ 2) && t2_value !== (t2_value = /*cidade*/ ctx[16].lugar + "")) set_data_dev(t2, t2_value);
   			if ((!current || dirty & /*selectedCheckbox*/ 2) && t4_value !== (t4_value = /*cidade*/ ctx[16].etiqueta + "")) set_data_dev(t4, t4_value);
   			if ((!current || dirty & /*selectedCheckbox*/ 2) && t6_value !== (t6_value = /*cidade*/ ctx[16].precio + "")) set_data_dev(t6, t6_value);
   		},
@@ -20769,20 +24303,20 @@ var app = (function () {
   			if (current) return;
 
   			add_render_callback(() => {
-  				if (!div6_transition) div6_transition = create_bidirectional_transition(div6, fade, { delay: 250, duration: 300 }, true);
-  				div6_transition.run(1);
+  				if (!div7_transition) div7_transition = create_bidirectional_transition(div7, fade, { delay: 250, duration: 300 }, true);
+  				div7_transition.run(1);
   			});
 
   			current = true;
   		},
   		o: function outro(local) {
-  			if (!div6_transition) div6_transition = create_bidirectional_transition(div6, fade, { delay: 250, duration: 300 }, false);
-  			div6_transition.run(0);
+  			if (!div7_transition) div7_transition = create_bidirectional_transition(div7, fade, { delay: 250, duration: 300 }, false);
+  			div7_transition.run(0);
   			current = false;
   		},
   		d: function destroy(detaching) {
   			if (detaching) detach_dev(div7);
-  			if (detaching && div6_transition) div6_transition.end();
+  			if (detaching && div7_transition) div7_transition.end();
   		}
   	};
 
@@ -20790,7 +24324,7 @@ var app = (function () {
   		block,
   		id: create_each_block$1.name,
   		type: "each",
-  		source: "(168:16) {#each selectedCheckbox as cidade }",
+  		source: "(185:16) {#each selectedCheckbox as cidade }",
   		ctx
   	});
 
@@ -20910,89 +24444,89 @@ var app = (function () {
   			t16 = space();
   			div12 = element("div");
   			if (if_block) if_block.c();
-  			attr_dev(span0, "class", "logoGW_txt svelte-jbn3k3");
-  			add_location(span0, file$9, 124, 45, 2684);
-  			attr_dev(h1, "class", "logoGW_tit svelte-jbn3k3");
-  			add_location(h1, file$9, 124, 8, 2647);
-  			attr_dev(div0, "class", "logoGW svelte-jbn3k3");
-  			add_location(div0, file$9, 123, 4, 2618);
-  			attr_dev(img0, "class", "banner svelte-jbn3k3");
+  			attr_dev(span0, "class", "logoGW_txt svelte-vm2lr");
+  			add_location(span0, file$9, 141, 45, 3145);
+  			attr_dev(h1, "class", "logoGW_tit svelte-vm2lr");
+  			add_location(h1, file$9, 141, 8, 3108);
+  			attr_dev(div0, "class", "logoGW svelte-vm2lr");
+  			add_location(div0, file$9, 140, 4, 3079);
+  			attr_dev(img0, "class", "banner svelte-vm2lr");
   			if (img0.src !== (img0_src_value = "images/Banner_Rexistro.png")) attr_dev(img0, "src", img0_src_value);
   			attr_dev(img0, "alt", "Rexístrate");
-  			add_location(img0, file$9, 131, 49, 2932);
+  			add_location(img0, file$9, 148, 49, 3393);
   			attr_dev(a, "href", "/Registro");
-  			add_location(a, file$9, 131, 20, 2903);
+  			add_location(a, file$9, 148, 20, 3364);
   			attr_dev(div1, "class", "row");
-  			add_location(div1, file$9, 130, 16, 2865);
+  			add_location(div1, file$9, 147, 16, 3326);
   			attr_dev(div2, "class", "container");
-  			add_location(div2, file$9, 129, 12, 2825);
-  			attr_dev(div3, "class", "usuario svelte-jbn3k3");
-  			add_location(div3, file$9, 128, 8, 2791);
+  			add_location(div2, file$9, 146, 12, 3286);
+  			attr_dev(div3, "class", "usuario svelte-vm2lr");
+  			add_location(div3, file$9, 145, 8, 3252);
   			attr_dev(img1, "class", "center-align");
   			attr_dev(img1, "width", "60%");
   			if (img1.src !== (img1_src_value = "images/btn_todos.svg")) attr_dev(img1, "src", img1_src_value);
-  			add_location(img1, file$9, 139, 111, 3330);
-  			attr_dev(span1, "class", "svelte-jbn3k3");
-  			add_location(span1, file$9, 140, 55, 3423);
-  			attr_dev(button0, "class", "btn_filtro svelte-jbn3k3");
+  			add_location(img1, file$9, 156, 111, 3791);
+  			attr_dev(span1, "class", "svelte-vm2lr");
+  			add_location(span1, file$9, 157, 55, 3884);
+  			attr_dev(button0, "class", "btn_filtro svelte-vm2lr");
   			toggle_class(button0, "selected", /*current*/ ctx[0] === "TODOS");
-  			add_location(button0, file$9, 139, 20, 3239);
+  			add_location(button0, file$9, 156, 20, 3700);
   			attr_dev(div4, "class", "col s3 todos");
-  			add_location(div4, file$9, 138, 16, 3192);
+  			add_location(div4, file$9, 155, 16, 3653);
   			attr_dev(img2, "class", "center-align");
   			attr_dev(img2, "width", "60%");
   			if (img2.src !== (img2_src_value = "images/btn_monumentos.svg")) attr_dev(img2, "src", img2_src_value);
-  			add_location(img2, file$9, 143, 114, 3630);
-  			attr_dev(span2, "class", "svelte-jbn3k3");
-  			add_location(span2, file$9, 144, 60, 3728);
-  			attr_dev(button1, "class", "btn_filtro svelte-jbn3k3");
+  			add_location(img2, file$9, 160, 114, 4091);
+  			attr_dev(span2, "class", "svelte-vm2lr");
+  			add_location(span2, file$9, 161, 60, 4189);
+  			attr_dev(button1, "class", "btn_filtro svelte-vm2lr");
   			toggle_class(button1, "selected", /*current*/ ctx[0] === "ARTE");
-  			add_location(button1, file$9, 143, 20, 3536);
+  			add_location(button1, file$9, 160, 20, 3997);
   			attr_dev(div5, "class", "col s3 arte");
-  			add_location(div5, file$9, 142, 16, 3490);
+  			add_location(div5, file$9, 159, 16, 3951);
   			attr_dev(img3, "class", "center-align");
   			attr_dev(img3, "width", "60%");
   			if (img3.src !== (img3_src_value = "images/btn_cidades.svg")) attr_dev(img3, "src", img3_src_value);
-  			add_location(img3, file$9, 147, 113, 3936);
-  			attr_dev(span3, "class", "svelte-jbn3k3");
-  			add_location(span3, file$9, 148, 57, 4031);
-  			attr_dev(button2, "class", "btn_filtro svelte-jbn3k3");
+  			add_location(img3, file$9, 164, 113, 4397);
+  			attr_dev(span3, "class", "svelte-vm2lr");
+  			add_location(span3, file$9, 165, 57, 4492);
+  			attr_dev(button2, "class", "btn_filtro svelte-vm2lr");
   			toggle_class(button2, "selected", /*current*/ ctx[0] === "CIDADES");
-  			add_location(button2, file$9, 147, 20, 3843);
+  			add_location(button2, file$9, 164, 20, 4304);
   			attr_dev(div6, "class", "col s3 cidades");
-  			add_location(div6, file$9, 146, 16, 3794);
+  			add_location(div6, file$9, 163, 16, 4255);
   			attr_dev(img4, "class", "center-align");
   			attr_dev(img4, "width", "60%");
   			if (img4.src !== (img4_src_value = "images/btn_natureza.svg")) attr_dev(img4, "src", img4_src_value);
-  			add_location(img4, file$9, 151, 116, 4246);
-  			attr_dev(span4, "class", "svelte-jbn3k3");
-  			add_location(span4, file$9, 152, 58, 4342);
-  			attr_dev(button3, "class", "btn_filtro svelte-jbn3k3");
+  			add_location(img4, file$9, 168, 116, 4707);
+  			attr_dev(span4, "class", "svelte-vm2lr");
+  			add_location(span4, file$9, 169, 58, 4803);
+  			attr_dev(button3, "class", "btn_filtro svelte-vm2lr");
   			toggle_class(button3, "selected", /*current*/ ctx[0] === "NATUREZA");
-  			add_location(button3, file$9, 151, 20, 4150);
+  			add_location(button3, file$9, 168, 20, 4611);
   			attr_dev(div7, "class", "col s3 natureza");
-  			add_location(div7, file$9, 150, 16, 4100);
+  			add_location(div7, file$9, 167, 16, 4561);
   			attr_dev(div8, "id", "BtnContainer");
-  			attr_dev(div8, "class", "col s12 svelte-jbn3k3");
-  			add_location(div8, file$9, 137, 12, 3136);
-  			attr_dev(button4, "class", "btn_gratis left svelte-jbn3k3");
-  			add_location(button4, file$9, 157, 20, 4537);
+  			attr_dev(div8, "class", "col s12 svelte-vm2lr");
+  			add_location(div8, file$9, 154, 12, 3597);
+  			attr_dev(button4, "class", "btn_gratis left svelte-vm2lr");
+  			add_location(button4, file$9, 174, 20, 4998);
   			attr_dev(div9, "class", "col s6 left");
-  			add_location(div9, file$9, 156, 16, 4491);
-  			attr_dev(button5, "class", "btn_descargadas right svelte-jbn3k3");
-  			add_location(button5, file$9, 160, 20, 4696);
+  			add_location(div9, file$9, 173, 16, 4952);
+  			attr_dev(button5, "class", "btn_descargadas right svelte-vm2lr");
+  			add_location(button5, file$9, 177, 20, 5157);
   			attr_dev(div10, "class", "col s6 right");
-  			add_location(div10, file$9, 159, 16, 4649);
-  			attr_dev(div11, "class", "col s12 botones_filtro_sub center svelte-jbn3k3");
-  			add_location(div11, file$9, 155, 12, 4427);
+  			add_location(div10, file$9, 176, 16, 5110);
+  			attr_dev(div11, "class", "col s12 botones_filtro_sub center svelte-vm2lr");
+  			add_location(div11, file$9, 172, 12, 4888);
   			attr_dev(div12, "class", "row");
-  			add_location(div12, file$9, 163, 12, 4835);
+  			add_location(div12, file$9, 180, 12, 5296);
   			attr_dev(div13, "class", "container");
-  			add_location(div13, file$9, 136, 8, 3100);
-  			attr_dev(div14, "class", "corpo center svelte-jbn3k3");
-  			add_location(div14, file$9, 127, 4, 2756);
-  			attr_dev(div15, "class", "fondo svelte-jbn3k3");
-  			add_location(div15, file$9, 119, 0, 2576);
+  			add_location(div13, file$9, 153, 8, 3561);
+  			attr_dev(div14, "class", "corpo center svelte-vm2lr");
+  			add_location(div14, file$9, 144, 4, 3217);
+  			attr_dev(div15, "class", "fondo svelte-vm2lr");
+  			add_location(div15, file$9, 136, 0, 3037);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -21196,9 +24730,17 @@ var app = (function () {
   			tipo: "BASIC"
   		},
   		{
-  			name: "Teatro García Barbón",
+  			name: "Dinoseto de Porta do Sol",
   			lugar: "Vigo",
-  			imagen: "Vigo_descargar",
+  			imagen: "Vigo_dinoseto_descargar",
+  			etiqueta: "Arte",
+  			precio: "0,99€",
+  			tipo: "PREMIUM"
+  		},
+  		{
+  			name: "O Sireo de Porta do Sol",
+  			lugar: "Vigo",
+  			imagen: "Vigo_sireno_descargar",
   			etiqueta: "Arte",
   			precio: "0,99€",
   			tipo: "PREMIUM"
@@ -21234,6 +24776,7 @@ var app = (function () {
 
   	$$self.$capture_state = () => ({
   		Sidebar,
+  		_: nn,
   		link,
   		fade,
   		current,
@@ -21363,769 +24906,12 @@ var app = (function () {
   	}
   }
 
-  /* src/Componentes/Draggabledraw.svelte generated by Svelte v3.25.0 */
-
-  const { Object: Object_1$1 } = globals;
-  const file$a = "src/Componentes/Draggabledraw.svelte";
-  const get_right_slot_changes = dirty => ({});
-  const get_right_slot_context = ctx => ({});
-  const get_left_slot_changes = dirty => ({});
-  const get_left_slot_context = ctx => ({});
-
-  // (319:0) {#if visible}
-  function create_if_block$4(ctx) {
-  	let div6;
-  	let div2;
-  	let div1;
-  	let div0;
-  	let div2_intro;
-  	let div2_outro;
-  	let t0;
-  	let div5;
-  	let div4;
-  	let t1;
-  	let div3;
-  	let t2;
-  	let div5_intro;
-  	let div5_outro;
-  	let div6_intro;
-  	let div6_outro;
-  	let current;
-  	const default_slot_template = /*#slots*/ ctx[11].default;
-  	const default_slot = create_slot(default_slot_template, ctx, /*$$scope*/ ctx[10], null);
-
-  	function select_block_type(ctx, dirty) {
-  		if (/*undraggeble*/ ctx[3]) return create_if_block_1$1;
-  		return create_else_block$2;
-  	}
-
-  	let current_block_type = select_block_type(ctx);
-  	let if_block = current_block_type(ctx);
-  	const left_slot_template = /*#slots*/ ctx[11].left;
-  	const left_slot = create_slot(left_slot_template, ctx, /*$$scope*/ ctx[10], get_left_slot_context);
-  	const right_slot_template = /*#slots*/ ctx[11].right;
-  	const right_slot = create_slot(right_slot_template, ctx, /*$$scope*/ ctx[10], get_right_slot_context);
-
-  	const block = {
-  		c: function create() {
-  			div6 = element("div");
-  			div2 = element("div");
-  			div1 = element("div");
-  			div0 = element("div");
-  			if (default_slot) default_slot.c();
-  			t0 = space();
-  			div5 = element("div");
-  			div4 = element("div");
-  			if_block.c();
-  			t1 = space();
-  			div3 = element("div");
-  			if (left_slot) left_slot.c();
-  			t2 = space();
-  			if (right_slot) right_slot.c();
-  			attr_dev(div0, "class", "content svelte-1h4zu3z");
-  			add_location(div0, file$a, 331, 8, 9241);
-  			attr_dev(div1, "class", "innercontent svelte-1h4zu3z");
-  			add_location(div1, file$a, 330, 6, 9205);
-  			set_style(div2, "overflow-y", /*overflow*/ ctx[9]);
-  			set_style(div2, "min-height", /*minVH*/ ctx[2] + "vh");
-  			set_style(div2, "max-height", /*maxVH*/ ctx[1] + "vh");
-  			attr_dev(div2, "class", "inner svelte-1h4zu3z");
-  			add_location(div2, file$a, 324, 4, 8980);
-  			attr_dev(div3, "class", "actionsDiv svelte-1h4zu3z");
-  			add_location(div3, file$a, 355, 8, 9849);
-  			add_location(div4, file$a, 343, 6, 9514);
-  			attr_dev(div5, "class", "linewrapper svelte-1h4zu3z");
-  			attr_dev(div5, "draggable", "true");
-  			add_location(div5, file$a, 337, 4, 9332);
-  			attr_dev(div6, "class", "wrapper svelte-1h4zu3z");
-  			add_location(div6, file$a, 319, 2, 8856);
-  		},
-  		m: function mount(target, anchor) {
-  			insert_dev(target, div6, anchor);
-  			append_dev(div6, div2);
-  			append_dev(div2, div1);
-  			append_dev(div1, div0);
-
-  			if (default_slot) {
-  				default_slot.m(div0, null);
-  			}
-
-  			/*div2_binding*/ ctx[12](div2);
-  			append_dev(div6, t0);
-  			append_dev(div6, div5);
-  			append_dev(div5, div4);
-  			if_block.m(div4, null);
-  			append_dev(div4, t1);
-  			append_dev(div4, div3);
-
-  			if (left_slot) {
-  				left_slot.m(div3, null);
-  			}
-
-  			append_dev(div3, t2);
-
-  			if (right_slot) {
-  				right_slot.m(div3, null);
-  			}
-
-  			/*div3_binding*/ ctx[15](div3);
-  			/*div5_binding*/ ctx[16](div5);
-  			/*div6_binding*/ ctx[17](div6);
-  			current = true;
-  		},
-  		p: function update(ctx, dirty) {
-  			if (default_slot) {
-  				if (default_slot.p && dirty[0] & /*$$scope*/ 1024) {
-  					update_slot(default_slot, default_slot_template, ctx, /*$$scope*/ ctx[10], dirty, null, null);
-  				}
-  			}
-
-  			if (!current || dirty[0] & /*overflow*/ 512) {
-  				set_style(div2, "overflow-y", /*overflow*/ ctx[9]);
-  			}
-
-  			if (!current || dirty[0] & /*minVH*/ 4) {
-  				set_style(div2, "min-height", /*minVH*/ ctx[2] + "vh");
-  			}
-
-  			if (!current || dirty[0] & /*maxVH*/ 2) {
-  				set_style(div2, "max-height", /*maxVH*/ ctx[1] + "vh");
-  			}
-
-  			if (current_block_type === (current_block_type = select_block_type(ctx)) && if_block) {
-  				if_block.p(ctx, dirty);
-  			} else {
-  				if_block.d(1);
-  				if_block = current_block_type(ctx);
-
-  				if (if_block) {
-  					if_block.c();
-  					if_block.m(div4, t1);
-  				}
-  			}
-
-  			if (left_slot) {
-  				if (left_slot.p && dirty[0] & /*$$scope*/ 1024) {
-  					update_slot(left_slot, left_slot_template, ctx, /*$$scope*/ ctx[10], dirty, get_left_slot_changes, get_left_slot_context);
-  				}
-  			}
-
-  			if (right_slot) {
-  				if (right_slot.p && dirty[0] & /*$$scope*/ 1024) {
-  					update_slot(right_slot, right_slot_template, ctx, /*$$scope*/ ctx[10], dirty, get_right_slot_changes, get_right_slot_context);
-  				}
-  			}
-  		},
-  		i: function intro(local) {
-  			if (current) return;
-  			transition_in(default_slot, local);
-
-  			add_render_callback(() => {
-  				if (div2_outro) div2_outro.end(1);
-  				if (!div2_intro) div2_intro = create_in_transition(div2, fly, { y: 2000, duration: 250 });
-  				div2_intro.start();
-  			});
-
-  			transition_in(left_slot, local);
-  			transition_in(right_slot, local);
-
-  			add_render_callback(() => {
-  				if (div5_outro) div5_outro.end(1);
-  				if (!div5_intro) div5_intro = create_in_transition(div5, fly, { y: 2000, duration: 250 });
-  				div5_intro.start();
-  			});
-
-  			add_render_callback(() => {
-  				if (div6_outro) div6_outro.end(1);
-  				if (!div6_intro) div6_intro = create_in_transition(div6, fade, { duration: 250 });
-  				div6_intro.start();
-  			});
-
-  			current = true;
-  		},
-  		o: function outro(local) {
-  			transition_out(default_slot, local);
-  			if (div2_intro) div2_intro.invalidate();
-  			div2_outro = create_out_transition(div2, fly, { y: 1000, duration: 750 });
-  			transition_out(left_slot, local);
-  			transition_out(right_slot, local);
-  			if (div5_intro) div5_intro.invalidate();
-  			div5_outro = create_out_transition(div5, fly, { y: 1000, duration: 750 });
-  			if (div6_intro) div6_intro.invalidate();
-  			div6_outro = create_out_transition(div6, fade, { duration: 350 });
-  			current = false;
-  		},
-  		d: function destroy(detaching) {
-  			if (detaching) detach_dev(div6);
-  			if (default_slot) default_slot.d(detaching);
-  			/*div2_binding*/ ctx[12](null);
-  			if (detaching && div2_outro) div2_outro.end();
-  			if_block.d();
-  			if (left_slot) left_slot.d(detaching);
-  			if (right_slot) right_slot.d(detaching);
-  			/*div3_binding*/ ctx[15](null);
-  			/*div5_binding*/ ctx[16](null);
-  			if (detaching && div5_outro) div5_outro.end();
-  			/*div6_binding*/ ctx[17](null);
-  			if (detaching && div6_outro) div6_outro.end();
-  		}
-  	};
-
-  	dispatch_dev("SvelteRegisterBlock", {
-  		block,
-  		id: create_if_block$4.name,
-  		type: "if",
-  		source: "(319:0) {#if visible}",
-  		ctx
-  	});
-
-  	return block;
-  }
-
-  // (352:8) {:else}
-  function create_else_block$2(ctx) {
-  	let div;
-
-  	const block = {
-  		c: function create() {
-  			div = element("div");
-  			attr_dev(div, "class", "line svelte-1h4zu3z");
-  			add_location(div, file$a, 352, 10, 9785);
-  		},
-  		m: function mount(target, anchor) {
-  			insert_dev(target, div, anchor);
-  			/*div_binding*/ ctx[14](div);
-  		},
-  		p: noop,
-  		d: function destroy(detaching) {
-  			if (detaching) detach_dev(div);
-  			/*div_binding*/ ctx[14](null);
-  		}
-  	};
-
-  	dispatch_dev("SvelteRegisterBlock", {
-  		block,
-  		id: create_else_block$2.name,
-  		type: "else",
-  		source: "(352:8) {:else}",
-  		ctx
-  	});
-
-  	return block;
-  }
-
-  // (345:8) {#if undraggeble}
-  function create_if_block_1$1(ctx) {
-  	let img;
-  	let img_src_value;
-
-  	const block = {
-  		c: function create() {
-  			img = element("img");
-  			if (img.src !== (img_src_value = "/assets/cross_primary.svg")) attr_dev(img, "src", img_src_value);
-  			attr_dev(img, "alt", "X");
-  			attr_dev(img, "class", "crossimg svelte-1h4zu3z");
-  			set_style(img, "cursor", /*undraggeble*/ ctx[3] ? "pointer" : "move");
-  			add_location(img, file$a, 345, 10, 9558);
-  		},
-  		m: function mount(target, anchor) {
-  			insert_dev(target, img, anchor);
-  			/*img_binding*/ ctx[13](img);
-  		},
-  		p: function update(ctx, dirty) {
-  			if (dirty[0] & /*undraggeble*/ 8) {
-  				set_style(img, "cursor", /*undraggeble*/ ctx[3] ? "pointer" : "move");
-  			}
-  		},
-  		d: function destroy(detaching) {
-  			if (detaching) detach_dev(img);
-  			/*img_binding*/ ctx[13](null);
-  		}
-  	};
-
-  	dispatch_dev("SvelteRegisterBlock", {
-  		block,
-  		id: create_if_block_1$1.name,
-  		type: "if",
-  		source: "(345:8) {#if undraggeble}",
-  		ctx
-  	});
-
-  	return block;
-  }
-
-  function create_fragment$c(ctx) {
-  	let if_block_anchor;
-  	let current;
-  	let if_block = /*visible*/ ctx[0] && create_if_block$4(ctx);
-
-  	const block = {
-  		c: function create() {
-  			if (if_block) if_block.c();
-  			if_block_anchor = empty();
-  		},
-  		l: function claim(nodes) {
-  			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
-  		},
-  		m: function mount(target, anchor) {
-  			if (if_block) if_block.m(target, anchor);
-  			insert_dev(target, if_block_anchor, anchor);
-  			current = true;
-  		},
-  		p: function update(ctx, dirty) {
-  			if (/*visible*/ ctx[0]) {
-  				if (if_block) {
-  					if_block.p(ctx, dirty);
-
-  					if (dirty[0] & /*visible*/ 1) {
-  						transition_in(if_block, 1);
-  					}
-  				} else {
-  					if_block = create_if_block$4(ctx);
-  					if_block.c();
-  					transition_in(if_block, 1);
-  					if_block.m(if_block_anchor.parentNode, if_block_anchor);
-  				}
-  			} else if (if_block) {
-  				group_outros();
-
-  				transition_out(if_block, 1, 1, () => {
-  					if_block = null;
-  				});
-
-  				check_outros();
-  			}
-  		},
-  		i: function intro(local) {
-  			if (current) return;
-  			transition_in(if_block);
-  			current = true;
-  		},
-  		o: function outro(local) {
-  			transition_out(if_block);
-  			current = false;
-  		},
-  		d: function destroy(detaching) {
-  			if (if_block) if_block.d(detaching);
-  			if (detaching) detach_dev(if_block_anchor);
-  		}
-  	};
-
-  	dispatch_dev("SvelteRegisterBlock", {
-  		block,
-  		id: create_fragment$c.name,
-  		type: "component",
-  		source: "",
-  		ctx
-  	});
-
-  	return block;
-  }
-
-  function getOffset(element) {
-  	let xPosition = 0;
-  	let yPosition = 0;
-
-  	while (element) {
-  		yPosition += element.offsetTop - element.scrollTop + element.clientTop;
-  		xPosition += element.offsetLeft - element.scrollLeft + element.clientLeft;
-  		element = element.offsetParent;
-  	}
-
-  	return { xPosition, yPosition };
-  }
-
-  function instance$c($$self, $$props, $$invalidate) {
-  	let { $$slots: slots = {}, $$scope } = $$props;
-  	validate_slots("Draggabledraw", slots, ['default','left','right']);
-  	let { visible = true } = $$props;
-  	let { maxVH = 90 } = $$props;
-  	let { minVH = 85 } = $$props;
-  	let stopExpand, initialized = false;
-  	let undraggeble = true;
-  	let inner, lineWrapper, wrapper, line, actionsDiv, overflow;
-  	let origHeight, origBottom, maxWidth, lastPageY, value, per_viewportHeight = 0;
-  	let touchStartHandler, touchMoveHandler, touchPoint;
-
-  	window.addEventListener("resize", () => {
-  		if (visible) {
-  			maxWidth = getComputedStyle(inner).width;
-  			$$invalidate(5, lineWrapper.style.width = maxWidth, lineWrapper);
-  		}
-  	});
-
-  	afterUpdate(() => {
-  		if (visible && !initialized) {
-  			origHeight = parseInt(getComputedStyle(inner).maxHeight.split("px")[0]);
-  			maxWidth = getComputedStyle(inner).width;
-  			$$invalidate(5, lineWrapper.style.width = maxWidth, lineWrapper);
-  			initialize();
-  			initialized = true;
-  			blockDrag();
-  		} else if (!visible) {
-  			lastPageY = undefined;
-  			initialized = false;
-  			stopExpand = false;
-  		}
-
-  		if (visible) {
-  			// updated the linewrapper position
-  			let innerOffset = getOffset(inner);
-
-  			$$invalidate(5, lineWrapper.style.top = innerOffset.yPosition + "px", lineWrapper);
-  			$$invalidate(5, lineWrapper.style.left = innerOffset.xPosition + "px", lineWrapper);
-  			$$invalidate(8, actionsDiv.style.width = lineWrapper.style.width, actionsDiv);
-  		}
-  	});
-
-  	onMount(() => {
-  		let vh = getComputedStyle(wrapper).height.split("px")[0] / 100;
-
-  		if (getComputedStyle(inner).height.split("px")[0] > vh * 85) {
-  			$$invalidate(9, overflow = "scroll");
-  		} else {
-  			$$invalidate(9, overflow = "inherit");
-  		}
-
-  		initialize();
-  		$$invalidate(3, undraggeble = document.ontouchmove === undefined && typeof window.orientation !== "undefined");
-  		origBottom = getComputedStyle(inner).bottom;
-
-  		setTimeout(
-  			() => {
-  				maxWidth = getComputedStyle(inner).width;
-  				$$invalidate(5, lineWrapper.style.width = maxWidth, lineWrapper);
-  			},
-  			500
-  		);
-  	});
-
-  	function initialize() {
-  		per_viewportHeight = parseInt(getComputedStyle(inner).minHeight.split("px")[0]) / minVH;
-
-  		if (document.ontouchmove === null) {
-  			// touch move supported
-  			// passive event listener: checkout https://www.chromestatus.com/feature/5745543795965952
-  			var supportsPassive = false;
-
-  			try {
-  				var opts = Object.defineProperty({}, "passive", {
-  					get() {
-  						supportsPassive = true;
-  					}
-  				});
-
-  				window.addEventListener("testPassive", null, opts);
-  				window.removeEventListener("testPassive", null, opts);
-  			} catch(e) {
-  				
-  			}
-
-  			// add event listener
-  			lineWrapper.addEventListener("touchmove", moveElement, supportsPassive ? { passive: true } : false);
-
-  			lineWrapper.addEventListener("touchend", closeElement, supportsPassive ? { passive: true } : false);
-  			return;
-  		} else if (undraggeble) {
-  			// touch move not supported and is mobile version
-  			line.addEventListener("click", () => {
-  				closeElement(1);
-  			});
-  		}
-
-  		// desktop version
-  		lineWrapper.addEventListener("dragstart", e => {
-  			e = e || window.event;
-  			e.preventDefault();
-  			document.addEventListener("mousemove", moveElement);
-  			document.addEventListener("mouseup", closeElement);
-  		});
-  	}
-
-  	function moveElement(e) {
-  		if (!inner) {
-  			return;
-  		}
-
-  		let touchLocation = document.ontouchmove === null
-  		? e.targetTouches[0].pageY
-  		: e.clientY;
-
-  		let minBottomExpo = 1.5;
-
-  		if (lastPageY === undefined) {
-  			lastPageY = touchLocation;
-  		}
-
-  		if (lastPageY <= touchLocation) {
-  			// user is dragging down the lineWrapper
-  			let botton = getComputedStyle(inner).bottom;
-
-  			value = parseInt(botton.split("px")[0]);
-  			$$invalidate(4, inner.style.bottom = value - Math.abs(touchLocation - lastPageY) + "px", inner);
-  			lastPageY = touchLocation;
-
-  			if (Math.abs(value * minBottomExpo) > origHeight) {
-  				closeElement(1);
-  			}
-  		} else {
-  			// user is dragging up the lineWrapper
-  			innerHeight = parseInt(inner.style.maxHeight.split("px")[0]);
-
-  			innerHeight = isNaN(innerHeight) ? 0 : innerHeight;
-
-  			if (innerHeight <= maxVH * per_viewportHeight) {
-  				let maxHeight = getComputedStyle(inner).maxHeight;
-  				value = parseInt(maxHeight.split("px")[0]);
-  				$$invalidate(4, inner.style.maxHeight = value + Math.abs(touchLocation - lastPageY) + "px", inner);
-  				lastPageY = touchLocation;
-  			} else {
-  				stopExpand = true;
-  			}
-  		}
-  	}
-
-  	function closeElement(e) {
-  		unblockDrag();
-  		value = 0;
-  		lastPageY = undefined;
-  		document.removeEventListener("mousemove", moveElement);
-
-  		if (Math.abs(value * 5) > origHeight || e === 1) {
-  			$$invalidate(0, visible = false);
-  		} else if (inner && visible) {
-  			$$invalidate(4, inner.style.bottom = origBottom, inner);
-  		}
-  	}
-
-  	function blockDrag() {
-  		(function () {
-  			// Only needed for touch events on chrome.
-  			if ((window.chrome || navigator.userAgent.match("CriOS")) && "ontouchstart" in document.documentElement) {
-  				touchStartHandler = function () {
-  					// Only need to handle single-touch cases
-  					touchPoint = event.touches.length === 1
-  					? event.touches[0].clientY
-  					: null;
-  				};
-
-  				touchMoveHandler = function (event) {
-  					var newTouchPoint;
-
-  					// Only need to handle single-touch cases
-  					if (event.touches.length !== 1) {
-  						touchPoint = null;
-  						return;
-  					}
-
-  					// We only need to defaultPrevent when scrolling up
-  					newTouchPoint = event.touches[0].clientY;
-
-  					if (newTouchPoint > touchPoint) {
-  						event.preventDefault();
-  					}
-
-  					touchPoint = newTouchPoint;
-  				};
-
-  				document.addEventListener("touchstart", touchStartHandler, { passive: false });
-  				document.addEventListener("touchmove", touchMoveHandler, { passive: false });
-  			}
-  		})();
-  	}
-
-  	function unblockDrag() {
-  		if ((window.chrome || navigator.userAgent.match("CriOS")) && "ontouchstart" in document.documentElement) {
-  			document.removeEventListener("touchstart", touchStartHandler);
-  			document.removeEventListener("touchmove", touchMoveHandler);
-  		}
-  	}
-
-  	const writable_props = ["visible", "maxVH", "minVH"];
-
-  	Object_1$1.keys($$props).forEach(key => {
-  		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<Draggabledraw> was created with unknown prop '${key}'`);
-  	});
-
-  	function div2_binding($$value) {
-  		binding_callbacks[$$value ? "unshift" : "push"](() => {
-  			inner = $$value;
-  			$$invalidate(4, inner);
-  		});
-  	}
-
-  	function img_binding($$value) {
-  		binding_callbacks[$$value ? "unshift" : "push"](() => {
-  			line = $$value;
-  			$$invalidate(7, line);
-  		});
-  	}
-
-  	function div_binding($$value) {
-  		binding_callbacks[$$value ? "unshift" : "push"](() => {
-  			line = $$value;
-  			$$invalidate(7, line);
-  		});
-  	}
-
-  	function div3_binding($$value) {
-  		binding_callbacks[$$value ? "unshift" : "push"](() => {
-  			actionsDiv = $$value;
-  			$$invalidate(8, actionsDiv);
-  		});
-  	}
-
-  	function div5_binding($$value) {
-  		binding_callbacks[$$value ? "unshift" : "push"](() => {
-  			lineWrapper = $$value;
-  			$$invalidate(5, lineWrapper);
-  		});
-  	}
-
-  	function div6_binding($$value) {
-  		binding_callbacks[$$value ? "unshift" : "push"](() => {
-  			wrapper = $$value;
-  			$$invalidate(6, wrapper);
-  		});
-  	}
-
-  	$$self.$$set = $$props => {
-  		if ("visible" in $$props) $$invalidate(0, visible = $$props.visible);
-  		if ("maxVH" in $$props) $$invalidate(1, maxVH = $$props.maxVH);
-  		if ("minVH" in $$props) $$invalidate(2, minVH = $$props.minVH);
-  		if ("$$scope" in $$props) $$invalidate(10, $$scope = $$props.$$scope);
-  	};
-
-  	$$self.$capture_state = () => ({
-  		afterUpdate,
-  		tick,
-  		onMount,
-  		onDestroy,
-  		fly,
-  		fade,
-  		visible,
-  		maxVH,
-  		minVH,
-  		stopExpand,
-  		initialized,
-  		undraggeble,
-  		inner,
-  		lineWrapper,
-  		wrapper,
-  		line,
-  		actionsDiv,
-  		overflow,
-  		origHeight,
-  		origBottom,
-  		maxWidth,
-  		lastPageY,
-  		value,
-  		per_viewportHeight,
-  		touchStartHandler,
-  		touchMoveHandler,
-  		touchPoint,
-  		initialize,
-  		moveElement,
-  		closeElement,
-  		blockDrag,
-  		unblockDrag,
-  		getOffset
-  	});
-
-  	$$self.$inject_state = $$props => {
-  		if ("visible" in $$props) $$invalidate(0, visible = $$props.visible);
-  		if ("maxVH" in $$props) $$invalidate(1, maxVH = $$props.maxVH);
-  		if ("minVH" in $$props) $$invalidate(2, minVH = $$props.minVH);
-  		if ("stopExpand" in $$props) stopExpand = $$props.stopExpand;
-  		if ("initialized" in $$props) initialized = $$props.initialized;
-  		if ("undraggeble" in $$props) $$invalidate(3, undraggeble = $$props.undraggeble);
-  		if ("inner" in $$props) $$invalidate(4, inner = $$props.inner);
-  		if ("lineWrapper" in $$props) $$invalidate(5, lineWrapper = $$props.lineWrapper);
-  		if ("wrapper" in $$props) $$invalidate(6, wrapper = $$props.wrapper);
-  		if ("line" in $$props) $$invalidate(7, line = $$props.line);
-  		if ("actionsDiv" in $$props) $$invalidate(8, actionsDiv = $$props.actionsDiv);
-  		if ("overflow" in $$props) $$invalidate(9, overflow = $$props.overflow);
-  		if ("origHeight" in $$props) origHeight = $$props.origHeight;
-  		if ("origBottom" in $$props) origBottom = $$props.origBottom;
-  		if ("maxWidth" in $$props) maxWidth = $$props.maxWidth;
-  		if ("lastPageY" in $$props) lastPageY = $$props.lastPageY;
-  		if ("value" in $$props) value = $$props.value;
-  		if ("per_viewportHeight" in $$props) per_viewportHeight = $$props.per_viewportHeight;
-  		if ("touchStartHandler" in $$props) touchStartHandler = $$props.touchStartHandler;
-  		if ("touchMoveHandler" in $$props) touchMoveHandler = $$props.touchMoveHandler;
-  		if ("touchPoint" in $$props) touchPoint = $$props.touchPoint;
-  	};
-
-  	if ($$props && "$$inject" in $$props) {
-  		$$self.$inject_state($$props.$$inject);
-  	}
-
-  	return [
-  		visible,
-  		maxVH,
-  		minVH,
-  		undraggeble,
-  		inner,
-  		lineWrapper,
-  		wrapper,
-  		line,
-  		actionsDiv,
-  		overflow,
-  		$$scope,
-  		slots,
-  		div2_binding,
-  		img_binding,
-  		div_binding,
-  		div3_binding,
-  		div5_binding,
-  		div6_binding
-  	];
-  }
-
-  class Draggabledraw extends SvelteComponentDev {
-  	constructor(options) {
-  		super(options);
-  		init(this, options, instance$c, create_fragment$c, safe_not_equal, { visible: 0, maxVH: 1, minVH: 2 }, [-1, -1]);
-
-  		dispatch_dev("SvelteRegisterComponent", {
-  			component: this,
-  			tagName: "Draggabledraw",
-  			options,
-  			id: create_fragment$c.name
-  		});
-  	}
-
-  	get visible() {
-  		throw new Error("<Draggabledraw>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
-  	}
-
-  	set visible(value) {
-  		throw new Error("<Draggabledraw>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
-  	}
-
-  	get maxVH() {
-  		throw new Error("<Draggabledraw>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
-  	}
-
-  	set maxVH(value) {
-  		throw new Error("<Draggabledraw>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
-  	}
-
-  	get minVH() {
-  		throw new Error("<Draggabledraw>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
-  	}
-
-  	set minVH(value) {
-  		throw new Error("<Draggabledraw>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
-  	}
-  }
-
   /* src/Componentes/Carddias.svelte generated by Svelte v3.25.0 */
 
   const { console: console_1$6 } = globals;
-  const file$b = "src/Componentes/Carddias.svelte";
+  const file$a = "src/Componentes/Carddias.svelte";
 
-  function create_fragment$d(ctx) {
+  function create_fragment$c(ctx) {
   	let div45;
   	let div44;
   	let div43;
@@ -22500,170 +25286,170 @@ var app = (function () {
   			p29 = element("p");
   			t87 = text(t87_value);
   			t88 = text("°C");
-  			add_location(p0, file$b, 178, 24, 7220);
-  			add_location(p1, file$b, 181, 28, 7316);
+  			add_location(p0, file$a, 178, 24, 7220);
+  			add_location(p1, file$a, 181, 28, 7316);
   			attr_dev(div0, "class", "tit-mes font-mes svelte-4rfikz");
-  			add_location(div0, file$b, 180, 24, 7257);
+  			add_location(div0, file$a, 180, 24, 7257);
   			attr_dev(div1, "class", "col s3 tit-diario");
-  			add_location(div1, file$b, 177, 20, 7164);
+  			add_location(div1, file$a, 177, 20, 7164);
   			if (img0.src !== (img0_src_value = "images/icons/" + /*DiconElementManana*/ ctx[2] + ".gif")) attr_dev(img0, "src", img0_src_value);
   			attr_dev(img0, "alt", "");
   			attr_dev(img0, "class", "svelte-4rfikz");
-  			add_location(img0, file$b, 185, 24, 7530);
+  			add_location(img0, file$a, 185, 24, 7530);
   			attr_dev(div2, "class", "col s2 weather-icon-manana  weather-icon center svelte-4rfikz");
-  			add_location(div2, file$b, 184, 20, 7444);
+  			add_location(div2, file$a, 184, 20, 7444);
   			attr_dev(span0, "class", "svelte-4rfikz");
-  			add_location(span0, file$b, 189, 28, 7757);
+  			add_location(span0, file$a, 189, 28, 7757);
   			attr_dev(p2, "class", "descripcionManana descripcion svelte-4rfikz");
-  			add_location(p2, file$b, 188, 24, 7687);
+  			add_location(p2, file$a, 188, 24, 7687);
   			attr_dev(div3, "class", "col s3 wrapper svelte-4rfikz");
-  			add_location(div3, file$b, 187, 20, 7634);
-  			add_location(p3, file$b, 193, 24, 7946);
+  			add_location(div3, file$a, 187, 20, 7634);
+  			add_location(p3, file$a, 193, 24, 7946);
   			attr_dev(div4, "class", "col s2 tempmaxD tempmax-manana temp_font svelte-4rfikz");
-  			add_location(div4, file$b, 192, 20, 7867);
-  			add_location(p4, file$b, 196, 24, 8105);
+  			add_location(div4, file$a, 192, 20, 7867);
+  			add_location(p4, file$a, 196, 24, 8105);
   			attr_dev(div5, "class", "col s2 tempminD tempmin-manana temp_font svelte-4rfikz");
-  			add_location(div5, file$b, 195, 20, 8026);
+  			add_location(div5, file$a, 195, 20, 8026);
   			attr_dev(div6, "class", "col s12 mas_una prox_dias centrarItems svelte-4rfikz");
-  			add_location(div6, file$b, 176, 16, 7091);
-  			add_location(p5, file$b, 202, 24, 8334);
-  			add_location(p6, file$b, 204, 28, 8458);
+  			add_location(div6, file$a, 176, 16, 7091);
+  			add_location(p5, file$a, 202, 24, 8334);
+  			add_location(p6, file$a, 204, 28, 8458);
   			attr_dev(div7, "class", "tit-mes_pasado font-mes svelte-4rfikz");
-  			add_location(div7, file$b, 203, 24, 8392);
+  			add_location(div7, file$a, 203, 24, 8392);
   			attr_dev(div8, "class", "col s3 tit-pasado");
-  			add_location(div8, file$b, 201, 20, 8278);
+  			add_location(div8, file$a, 201, 20, 8278);
   			if (img1.src !== (img1_src_value = "images/icons/" + /*DiconElementPasado*/ ctx[5] + ".gif")) attr_dev(img1, "src", img1_src_value);
   			attr_dev(img1, "alt", "");
   			attr_dev(img1, "class", "svelte-4rfikz");
-  			add_location(img1, file$b, 208, 24, 8677);
+  			add_location(img1, file$a, 208, 24, 8677);
   			attr_dev(div9, "class", "col s2 weather-icon-pasado weather-icon center svelte-4rfikz");
-  			add_location(div9, file$b, 207, 20, 8592);
+  			add_location(div9, file$a, 207, 20, 8592);
   			attr_dev(span1, "class", "svelte-4rfikz");
-  			add_location(span1, file$b, 212, 28, 8904);
+  			add_location(span1, file$a, 212, 28, 8904);
   			attr_dev(p7, "class", "descripcionPasado descripcion svelte-4rfikz");
-  			add_location(p7, file$b, 211, 24, 8834);
+  			add_location(p7, file$a, 211, 24, 8834);
   			attr_dev(div10, "class", "col s3 wrapper svelte-4rfikz");
-  			add_location(div10, file$b, 210, 20, 8781);
-  			add_location(p8, file$b, 216, 24, 9093);
+  			add_location(div10, file$a, 210, 20, 8781);
+  			add_location(p8, file$a, 216, 24, 9093);
   			attr_dev(div11, "class", "col s2 tempmaxD tempmax-pasado temp_font svelte-4rfikz");
-  			add_location(div11, file$b, 215, 20, 9014);
-  			add_location(p9, file$b, 219, 24, 9252);
+  			add_location(div11, file$a, 215, 20, 9014);
+  			add_location(p9, file$a, 219, 24, 9252);
   			attr_dev(div12, "class", "col s2 tempminD tempmin-pasado temp_font svelte-4rfikz");
-  			add_location(div12, file$b, 218, 20, 9173);
+  			add_location(div12, file$a, 218, 20, 9173);
   			attr_dev(div13, "class", "col s12 mas_dos prox_dias centrarItems svelte-4rfikz");
-  			add_location(div13, file$b, 200, 16, 8205);
-  			add_location(p10, file$b, 224, 24, 9486);
-  			add_location(p11, file$b, 226, 28, 9609);
+  			add_location(div13, file$a, 200, 16, 8205);
+  			add_location(p10, file$a, 224, 24, 9486);
+  			add_location(p11, file$a, 226, 28, 9609);
   			attr_dev(div14, "class", "tit-mes_en_dos_dias font-mes svelte-4rfikz");
-  			add_location(div14, file$b, 225, 24, 9538);
+  			add_location(div14, file$a, 225, 24, 9538);
   			attr_dev(div15, "class", "col s3 tit-en_dos_dias");
-  			add_location(div15, file$b, 223, 20, 9425);
+  			add_location(div15, file$a, 223, 20, 9425);
   			if (img2.src !== (img2_src_value = "images/icons/" + /*DiconElementEnDosDias*/ ctx[8] + ".gif")) attr_dev(img2, "src", img2_src_value);
   			attr_dev(img2, "alt", "");
   			attr_dev(img2, "class", "svelte-4rfikz");
-  			add_location(img2, file$b, 230, 24, 9821);
+  			add_location(img2, file$a, 230, 24, 9821);
   			attr_dev(div16, "class", "col s2 weather-icon-en_dos_dias weather-icon center svelte-4rfikz");
-  			add_location(div16, file$b, 229, 20, 9731);
+  			add_location(div16, file$a, 229, 20, 9731);
   			attr_dev(span2, "class", "svelte-4rfikz");
-  			add_location(span2, file$b, 234, 28, 10057);
+  			add_location(span2, file$a, 234, 28, 10057);
   			attr_dev(p12, "class", "descripcion-en_dos_dias descripcion svelte-4rfikz");
-  			add_location(p12, file$b, 233, 24, 9981);
+  			add_location(p12, file$a, 233, 24, 9981);
   			attr_dev(div17, "class", "col s3 wrapper svelte-4rfikz");
-  			add_location(div17, file$b, 232, 20, 9928);
-  			add_location(p13, file$b, 239, 24, 10255);
+  			add_location(div17, file$a, 232, 20, 9928);
+  			add_location(p13, file$a, 239, 24, 10255);
   			attr_dev(div18, "class", "col s2 tempmaxD tempmax-en_dos_dias temp_font svelte-4rfikz");
-  			add_location(div18, file$b, 238, 20, 10171);
-  			add_location(p14, file$b, 242, 24, 10427);
+  			add_location(div18, file$a, 238, 20, 10171);
+  			add_location(p14, file$a, 242, 24, 10427);
   			attr_dev(div19, "class", "col s2 tempminD tempmin-en_dos_dias temp_font svelte-4rfikz");
-  			add_location(div19, file$b, 241, 20, 10343);
+  			add_location(div19, file$a, 241, 20, 10343);
   			attr_dev(div20, "class", "col s12 mas_tres prox_dias centrarItems svelte-4rfikz");
-  			add_location(div20, file$b, 222, 16, 9351);
-  			add_location(p15, file$b, 247, 24, 10672);
-  			add_location(p16, file$b, 249, 28, 10797);
+  			add_location(div20, file$a, 222, 16, 9351);
+  			add_location(p15, file$a, 247, 24, 10672);
+  			add_location(p16, file$a, 249, 28, 10797);
   			attr_dev(div21, "class", "tit-mes_en_tres_dias font-mes svelte-4rfikz");
-  			add_location(div21, file$b, 248, 24, 10725);
+  			add_location(div21, file$a, 248, 24, 10725);
   			attr_dev(div22, "class", "col s3 tit-en_tres_dias");
-  			add_location(div22, file$b, 246, 20, 10610);
+  			add_location(div22, file$a, 246, 20, 10610);
   			if (img3.src !== (img3_src_value = "images/icons/" + /*DiconElementEnTresDias*/ ctx[11] + ".gif")) attr_dev(img3, "src", img3_src_value);
   			attr_dev(img3, "alt", "");
   			attr_dev(img3, "class", "svelte-4rfikz");
-  			add_location(img3, file$b, 253, 24, 11012);
+  			add_location(img3, file$a, 253, 24, 11012);
   			attr_dev(div23, "class", "col s2 weather-icon-en_tres_dias weather-icon center svelte-4rfikz");
-  			add_location(div23, file$b, 252, 20, 10921);
+  			add_location(div23, file$a, 252, 20, 10921);
   			attr_dev(span3, "class", "svelte-4rfikz");
-  			add_location(span3, file$b, 257, 28, 11250);
+  			add_location(span3, file$a, 257, 28, 11250);
   			attr_dev(p17, "class", "descripcion-en_tres_dias descripcion svelte-4rfikz");
-  			add_location(p17, file$b, 256, 24, 11173);
+  			add_location(p17, file$a, 256, 24, 11173);
   			attr_dev(div24, "class", "col s3 wrapper svelte-4rfikz");
-  			add_location(div24, file$b, 255, 20, 11120);
-  			add_location(p18, file$b, 261, 24, 11449);
+  			add_location(div24, file$a, 255, 20, 11120);
+  			add_location(p18, file$a, 261, 24, 11449);
   			attr_dev(div25, "class", "col s2 tempmaxD tempmax-en_tres_dias temp_font svelte-4rfikz");
-  			add_location(div25, file$b, 260, 20, 11364);
-  			add_location(p19, file$b, 264, 24, 11623);
+  			add_location(div25, file$a, 260, 20, 11364);
+  			add_location(p19, file$a, 264, 24, 11623);
   			attr_dev(div26, "class", "col s2 tempminD tempmin-en_tres_dias temp_font svelte-4rfikz");
-  			add_location(div26, file$b, 263, 20, 11538);
+  			add_location(div26, file$a, 263, 20, 11538);
   			attr_dev(div27, "class", "col s12 mas_cuatro prox_dias centrarItems svelte-4rfikz");
-  			add_location(div27, file$b, 245, 16, 10534);
-  			add_location(p20, file$b, 269, 24, 11870);
-  			add_location(p21, file$b, 271, 28, 11999);
+  			add_location(div27, file$a, 245, 16, 10534);
+  			add_location(p20, file$a, 269, 24, 11870);
+  			add_location(p21, file$a, 271, 28, 11999);
   			attr_dev(div28, "class", "tit-mes_en_cuatro_dias font-mes svelte-4rfikz");
-  			add_location(div28, file$b, 270, 24, 11925);
+  			add_location(div28, file$a, 270, 24, 11925);
   			attr_dev(div29, "class", "col s3 tit-en_cuatro_dias");
-  			add_location(div29, file$b, 268, 20, 11806);
+  			add_location(div29, file$a, 268, 20, 11806);
   			if (img4.src !== (img4_src_value = "images/icons/" + /*DiconElementEnCuatroDias*/ ctx[14] + ".gif")) attr_dev(img4, "src", img4_src_value);
   			attr_dev(img4, "alt", "");
   			attr_dev(img4, "class", "svelte-4rfikz");
-  			add_location(img4, file$b, 275, 24, 12220);
+  			add_location(img4, file$a, 275, 24, 12220);
   			attr_dev(div30, "class", "col s2 weather-icon-en_cuatro_dias weather-icon center svelte-4rfikz");
-  			add_location(div30, file$b, 274, 20, 12127);
+  			add_location(div30, file$a, 274, 20, 12127);
   			attr_dev(span4, "class", "svelte-4rfikz");
-  			add_location(span4, file$b, 279, 28, 12462);
+  			add_location(span4, file$a, 279, 28, 12462);
   			attr_dev(p22, "class", "descripcion-en_cuatro_dias descripcion svelte-4rfikz");
-  			add_location(p22, file$b, 278, 24, 12383);
+  			add_location(p22, file$a, 278, 24, 12383);
   			attr_dev(div31, "class", "col s3 wrapper svelte-4rfikz");
-  			add_location(div31, file$b, 277, 20, 12330);
-  			add_location(p23, file$b, 283, 24, 12665);
+  			add_location(div31, file$a, 277, 20, 12330);
+  			add_location(p23, file$a, 283, 24, 12665);
   			attr_dev(div32, "class", "col s2 tempmaxD tempmax-en_cuatro_dias temp_font svelte-4rfikz");
-  			add_location(div32, file$b, 282, 20, 12578);
-  			add_location(p24, file$b, 286, 24, 12843);
+  			add_location(div32, file$a, 282, 20, 12578);
+  			add_location(p24, file$a, 286, 24, 12843);
   			attr_dev(div33, "class", "col s2 tempminD tempmin-en_cuatro_dias temp_font svelte-4rfikz");
-  			add_location(div33, file$b, 285, 20, 12756);
+  			add_location(div33, file$a, 285, 20, 12756);
   			attr_dev(div34, "class", "col s12 mas_cinco prox_dias centrarItems svelte-4rfikz");
-  			add_location(div34, file$b, 267, 16, 11731);
-  			add_location(p25, file$b, 291, 24, 13090);
-  			add_location(p26, file$b, 293, 28, 13217);
+  			add_location(div34, file$a, 267, 16, 11731);
+  			add_location(p25, file$a, 291, 24, 13090);
+  			add_location(p26, file$a, 293, 28, 13217);
   			attr_dev(div35, "class", "tit-mes_en_cinco_dias font-mes svelte-4rfikz");
-  			add_location(div35, file$b, 292, 24, 13144);
+  			add_location(div35, file$a, 292, 24, 13144);
   			attr_dev(div36, "class", "col s3 tit-en_cinco_dias");
-  			add_location(div36, file$b, 290, 20, 13027);
+  			add_location(div36, file$a, 290, 20, 13027);
   			if (img5.src !== (img5_src_value = "images/icons/" + /*DiconElementEnCincoDias*/ ctx[17] + ".gif")) attr_dev(img5, "src", img5_src_value);
   			attr_dev(img5, "alt", "");
   			attr_dev(img5, "class", "svelte-4rfikz");
-  			add_location(img5, file$b, 297, 24, 13435);
+  			add_location(img5, file$a, 297, 24, 13435);
   			attr_dev(div37, "class", "col s2 weather-icon-en_cinco_dias weather-icon center svelte-4rfikz");
-  			add_location(div37, file$b, 296, 20, 13343);
+  			add_location(div37, file$a, 296, 20, 13343);
   			attr_dev(span5, "class", "svelte-4rfikz");
-  			add_location(span5, file$b, 301, 28, 13675);
+  			add_location(span5, file$a, 301, 28, 13675);
   			attr_dev(p27, "class", "descripcion-en_cinco_dias descripcion svelte-4rfikz");
-  			add_location(p27, file$b, 300, 24, 13597);
+  			add_location(p27, file$a, 300, 24, 13597);
   			attr_dev(div38, "class", "col s3 wrapper svelte-4rfikz");
-  			add_location(div38, file$b, 299, 20, 13544);
-  			add_location(p28, file$b, 305, 24, 13876);
+  			add_location(div38, file$a, 299, 20, 13544);
+  			add_location(p28, file$a, 305, 24, 13876);
   			attr_dev(div39, "class", "col s2 tempmaxD tempmax-en_cinco_dias temp_font svelte-4rfikz");
-  			add_location(div39, file$b, 304, 20, 13790);
-  			add_location(p29, file$b, 308, 24, 14052);
+  			add_location(div39, file$a, 304, 20, 13790);
+  			add_location(p29, file$a, 308, 24, 14052);
   			attr_dev(div40, "class", "col s2 tempminD tempmin-en_cinco_dias temp_font svelte-4rfikz");
-  			add_location(div40, file$b, 307, 20, 13966);
+  			add_location(div40, file$a, 307, 20, 13966);
   			attr_dev(div41, "class", "col s12 mas_seis prox_dias centrarItems svelte-4rfikz");
-  			add_location(div41, file$b, 289, 16, 12953);
+  			add_location(div41, file$a, 289, 16, 12953);
   			attr_dev(div42, "class", "row");
-  			add_location(div42, file$b, 174, 12, 7056);
+  			add_location(div42, file$a, 174, 12, 7056);
   			attr_dev(div43, "class", "pronos_dias svelte-4rfikz");
-  			add_location(div43, file$b, 173, 8, 7018);
+  			add_location(div43, file$a, 173, 8, 7018);
   			attr_dev(div44, "class", "container");
-  			add_location(div44, file$b, 172, 4, 6986);
+  			add_location(div44, file$a, 172, 4, 6986);
   			attr_dev(div45, "class", "col s12 datosTecnicosCard svelte-4rfikz");
-  			add_location(div45, file$b, 170, 0, 6941);
+  			add_location(div45, file$a, 170, 0, 6941);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -22922,7 +25708,7 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_fragment$d.name,
+  		id: create_fragment$c.name,
   		type: "component",
   		source: "",
   		ctx
@@ -22933,7 +25719,7 @@ var app = (function () {
 
   const KEY$4 = "3e867330616c39fa60d18a1af5d82f16";
 
-  function instance$d($$self, $$props, $$invalidate) {
+  function instance$c($$self, $$props, $$invalidate) {
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("Carddias", slots, []);
   	let { longitude } = $$props;
@@ -23233,13 +26019,13 @@ var app = (function () {
   class Carddias extends SvelteComponentDev {
   	constructor(options) {
   		super(options);
-  		init(this, options, instance$d, create_fragment$d, safe_not_equal, { longitude: 41, latitude: 42 }, [-1, -1]);
+  		init(this, options, instance$c, create_fragment$c, safe_not_equal, { longitude: 41, latitude: 42 }, [-1, -1]);
 
   		dispatch_dev("SvelteRegisterComponent", {
   			component: this,
   			tagName: "Carddias",
   			options,
-  			id: create_fragment$d.name
+  			id: create_fragment$c.name
   		});
 
   		const { ctx } = this.$$;
@@ -23274,10 +26060,10 @@ var app = (function () {
   /* src/Componentes/Cardtiempo.svelte generated by Svelte v3.25.0 */
 
   const { console: console_1$7 } = globals;
-  const file$c = "src/Componentes/Cardtiempo.svelte";
+  const file$b = "src/Componentes/Cardtiempo.svelte";
 
-  // (319:4) {#if datosCard!==null}
-  function create_if_block$5(ctx) {
+  // (321:4) {#if datosCard!==null}
+  function create_if_block$4(ctx) {
   	let div7;
   	let div6;
   	let div5;
@@ -23329,28 +26115,28 @@ var app = (function () {
   			t5 = text(/*descripcion*/ ctx[2]);
   			t6 = space();
   			create_component(carddias.$$.fragment);
-  			attr_dev(p0, "class", "svelte-1xblg03");
-  			add_location(p0, file$c, 324, 24, 13935);
-  			attr_dev(div0, "class", "col s12 location svelte-1xblg03");
-  			add_location(div0, file$c, 323, 20, 13880);
-  			attr_dev(p1, "class", "svelte-1xblg03");
-  			add_location(p1, file$c, 327, 24, 14067);
-  			attr_dev(div1, "class", "col s12 temperature-value center svelte-1xblg03");
-  			add_location(div1, file$c, 326, 20, 13996);
-  			attr_dev(div2, "class", "weather-container svelte-1xblg03");
-  			add_location(div2, file$c, 322, 16, 13828);
-  			attr_dev(p2, "class", "svelte-1xblg03");
-  			add_location(p2, file$c, 332, 24, 14293);
-  			attr_dev(div3, "class", "col s12 temperature-description center svelte-1xblg03");
-  			add_location(div3, file$c, 331, 20, 14216);
-  			attr_dev(div4, "class", "weather-datos svelte-1xblg03");
-  			add_location(div4, file$c, 330, 16, 14168);
+  			attr_dev(p0, "class", "svelte-1ref8fs");
+  			add_location(p0, file$b, 326, 24, 13946);
+  			attr_dev(div0, "class", "col s12 location svelte-1ref8fs");
+  			add_location(div0, file$b, 325, 20, 13891);
+  			attr_dev(p1, "class", "svelte-1ref8fs");
+  			add_location(p1, file$b, 329, 24, 14078);
+  			attr_dev(div1, "class", "col s12 temperature-value center svelte-1ref8fs");
+  			add_location(div1, file$b, 328, 20, 14007);
+  			attr_dev(div2, "class", "weather-container svelte-1ref8fs");
+  			add_location(div2, file$b, 324, 16, 13839);
+  			attr_dev(p2, "class", "svelte-1ref8fs");
+  			add_location(p2, file$b, 334, 24, 14304);
+  			attr_dev(div3, "class", "col s12 temperature-description center svelte-1ref8fs");
+  			add_location(div3, file$b, 333, 20, 14227);
+  			attr_dev(div4, "class", "weather-datos svelte-1ref8fs");
+  			add_location(div4, file$b, 332, 16, 14179);
   			attr_dev(div5, "class", "row");
-  			add_location(div5, file$c, 321, 12, 13794);
+  			add_location(div5, file$b, 323, 12, 13805);
   			attr_dev(div6, "class", "container");
-  			add_location(div6, file$c, 320, 8, 13758);
+  			add_location(div6, file$b, 322, 8, 13769);
   			attr_dev(div7, "class", "white-text PanelPrincipal");
-  			add_location(div7, file$c, 319, 4, 13710);
+  			add_location(div7, file$b, 321, 4, 13721);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div7, anchor);
@@ -23401,34 +26187,60 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_if_block$5.name,
+  		id: create_if_block$4.name,
   		type: "if",
-  		source: "(319:4) {#if datosCard!==null}",
+  		source: "(321:4) {#if datosCard!==null}",
   		ctx
   	});
 
   	return block;
   }
 
-  function create_fragment$e(ctx) {
-  	let div;
+  function create_fragment$d(ctx) {
+  	let div2;
+  	let t0;
+  	let div1;
+  	let div0;
+  	let button;
   	let current;
-  	let if_block = /*datosCard*/ ctx[5] !== null && create_if_block$5(ctx);
+  	let mounted;
+  	let dispose;
+  	let if_block = /*datosCard*/ ctx[5] !== null && create_if_block$4(ctx);
 
   	const block = {
   		c: function create() {
-  			div = element("div");
+  			div2 = element("div");
   			if (if_block) if_block.c();
-  			attr_dev(div, "class", "center PanelCard");
-  			add_location(div, file$c, 317, 0, 13648);
+  			t0 = space();
+  			div1 = element("div");
+  			div0 = element("div");
+  			button = element("button");
+  			button.textContent = "Volver";
+  			attr_dev(button, "class", "btn btn-large volver svelte-1ref8fs");
+  			add_location(button, file$b, 344, 12, 14562);
+  			attr_dev(div0, "class", "col s12");
+  			add_location(div0, file$b, 343, 8, 14528);
+  			attr_dev(div1, "class", "container");
+  			add_location(div1, file$b, 342, 4, 14496);
+  			attr_dev(div2, "class", "center PanelCard svelte-1ref8fs");
+  			add_location(div2, file$b, 318, 0, 13658);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
   		},
   		m: function mount(target, anchor) {
-  			insert_dev(target, div, anchor);
-  			if (if_block) if_block.m(div, null);
+  			insert_dev(target, div2, anchor);
+  			if (if_block) if_block.m(div2, null);
+  			append_dev(div2, t0);
+  			append_dev(div2, div1);
+  			append_dev(div1, div0);
+  			append_dev(div0, button);
   			current = true;
+
+  			if (!mounted) {
+  				dispose = listen_dev(button, "click", /*click_handler*/ ctx[8], false, false, false);
+  				mounted = true;
+  			}
   		},
   		p: function update(ctx, [dirty]) {
   			if (/*datosCard*/ ctx[5] !== null) {
@@ -23439,10 +26251,10 @@ var app = (function () {
   						transition_in(if_block, 1);
   					}
   				} else {
-  					if_block = create_if_block$5(ctx);
+  					if_block = create_if_block$4(ctx);
   					if_block.c();
   					transition_in(if_block, 1);
-  					if_block.m(div, null);
+  					if_block.m(div2, t0);
   				}
   			} else if (if_block) {
   				group_outros();
@@ -23464,14 +26276,16 @@ var app = (function () {
   			current = false;
   		},
   		d: function destroy(detaching) {
-  			if (detaching) detach_dev(div);
+  			if (detaching) detach_dev(div2);
   			if (if_block) if_block.d();
+  			mounted = false;
+  			dispose();
   		}
   	};
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_fragment$e.name,
+  		id: create_fragment$d.name,
   		type: "component",
   		source: "",
   		ctx
@@ -23482,10 +26296,11 @@ var app = (function () {
 
   const key = "3e867330616c39fa60d18a1af5d82f16";
 
-  function instance$e($$self, $$props, $$invalidate) {
+  function instance$d($$self, $$props, $$invalidate) {
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("Cardtiempo", slots, []);
   	let { name } = $$props;
+  	let { visible } = $$props;
   	let city = "";
   	let temperature = "";
   	let descripcion = "";
@@ -23505,7 +26320,7 @@ var app = (function () {
   			$$invalidate(4, longitude = datosCard.coord.lon);
   			icon = datosCard.weather[0].icon;
 
-  			// Cambiar a noche o día el fondo de pantalla
+  			// Cambiar tiempo en el fondo de pantalla
   			var fondo = document.querySelector(".PanelCard");
 
   			function cambiarSoleado() {
@@ -23750,14 +26565,19 @@ var app = (function () {
   		});
   	});
 
-  	const writable_props = ["name"];
+  	const writable_props = ["name", "visible"];
 
   	Object.keys($$props).forEach(key => {
   		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$7.warn(`<Cardtiempo> was created with unknown prop '${key}'`);
   	});
 
+  	function click_handler(event) {
+  		bubble($$self, event);
+  	}
+
   	$$self.$$set = $$props => {
   		if ("name" in $$props) $$invalidate(6, name = $$props.name);
+  		if ("visible" in $$props) $$invalidate(7, visible = $$props.visible);
   	};
 
   	$$self.$capture_state = () => ({
@@ -23765,6 +26585,7 @@ var app = (function () {
   		onMount,
   		Carddias,
   		name,
+  		visible,
   		key,
   		city,
   		temperature,
@@ -23777,6 +26598,7 @@ var app = (function () {
 
   	$$self.$inject_state = $$props => {
   		if ("name" in $$props) $$invalidate(6, name = $$props.name);
+  		if ("visible" in $$props) $$invalidate(7, visible = $$props.visible);
   		if ("city" in $$props) $$invalidate(0, city = $$props.city);
   		if ("temperature" in $$props) $$invalidate(1, temperature = $$props.temperature);
   		if ("descripcion" in $$props) $$invalidate(2, descripcion = $$props.descripcion);
@@ -23790,19 +26612,29 @@ var app = (function () {
   		$$self.$inject_state($$props.$$inject);
   	}
 
-  	return [city, temperature, descripcion, latitude, longitude, datosCard, name];
+  	return [
+  		city,
+  		temperature,
+  		descripcion,
+  		latitude,
+  		longitude,
+  		datosCard,
+  		name,
+  		visible,
+  		click_handler
+  	];
   }
 
   class Cardtiempo extends SvelteComponentDev {
   	constructor(options) {
   		super(options);
-  		init(this, options, instance$e, create_fragment$e, safe_not_equal, { name: 6 });
+  		init(this, options, instance$d, create_fragment$d, safe_not_equal, { name: 6, visible: 7 });
 
   		dispatch_dev("SvelteRegisterComponent", {
   			component: this,
   			tagName: "Cardtiempo",
   			options,
-  			id: create_fragment$e.name
+  			id: create_fragment$d.name
   		});
 
   		const { ctx } = this.$$;
@@ -23810,6 +26642,10 @@ var app = (function () {
 
   		if (/*name*/ ctx[6] === undefined && !("name" in props)) {
   			console_1$7.warn("<Cardtiempo> was created without expected prop 'name'");
+  		}
+
+  		if (/*visible*/ ctx[7] === undefined && !("visible" in props)) {
+  			console_1$7.warn("<Cardtiempo> was created without expected prop 'visible'");
   		}
   	}
 
@@ -23820,133 +26656,23 @@ var app = (function () {
   	set name(value) {
   		throw new Error("<Cardtiempo>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
   	}
+
+  	get visible() {
+  		throw new Error("<Cardtiempo>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+  	}
+
+  	set visible(value) {
+  		throw new Error("<Cardtiempo>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+  	}
   }
 
   /* src/Componentes/Cardbusqueda.svelte generated by Svelte v3.25.0 */
-  const file$d = "src/Componentes/Cardbusqueda.svelte";
 
-  // (55:0) {#if visible}
-  function create_if_block$6(ctx) {
-  	let draggabledraw;
-  	let updating_visible;
-  	let current;
+  const file$c = "src/Componentes/Cardbusqueda.svelte";
 
-  	function draggabledraw_visible_binding(value) {
-  		/*draggabledraw_visible_binding*/ ctx[11].call(null, value);
-  	}
-
-  	let draggabledraw_props = {
-  		maxVH: /*maxVH*/ ctx[5],
-  		minVH: /*minVH*/ ctx[6],
-  		$$slots: {
-  			default: [create_default_slot],
-  			right: [create_right_slot]
-  		},
-  		$$scope: { ctx }
-  	};
-
-  	if (/*visible*/ ctx[4] !== void 0) {
-  		draggabledraw_props.visible = /*visible*/ ctx[4];
-  	}
-
-  	draggabledraw = new Draggabledraw({
-  			props: draggabledraw_props,
-  			$$inline: true
-  		});
-
-  	binding_callbacks.push(() => bind(draggabledraw, "visible", draggabledraw_visible_binding));
-
-  	const block = {
-  		c: function create() {
-  			create_component(draggabledraw.$$.fragment);
-  		},
-  		m: function mount(target, anchor) {
-  			mount_component(draggabledraw, target, anchor);
-  			current = true;
-  		},
-  		p: function update(ctx, dirty) {
-  			const draggabledraw_changes = {};
-
-  			if (dirty & /*$$scope, name*/ 8194) {
-  				draggabledraw_changes.$$scope = { dirty, ctx };
-  			}
-
-  			if (!updating_visible && dirty & /*visible*/ 16) {
-  				updating_visible = true;
-  				draggabledraw_changes.visible = /*visible*/ ctx[4];
-  				add_flush_callback(() => updating_visible = false);
-  			}
-
-  			draggabledraw.$set(draggabledraw_changes);
-  		},
-  		i: function intro(local) {
-  			if (current) return;
-  			transition_in(draggabledraw.$$.fragment, local);
-  			current = true;
-  		},
-  		o: function outro(local) {
-  			transition_out(draggabledraw.$$.fragment, local);
-  			current = false;
-  		},
-  		d: function destroy(detaching) {
-  			destroy_component(draggabledraw, detaching);
-  		}
-  	};
-
-  	dispatch_dev("SvelteRegisterBlock", {
-  		block,
-  		id: create_if_block$6.name,
-  		type: "if",
-  		source: "(55:0) {#if visible}",
-  		ctx
-  	});
-
-  	return block;
-  }
-
-  // (57:4) <span slot="right" on:click={switchVisible}>
-  function create_right_slot(ctx) {
-  	let span;
-  	let mounted;
-  	let dispose;
-
-  	const block = {
-  		c: function create() {
-  			span = element("span");
-  			span.textContent = "Pechar";
-  			attr_dev(span, "slot", "right");
-  			add_location(span, file$d, 56, 4, 1631);
-  		},
-  		m: function mount(target, anchor) {
-  			insert_dev(target, span, anchor);
-
-  			if (!mounted) {
-  				dispose = listen_dev(span, "click", /*switchVisible*/ ctx[7], false, false, false);
-  				mounted = true;
-  			}
-  		},
-  		p: noop,
-  		d: function destroy(detaching) {
-  			if (detaching) detach_dev(span);
-  			mounted = false;
-  			dispose();
-  		}
-  	};
-
-  	dispatch_dev("SvelteRegisterBlock", {
-  		block,
-  		id: create_right_slot.name,
-  		type: "slot",
-  		source: "(57:4) <span slot=\\\"right\\\" on:click={switchVisible}>",
-  		ctx
-  	});
-
-  	return block;
-  }
-
-  // (56:0) <DraggableDraw bind:visible {maxVH} {minVH}>
-  function create_default_slot(ctx) {
-  	let t;
+  // (65:0) {#if visible}
+  function create_if_block$5(ctx) {
+  	let div;
   	let cardtiempo;
   	let current;
 
@@ -23955,14 +26681,17 @@ var app = (function () {
   			$$inline: true
   		});
 
+  	cardtiempo.$on("click", /*abrirModal*/ ctx[6]);
+
   	const block = {
   		c: function create() {
-  			t = space();
+  			div = element("div");
   			create_component(cardtiempo.$$.fragment);
+  			add_location(div, file$c, 65, 0, 1677);
   		},
   		m: function mount(target, anchor) {
-  			insert_dev(target, t, anchor);
-  			mount_component(cardtiempo, target, anchor);
+  			insert_dev(target, div, anchor);
+  			mount_component(cardtiempo, div, null);
   			current = true;
   		},
   		p: function update(ctx, dirty) {
@@ -23980,23 +26709,23 @@ var app = (function () {
   			current = false;
   		},
   		d: function destroy(detaching) {
-  			if (detaching) detach_dev(t);
-  			destroy_component(cardtiempo, detaching);
+  			if (detaching) detach_dev(div);
+  			destroy_component(cardtiempo);
   		}
   	};
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_default_slot.name,
-  		type: "slot",
-  		source: "(56:0) <DraggableDraw bind:visible {maxVH} {minVH}>",
+  		id: create_if_block$5.name,
+  		type: "if",
+  		source: "(65:0) {#if visible}",
   		ctx
   	});
 
   	return block;
   }
 
-  function create_fragment$f(ctx) {
+  function create_fragment$e(ctx) {
   	let li;
   	let div4;
   	let div3;
@@ -24025,7 +26754,7 @@ var app = (function () {
   	let current;
   	let mounted;
   	let dispose;
-  	let if_block = /*visible*/ ctx[4] && create_if_block$6(ctx);
+  	let if_block = /*visible*/ ctx[4] && create_if_block$5(ctx);
 
   	const block = {
   		c: function create() {
@@ -24057,33 +26786,33 @@ var app = (function () {
   			if_block_anchor = empty();
   			if (img.src !== (img_src_value = "/images/tarxetas/" + /*icon*/ ctx[2] + ".gif")) attr_dev(img, "src", img_src_value);
   			attr_dev(img, "alt", "icono do tempo");
-  			attr_dev(img, "class", "fondo_card svelte-zujxxy");
-  			add_location(img, file$d, 39, 24, 792);
-  			add_location(br, file$d, 40, 80, 952);
-  			attr_dev(p, "class", "city-name svelte-zujxxy");
-  			add_location(p, file$d, 41, 28, 985);
-  			attr_dev(span, "class", "card-title city-temp svelte-zujxxy");
-  			add_location(span, file$d, 40, 24, 896);
+  			attr_dev(img, "class", "fondo_card svelte-d2z9rs");
+  			add_location(img, file$c, 49, 24, 890);
+  			add_location(br, file$c, 50, 80, 1050);
+  			attr_dev(p, "class", "city-name svelte-d2z9rs");
+  			add_location(p, file$c, 51, 28, 1083);
+  			attr_dev(span, "class", "card-title city-temp svelte-d2z9rs");
+  			add_location(span, file$c, 50, 24, 994);
   			attr_dev(i0, "class", "material-icons");
-  			add_location(i0, file$d, 44, 45, 1228);
-  			attr_dev(a0, "class", "btn modal-trigger btn-floating halfway-fab waves-effect waves-light\n                            black verTiempo svelte-zujxxy");
-  			add_location(a0, file$d, 43, 24, 1073);
+  			add_location(i0, file$c, 54, 45, 1323);
+  			attr_dev(a0, "class", "btn modal-trigger btn-floating halfway-fab waves-effect waves-light\n                            black verTiempo svelte-d2z9rs");
+  			add_location(a0, file$c, 53, 24, 1171);
   			attr_dev(i1, "class", "material-icons");
-  			add_location(i1, file$d, 46, 35, 1425);
+  			add_location(i1, file$c, 56, 35, 1520);
   			attr_dev(a1, "class", "btn-floating halfway-fab waves-effect waves-light\n                            black");
-  			add_location(a1, file$d, 45, 24, 1297);
-  			attr_dev(div0, "class", "card-image svelte-zujxxy");
-  			add_location(div0, file$d, 38, 20, 743);
-  			attr_dev(div1, "class", "card svelte-zujxxy");
-  			add_location(div1, file$d, 37, 16, 704);
+  			add_location(a1, file$c, 55, 24, 1392);
+  			attr_dev(div0, "class", "card-image svelte-d2z9rs");
+  			add_location(div0, file$c, 48, 20, 841);
+  			attr_dev(div1, "class", "card svelte-d2z9rs");
+  			add_location(div1, file$c, 47, 16, 802);
   			attr_dev(div2, "class", "col s12 m6");
-  			add_location(div2, file$d, 36, 12, 663);
+  			add_location(div2, file$c, 46, 12, 761);
   			attr_dev(div3, "class", "row");
-  			add_location(div3, file$d, 35, 8, 633);
+  			add_location(div3, file$c, 45, 8, 731);
   			attr_dev(div4, "class", "ulwrpper");
-  			add_location(div4, file$d, 34, 4, 602);
+  			add_location(div4, file$c, 44, 4, 700);
   			attr_dev(li, "class", "data");
-  			add_location(li, file$d, 33, 0, 580);
+  			add_location(li, file$c, 43, 0, 678);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -24117,8 +26846,8 @@ var app = (function () {
 
   			if (!mounted) {
   				dispose = [
-  					listen_dev(a0, "click", /*click_handler*/ ctx[9], false, false, false),
-  					listen_dev(a1, "click", /*click_handler_1*/ ctx[10], false, false, false)
+  					listen_dev(a0, "click", /*click_handler*/ ctx[7], false, false, false),
+  					listen_dev(a1, "click", /*click_handler_1*/ ctx[8], false, false, false)
   				];
 
   				mounted = true;
@@ -24140,7 +26869,7 @@ var app = (function () {
   						transition_in(if_block, 1);
   					}
   				} else {
-  					if_block = create_if_block$6(ctx);
+  					if_block = create_if_block$5(ctx);
   					if_block.c();
   					transition_in(if_block, 1);
   					if_block.m(if_block_anchor.parentNode, if_block_anchor);
@@ -24176,7 +26905,7 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_fragment$f.name,
+  		id: create_fragment$e.name,
   		type: "component",
   		source: "",
   		ctx
@@ -24185,17 +26914,9 @@ var app = (function () {
   	return block;
   }
 
-  function instance$f($$self, $$props, $$invalidate) {
+  function instance$e($$self, $$props, $$invalidate) {
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("Cardbusqueda", slots, []);
-  	let visible = false;
-  	let maxVH = 90;
-  	let minVH = 85;
-
-  	function switchVisible() {
-  		$$invalidate(4, visible = !visible);
-  	}
-
   	let { id } = $$props;
   	let { name } = $$props;
   	let { icon } = $$props;
@@ -24206,19 +26927,20 @@ var app = (function () {
   		dispatch("removeTiempo", { id });
   	}
 
+  	let visible = false;
+
+  	function abrirModal() {
+  		$$invalidate(4, visible = !visible);
+  	}
+
   	const writable_props = ["id", "name", "icon", "temp"];
 
   	Object.keys($$props).forEach(key => {
   		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<Cardbusqueda> was created with unknown prop '${key}'`);
   	});
 
-  	const click_handler = () => switchVisible();
+  	const click_handler = () => abrirModal();
   	const click_handler_1 = () => removeTiempo();
-
-  	function draggabledraw_visible_binding(value) {
-  		visible = value;
-  		$$invalidate(4, visible);
-  	}
 
   	$$self.$$set = $$props => {
   		if ("id" in $$props) $$invalidate(0, id = $$props.id);
@@ -24229,28 +26951,23 @@ var app = (function () {
 
   	$$self.$capture_state = () => ({
   		createEventDispatcher,
-  		DraggableDraw: Draggabledraw,
   		Cardtiempo,
-  		visible,
-  		maxVH,
-  		minVH,
-  		switchVisible,
   		id,
   		name,
   		icon,
   		temp,
   		dispatch,
-  		removeTiempo
+  		removeTiempo,
+  		visible,
+  		abrirModal
   	});
 
   	$$self.$inject_state = $$props => {
-  		if ("visible" in $$props) $$invalidate(4, visible = $$props.visible);
-  		if ("maxVH" in $$props) $$invalidate(5, maxVH = $$props.maxVH);
-  		if ("minVH" in $$props) $$invalidate(6, minVH = $$props.minVH);
   		if ("id" in $$props) $$invalidate(0, id = $$props.id);
   		if ("name" in $$props) $$invalidate(1, name = $$props.name);
   		if ("icon" in $$props) $$invalidate(2, icon = $$props.icon);
   		if ("temp" in $$props) $$invalidate(3, temp = $$props.temp);
+  		if ("visible" in $$props) $$invalidate(4, visible = $$props.visible);
   	};
 
   	if ($$props && "$$inject" in $$props) {
@@ -24263,26 +26980,23 @@ var app = (function () {
   		icon,
   		temp,
   		visible,
-  		maxVH,
-  		minVH,
-  		switchVisible,
   		removeTiempo,
+  		abrirModal,
   		click_handler,
-  		click_handler_1,
-  		draggabledraw_visible_binding
+  		click_handler_1
   	];
   }
 
   class Cardbusqueda extends SvelteComponentDev {
   	constructor(options) {
   		super(options);
-  		init(this, options, instance$f, create_fragment$f, safe_not_equal, { id: 0, name: 1, icon: 2, temp: 3 });
+  		init(this, options, instance$e, create_fragment$e, safe_not_equal, { id: 0, name: 1, icon: 2, temp: 3 });
 
   		dispatch_dev("SvelteRegisterComponent", {
   			component: this,
   			tagName: "Cardbusqueda",
   			options,
-  			id: create_fragment$f.name
+  			id: create_fragment$e.name
   		});
 
   		const { ctx } = this.$$;
@@ -24381,7 +27095,7 @@ var app = (function () {
   /* src/Paginas/Buscar.svelte generated by Svelte v3.25.0 */
 
   const { console: console_1$8 } = globals;
-  const file$e = "src/Paginas/Buscar.svelte";
+  const file$d = "src/Paginas/Buscar.svelte";
 
   function get_each_context$2(ctx, list, i) {
   	const child_ctx = ctx.slice();
@@ -24391,14 +27105,14 @@ var app = (function () {
   }
 
   // (135:6) {#if loading}
-  function create_if_block_1$2(ctx) {
+  function create_if_block_1$1(ctx) {
   	let div;
 
   	const block = {
   		c: function create() {
   			div = element("div");
   			attr_dev(div, "class", "loader svelte-u26sdc");
-  			add_location(div, file$e, 135, 12, 2933);
+  			add_location(div, file$d, 135, 12, 2933);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div, anchor);
@@ -24410,7 +27124,7 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_if_block_1$2.name,
+  		id: create_if_block_1$1.name,
   		type: "if",
   		source: "(135:6) {#if loading}",
   		ctx
@@ -24420,7 +27134,7 @@ var app = (function () {
   }
 
   // (142:8) {#if todos.length}
-  function create_if_block$7(ctx) {
+  function create_if_block$6(ctx) {
   	let each_blocks = [];
   	let each_1_lookup = new Map();
   	let each_1_anchor;
@@ -24489,7 +27203,7 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_if_block$7.name,
+  		id: create_if_block$6.name,
   		type: "if",
   		source: "(142:8) {#if todos.length}",
   		ctx
@@ -24566,7 +27280,7 @@ var app = (function () {
   	return block;
   }
 
-  function create_fragment$g(ctx) {
+  function create_fragment$f(ctx) {
   	let main;
   	let nav;
   	let div1;
@@ -24589,8 +27303,8 @@ var app = (function () {
   	let current;
   	let mounted;
   	let dispose;
-  	let if_block0 = /*loading*/ ctx[2] && create_if_block_1$2(ctx);
-  	let if_block1 = /*todos*/ ctx[0].length && create_if_block$7(ctx);
+  	let if_block0 = /*loading*/ ctx[2] && create_if_block_1$1(ctx);
+  	let if_block1 = /*todos*/ ctx[0].length && create_if_block$6(ctx);
 
   	const block = {
   		c: function create() {
@@ -24624,32 +27338,32 @@ var app = (function () {
   			attr_dev(input_1, "placeholder", "Busca aquí unha cidade");
   			input_1.required = true;
   			attr_dev(input_1, "class", "svelte-u26sdc");
-  			add_location(input_1, file$e, 126, 10, 2514);
+  			add_location(input_1, file$d, 126, 10, 2514);
   			attr_dev(i0, "class", "material-icons");
-  			add_location(i0, file$e, 128, 49, 2693);
+  			add_location(i0, file$d, 128, 49, 2693);
   			attr_dev(label, "class", "label-icon");
   			attr_dev(label, "for", "search");
-  			add_location(label, file$e, 128, 10, 2654);
+  			add_location(label, file$d, 128, 10, 2654);
   			attr_dev(i1, "class", "material-icons");
-  			add_location(i1, file$e, 129, 10, 2748);
+  			add_location(i1, file$d, 129, 10, 2748);
   			attr_dev(span, "class", "msg");
-  			add_location(span, file$e, 130, 10, 2794);
+  			add_location(span, file$d, 130, 10, 2794);
   			attr_dev(div0, "class", "input-field");
-  			add_location(div0, file$e, 125, 8, 2478);
+  			add_location(div0, file$d, 125, 8, 2478);
   			attr_dev(button, "class", "transparent");
-  			add_location(button, file$e, 132, 8, 2843);
+  			add_location(button, file$d, 132, 8, 2843);
   			attr_dev(form, "class", "forminput");
-  			add_location(form, file$e, 124, 6, 2408);
+  			add_location(form, file$d, 124, 6, 2408);
   			attr_dev(div1, "class", "nav-wrapper");
-  			add_location(div1, file$e, 123, 4, 2376);
+  			add_location(div1, file$d, 123, 4, 2376);
   			attr_dev(nav, "class", "navbar-fixed navbarbaja grey darken-4 svelte-u26sdc");
-  			add_location(nav, file$e, 122, 2, 2320);
+  			add_location(nav, file$d, 122, 2, 2320);
   			toggle_class(ul, "list", /*todos*/ ctx[0].length > 0);
-  			add_location(ul, file$e, 140, 8, 3041);
+  			add_location(ul, file$d, 140, 8, 3041);
   			attr_dev(section, "class", "ajax-section svelte-u26sdc");
-  			add_location(section, file$e, 139, 4, 3002);
+  			add_location(section, file$d, 139, 4, 3002);
   			attr_dev(main, "class", "svelte-u26sdc");
-  			add_location(main, file$e, 121, 0, 2311);
+  			add_location(main, file$d, 121, 0, 2311);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -24701,7 +27415,7 @@ var app = (function () {
   						transition_in(if_block1, 1);
   					}
   				} else {
-  					if_block1 = create_if_block$7(ctx);
+  					if_block1 = create_if_block$6(ctx);
   					if_block1.c();
   					transition_in(if_block1, 1);
   					if_block1.m(ul, null);
@@ -24740,7 +27454,7 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_fragment$g.name,
+  		id: create_fragment$f.name,
   		type: "component",
   		source: "",
   		ctx
@@ -24751,7 +27465,7 @@ var app = (function () {
 
   const key$1 = "3e867330616c39fa60d18a1af5d82f16";
 
-  function instance$g($$self, $$props, $$invalidate) {
+  function instance$f($$self, $$props, $$invalidate) {
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("Buscar", slots, []);
   	var loading = false;
@@ -24876,21 +27590,21 @@ var app = (function () {
   class Buscar extends SvelteComponentDev {
   	constructor(options) {
   		super(options);
-  		init(this, options, instance$g, create_fragment$g, safe_not_equal, {});
+  		init(this, options, instance$f, create_fragment$f, safe_not_equal, {});
 
   		dispatch_dev("SvelteRegisterComponent", {
   			component: this,
   			tagName: "Buscar",
   			options,
-  			id: create_fragment$g.name
+  			id: create_fragment$f.name
   		});
   	}
   }
 
   /* src/Paginas/Creditos.svelte generated by Svelte v3.25.0 */
-  const file$f = "src/Paginas/Creditos.svelte";
+  const file$e = "src/Paginas/Creditos.svelte";
 
-  function create_fragment$h(ctx) {
+  function create_fragment$g(ctx) {
   	let div12;
   	let div5;
   	let div4;
@@ -25040,88 +27754,88 @@ var app = (function () {
   			attr_dev(img0, "alt", "");
   			attr_dev(img0, "width", "50%");
   			attr_dev(img0, "class", "prev svelte-1nlljx");
-  			add_location(img0, file$f, 13, 58, 408);
+  			add_location(img0, file$e, 13, 58, 408);
   			attr_dev(a, "href", "/");
   			attr_dev(a, "class", "left");
-  			add_location(a, file$f, 13, 24, 374);
+  			add_location(a, file$e, 13, 24, 374);
   			attr_dev(div0, "class", "col s6 content-left svelte-1nlljx");
-  			add_location(div0, file$f, 12, 20, 316);
+  			add_location(div0, file$e, 12, 20, 316);
   			attr_dev(p0, "class", "white-text axustes svelte-1nlljx");
-  			add_location(p0, file$f, 17, 24, 610);
+  			add_location(p0, file$e, 17, 24, 610);
   			attr_dev(div1, "class", "col s6 content-right svelte-1nlljx");
-  			add_location(div1, file$f, 16, 20, 551);
+  			add_location(div1, file$e, 16, 20, 551);
   			attr_dev(div2, "class", "col s12");
-  			add_location(div2, file$f, 11, 16, 274);
+  			add_location(div2, file$e, 11, 16, 274);
   			attr_dev(div3, "class", "row svelte-1nlljx");
-  			add_location(div3, file$f, 10, 12, 240);
+  			add_location(div3, file$e, 10, 12, 240);
   			attr_dev(div4, "class", "container");
-  			add_location(div4, file$f, 9, 8, 204);
+  			add_location(div4, file$e, 9, 8, 204);
   			attr_dev(div5, "class", "navbar svelte-1nlljx");
-  			add_location(div5, file$f, 8, 4, 175);
+  			add_location(div5, file$e, 8, 4, 175);
   			attr_dev(path0, "class", "elementor-shape-fill");
   			attr_dev(path0, "opacity", "0.33");
   			attr_dev(path0, "d", "M473,67.3c-203.9,88.3-263.1-34-320.3,0C66,119.1,0,59.7,0,59.7V0h1000v59.7 c0,0-62.1,26.1-94.9,29.3c-32.8,3.3-62.8-12.3-75.8-22.1C806,49.6,745.3,8.7,694.9,4.7S492.4,59,473,67.3z");
-  			add_location(path0, file$f, 26, 12, 951);
+  			add_location(path0, file$e, 26, 12, 951);
   			attr_dev(path1, "class", "elementor-shape-fill");
   			attr_dev(path1, "opacity", "0.66");
   			attr_dev(path1, "d", "M734,67.3c-45.5,0-77.2-23.2-129.1-39.1c-28.6-8.7-150.3-10.1-254,39.1 s-91.7-34.4-149.2,0C115.7,118.3,0,39.8,0,39.8V0h1000v36.5c0,0-28.2-18.5-92.1-18.5C810.2,18.1,775.7,67.3,734,67.3z");
-  			add_location(path1, file$f, 29, 12, 1231);
+  			add_location(path1, file$e, 29, 12, 1231);
   			attr_dev(path2, "class", "elementor-shape-fill");
   			attr_dev(path2, "d", "M766.1,28.9c-200-57.5-266,65.5-395.1,19.5C242,1.8,242,5.4,184.8,20.6C128,35.8,132.3,44.9,89.9,52.5C28.6,63.7,0,0,0,0 h1000c0,0-9.9,40.9-83.6,48.1S829.6,47,766.1,28.9z");
-  			add_location(path2, file$f, 32, 12, 1517);
+  			add_location(path2, file$e, 32, 12, 1517);
   			attr_dev(svg, "xmlns", "http://www.w3.org/2000/svg");
   			attr_dev(svg, "viewBox", "0 0 1000 100");
   			attr_dev(svg, "preserveAspectRatio", "none");
   			attr_dev(svg, "class", "shape-fill svelte-1nlljx");
-  			add_location(svg, file$f, 25, 8, 829);
+  			add_location(svg, file$e, 25, 8, 829);
   			attr_dev(div6, "class", "shape svelte-1nlljx");
   			attr_dev(div6, "data-negative", "false");
-  			add_location(div6, file$f, 24, 4, 779);
+  			add_location(div6, file$e, 24, 4, 779);
   			attr_dev(div7, "class", "container");
-  			add_location(div7, file$f, 38, 4, 1791);
+  			add_location(div7, file$e, 38, 4, 1791);
   			attr_dev(img1, "class", "center svelte-1nlljx");
   			if (img1.src !== (img1_src_value = "/images/GaliciaWeather.gif")) attr_dev(img1, "src", img1_src_value);
   			attr_dev(img1, "alt", "");
-  			add_location(img1, file$f, 42, 8, 1860);
+  			add_location(img1, file$e, 42, 8, 1860);
   			attr_dev(div8, "class", "banner svelte-1nlljx");
-  			add_location(div8, file$f, 41, 4, 1831);
+  			add_location(div8, file$e, 41, 4, 1831);
   			attr_dev(h40, "class", "about-tit svelte-1nlljx");
-  			add_location(h40, file$f, 49, 20, 2080);
+  			add_location(h40, file$e, 49, 20, 2080);
   			attr_dev(p1, "class", "about-version svelte-1nlljx");
-  			add_location(p1, file$f, 50, 20, 2142);
+  			add_location(p1, file$e, 50, 20, 2142);
   			attr_dev(p2, "class", "about-txt svelte-1nlljx");
-  			add_location(p2, file$f, 51, 20, 2206);
+  			add_location(p2, file$e, 51, 20, 2206);
   			attr_dev(strong, "class", "white-text");
-  			add_location(strong, file$f, 53, 46, 2348);
+  			add_location(strong, file$e, 53, 46, 2348);
   			attr_dev(p3, "class", "about-textoDos svelte-1nlljx");
-  			add_location(p3, file$f, 53, 20, 2322);
-  			add_location(li0, file$f, 56, 24, 2538);
-  			add_location(li1, file$f, 57, 24, 2592);
-  			add_location(li2, file$f, 58, 24, 2672);
-  			add_location(li3, file$f, 59, 24, 2742);
-  			add_location(li4, file$f, 60, 24, 2798);
+  			add_location(p3, file$e, 53, 20, 2322);
+  			add_location(li0, file$e, 56, 24, 2538);
+  			add_location(li1, file$e, 57, 24, 2592);
+  			add_location(li2, file$e, 58, 24, 2672);
+  			add_location(li3, file$e, 59, 24, 2742);
+  			add_location(li4, file$e, 60, 24, 2798);
   			attr_dev(ul, "class", "white-text left-align");
-  			add_location(ul, file$f, 55, 20, 2479);
-  			add_location(br, file$f, 62, 0, 2856);
+  			add_location(ul, file$e, 55, 20, 2479);
+  			add_location(br, file$e, 62, 0, 2856);
   			attr_dev(h41, "class", "about-tit svelte-1nlljx");
-  			add_location(h41, file$f, 63, 20, 2881);
+  			add_location(h41, file$e, 63, 20, 2881);
   			attr_dev(p4, "class", "about-version svelte-1nlljx");
-  			add_location(p4, file$f, 65, 20, 2941);
+  			add_location(p4, file$e, 65, 20, 2941);
   			attr_dev(p5, "class", "licencia-txt svelte-1nlljx");
-  			add_location(p5, file$f, 67, 20, 3025);
+  			add_location(p5, file$e, 67, 20, 3025);
   			attr_dev(p6, "class", "licencia-txt svelte-1nlljx");
-  			add_location(p6, file$f, 74, 20, 3627);
+  			add_location(p6, file$e, 74, 20, 3627);
   			attr_dev(p7, "class", "licencia-txt svelte-1nlljx");
-  			add_location(p7, file$f, 77, 20, 3827);
+  			add_location(p7, file$e, 77, 20, 3827);
   			attr_dev(div9, "class", "col s12 center-align");
-  			add_location(div9, file$f, 48, 16, 2025);
+  			add_location(div9, file$e, 48, 16, 2025);
   			attr_dev(div10, "class", "row");
-  			add_location(div10, file$f, 47, 12, 1991);
+  			add_location(div10, file$e, 47, 12, 1991);
   			attr_dev(div11, "class", "container");
-  			add_location(div11, file$f, 46, 8, 1955);
-  			add_location(section, file$f, 45, 4, 1937);
+  			add_location(div11, file$e, 46, 8, 1955);
+  			add_location(section, file$e, 45, 4, 1937);
   			attr_dev(div12, "class", "fondo svelte-1nlljx");
-  			add_location(div12, file$f, 6, 0, 131);
+  			add_location(div12, file$e, 6, 0, 131);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -25215,7 +27929,7 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_fragment$h.name,
+  		id: create_fragment$g.name,
   		type: "component",
   		source: "",
   		ctx
@@ -25224,7 +27938,7 @@ var app = (function () {
   	return block;
   }
 
-  function instance$h($$self, $$props, $$invalidate) {
+  function instance$g($$self, $$props, $$invalidate) {
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("Creditos", slots, []);
   	const writable_props = [];
@@ -25240,21 +27954,21 @@ var app = (function () {
   class Creditos extends SvelteComponentDev {
   	constructor(options) {
   		super(options);
-  		init(this, options, instance$h, create_fragment$h, safe_not_equal, {});
+  		init(this, options, instance$g, create_fragment$g, safe_not_equal, {});
 
   		dispatch_dev("SvelteRegisterComponent", {
   			component: this,
   			tagName: "Creditos",
   			options,
-  			id: create_fragment$h.name
+  			id: create_fragment$g.name
   		});
   	}
   }
 
   /* src/Paginas/Axustes.svelte generated by Svelte v3.25.0 */
-  const file$g = "src/Paginas/Axustes.svelte";
+  const file$f = "src/Paginas/Axustes.svelte";
 
-  function create_fragment$i(ctx) {
+  function create_fragment$h(ctx) {
   	let div5;
   	let div4;
   	let div3;
@@ -25282,29 +27996,29 @@ var app = (function () {
   			t0 = space();
   			div1 = element("div");
   			p = element("p");
-  			p.textContent = "AXUSTES";
+  			p.textContent = "Axustes";
   			if (img.src !== (img_src_value = "images/prev.png")) attr_dev(img, "src", img_src_value);
   			attr_dev(img, "alt", "");
   			attr_dev(img, "width", "50%");
-  			attr_dev(img, "class", "prev svelte-t83hqo");
-  			add_location(img, file$g, 11, 58, 321);
+  			attr_dev(img, "class", "prev svelte-1hlnm9m");
+  			add_location(img, file$f, 12, 58, 322);
   			attr_dev(a, "href", "/");
   			attr_dev(a, "class", "left");
-  			add_location(a, file$g, 11, 24, 287);
-  			attr_dev(div0, "class", "col s6 content-left svelte-t83hqo");
-  			add_location(div0, file$g, 10, 20, 229);
-  			attr_dev(p, "class", "white-text axustes svelte-t83hqo");
-  			add_location(p, file$g, 14, 24, 491);
-  			attr_dev(div1, "class", "col s6 content-right svelte-t83hqo");
-  			add_location(div1, file$g, 13, 20, 432);
+  			add_location(a, file$f, 12, 24, 288);
+  			attr_dev(div0, "class", "col s6 content-left svelte-1hlnm9m");
+  			add_location(div0, file$f, 11, 20, 230);
+  			attr_dev(p, "class", "white-text axustes svelte-1hlnm9m");
+  			add_location(p, file$f, 15, 24, 492);
+  			attr_dev(div1, "class", "col s6 content-right svelte-1hlnm9m");
+  			add_location(div1, file$f, 14, 20, 433);
   			attr_dev(div2, "class", "col s12");
-  			add_location(div2, file$g, 9, 16, 187);
-  			attr_dev(div3, "class", "row svelte-t83hqo");
-  			add_location(div3, file$g, 8, 12, 153);
+  			add_location(div2, file$f, 10, 16, 188);
+  			attr_dev(div3, "class", "row svelte-1hlnm9m");
+  			add_location(div3, file$f, 9, 12, 154);
   			attr_dev(div4, "class", "container");
-  			add_location(div4, file$g, 7, 8, 117);
-  			attr_dev(div5, "class", "navbar svelte-t83hqo");
-  			add_location(div5, file$g, 6, 4, 88);
+  			add_location(div4, file$f, 8, 8, 118);
+  			attr_dev(div5, "class", "navbar svelte-1hlnm9m");
+  			add_location(div5, file$f, 7, 4, 89);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -25338,7 +28052,7 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_fragment$i.name,
+  		id: create_fragment$h.name,
   		type: "component",
   		source: "",
   		ctx
@@ -25347,7 +28061,7 @@ var app = (function () {
   	return block;
   }
 
-  function instance$i($$self, $$props, $$invalidate) {
+  function instance$h($$self, $$props, $$invalidate) {
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("Axustes", slots, []);
   	const writable_props = [];
@@ -25363,29 +28077,29 @@ var app = (function () {
   class Axustes extends SvelteComponentDev {
   	constructor(options) {
   		super(options);
-  		init(this, options, instance$i, create_fragment$i, safe_not_equal, {});
+  		init(this, options, instance$h, create_fragment$h, safe_not_equal, {});
 
   		dispatch_dev("SvelteRegisterComponent", {
   			component: this,
   			tagName: "Axustes",
   			options,
-  			id: create_fragment$i.name
+  			id: create_fragment$h.name
   		});
   	}
   }
 
   /* src/Paginas/ErrorRuta.svelte generated by Svelte v3.25.0 */
 
-  const file$h = "src/Paginas/ErrorRuta.svelte";
+  const file$g = "src/Paginas/ErrorRuta.svelte";
 
-  function create_fragment$j(ctx) {
+  function create_fragment$i(ctx) {
   	let h1;
 
   	const block = {
   		c: function create() {
   			h1 = element("h1");
   			h1.textContent = "ERROR 404";
-  			add_location(h1, file$h, 0, 0, 0);
+  			add_location(h1, file$g, 0, 0, 0);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -25403,7 +28117,7 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_fragment$j.name,
+  		id: create_fragment$i.name,
   		type: "component",
   		source: "",
   		ctx
@@ -25412,7 +28126,7 @@ var app = (function () {
   	return block;
   }
 
-  function instance$j($$self, $$props) {
+  function instance$i($$self, $$props) {
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("ErrorRuta", slots, []);
   	const writable_props = [];
@@ -25427,13 +28141,13 @@ var app = (function () {
   class ErrorRuta extends SvelteComponentDev {
   	constructor(options) {
   		super(options);
-  		init(this, options, instance$j, create_fragment$j, safe_not_equal, {});
+  		init(this, options, instance$i, create_fragment$i, safe_not_equal, {});
 
   		dispatch_dev("SvelteRegisterComponent", {
   			component: this,
   			tagName: "ErrorRuta",
   			options,
-  			id: create_fragment$j.name
+  			id: create_fragment$i.name
   		});
   	}
   }
@@ -25448,9 +28162,9 @@ var app = (function () {
   };
 
   /* src/App.svelte generated by Svelte v3.25.0 */
-  const file$i = "src/App.svelte";
+  const file$h = "src/App.svelte";
 
-  function create_fragment$k(ctx) {
+  function create_fragment$j(ctx) {
   	let div;
   	let a0;
   	let i0;
@@ -25502,30 +28216,30 @@ var app = (function () {
   			t7 = space();
   			create_component(router.$$.fragment);
   			attr_dev(i0, "class", "large material-icons black-text");
-  			add_location(i0, file$i, 17, 4, 468);
+  			add_location(i0, file$h, 20, 4, 477);
   			attr_dev(a0, "class", "btn-floating btn-large white");
-  			add_location(a0, file$i, 16, 2, 423);
+  			add_location(a0, file$h, 19, 2, 432);
   			attr_dev(i1, "class", "material-icons black-text");
-  			add_location(i1, file$i, 20, 57, 591);
+  			add_location(i1, file$h, 23, 56, 599);
   			attr_dev(a1, "class", "btn-floating");
   			attr_dev(a1, "href", "/Buscar");
-  			add_location(a1, file$i, 20, 8, 542);
-  			add_location(li0, file$i, 20, 4, 538);
+  			add_location(a1, file$h, 23, 8, 551);
+  			add_location(li0, file$h, 23, 4, 547);
   			attr_dev(i2, "class", "material-icons black-text");
-  			add_location(i2, file$i, 21, 51, 699);
+  			add_location(i2, file$h, 24, 50, 706);
   			attr_dev(a2, "class", "btn-floating");
   			attr_dev(a2, "href", "/");
-  			add_location(a2, file$i, 21, 8, 656);
-  			add_location(li1, file$i, 21, 4, 652);
+  			add_location(a2, file$h, 24, 8, 664);
+  			add_location(li1, file$h, 24, 4, 660);
   			attr_dev(i3, "class", "material-icons black-text");
-  			add_location(i3, file$i, 22, 60, 814);
+  			add_location(i3, file$h, 25, 59, 820);
   			attr_dev(a3, "class", "btn-floating");
   			attr_dev(a3, "href", "/Taboleiro");
-  			add_location(a3, file$i, 22, 8, 762);
-  			add_location(li2, file$i, 22, 4, 758);
-  			add_location(ul, file$i, 19, 2, 529);
+  			add_location(a3, file$h, 25, 8, 769);
+  			add_location(li2, file$h, 25, 4, 765);
+  			add_location(ul, file$h, 22, 2, 538);
   			attr_dev(div, "class", "fixed-action-btn toolbar");
-  			add_location(div, file$i, 15, 0, 382);
+  			add_location(div, file$h, 18, 0, 391);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -25582,7 +28296,7 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_fragment$k.name,
+  		id: create_fragment$j.name,
   		type: "component",
   		source: "",
   		ctx
@@ -25591,7 +28305,7 @@ var app = (function () {
   	return block;
   }
 
-  function instance$k($$self, $$props, $$invalidate) {
+  function instance$j($$self, $$props, $$invalidate) {
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("App", slots, []);
 
@@ -25613,13 +28327,13 @@ var app = (function () {
   class App extends SvelteComponentDev {
   	constructor(options) {
   		super(options);
-  		init(this, options, instance$k, create_fragment$k, safe_not_equal, {});
+  		init(this, options, instance$j, create_fragment$j, safe_not_equal, {});
 
   		dispatch_dev("SvelteRegisterComponent", {
   			component: this,
   			tagName: "App",
   			options,
-  			id: create_fragment$k.name
+  			id: create_fragment$j.name
   		});
   	}
   }

@@ -1,6 +1,8 @@
 <script>
     import Faseslunares from '../Componentes/Faseslunares.svelte';
     import axios from "axios";
+    import {_} from 'svelte-i18n';
+
 
     import {
         onMount
@@ -98,7 +100,7 @@
                 <div class="col s6 DatosEsencialesInicio">
                     <img src="images/temperMax.png" width="20%" alt="Temperatura máxima">
                     <p class="tit_icon">
-                        Temp. Máx.
+                        {$_('TempMax')}
                     </p>
                     <div class="chip tempmax">
                         {#if datosGlobal!==null}
@@ -109,7 +111,7 @@
                 <div class="col s6 DatosEsencialesInicio">
                     <img src="images/temperMin.png" width="20%" alt="Temperatura mínima">
                     <p class="tit_icon">
-                        Temp. Min.
+                        {$_('TempMin')}
                     </p>
                     <div class="chip tempmin">
                         {#if datosGlobal!==null}
@@ -120,7 +122,7 @@
                 <div class="col s6 DatosEsenciales">
                     <img src="images/wind.png" width="20%" alt="Velocidad del viento">
                     <p class="tit_icon">
-                        Vento
+                        {$_('Wind')}
                     </p>
                     <div class="chip wind">
                         {#if datosGlobal!==null}
@@ -131,7 +133,7 @@
                 <div class="col s6 DatosEsenciales">
                     <img src="images/feel_like.png" width="20%" class="center" alt="Sensación térmica">
                     <p class="tit_icon">
-                        Sensación térmica
+                        {$_('Feellike')}
                     </p>
                     <div class="chip feel-like">
                         {#if datosGlobal!==null}
@@ -142,7 +144,7 @@
                 <div class="col s6 DatosEsenciales">
                     <img src="images/humidity.png" width="20%" alt="Humedad">
                     <p class="tit_icon">
-                        Humedad
+                        {$_('Humidity')}
                     </p>
                     <div class="chip humidity">
                         {#if datosGlobal!==null}
@@ -153,7 +155,7 @@
                 <div class="col s6 DatosEsenciales">
                     <img src="images/pressure.png" width="20%" alt="Presión atmosférica">
                     <p class="tit_icon">
-                        Presión
+                        {$_('Pressure')}
                     </p>
                     <div class="chip pressure">
                         {#if datosGlobal!==null}
@@ -164,7 +166,7 @@
                 <div class="col s6 DatosEsenciales">
                     <img src="images/uvi.png" width="20%" alt="Índice UVI">
                     <p class="tit_icon">
-                        Índice UV
+                        {$_('UV')}
                     </p>
                     <div class="chip uvi">
                         {#if datosGlobal!==null}
@@ -175,7 +177,7 @@
                 <div class="col s6 DatosEsenciales">
                     <img src="images/visibilidad.png" width="20%" alt="Visibilidad">
                     <p class="tit_icon">
-                        Visibilidad
+                        {$_('Visibility')}
                     </p>
                     <div class="chip visibilidad">
                         {#if datosGlobal!==null}
@@ -186,7 +188,7 @@
                 <div class="col s6 DatosEsenciales">
                     <img src="images/sunrise.png" width="20%" alt="Amancer">
                     <p class="tit_icon">
-                        Amancer
+                        {$_('Sunrise')}
                     </p>
                     <div class="chip sunrise">
                         <p></p>
@@ -195,7 +197,7 @@
                 <div class="col s6 DatosEsenciales">
                     <img src="images/sunset.png" width="20%" alt="Solpor">
                     <p class="tit_icon">
-                        Solpor
+                        {$_('Sunset')}
                     </p>
                     <div class="chip sunset">
                         <p></p>

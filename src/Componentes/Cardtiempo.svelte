@@ -1,13 +1,12 @@
 <script>
     import axios from "axios";
 
-    import {
-        onMount
-    } from 'svelte';
+    import { onMount } from 'svelte';
 
     import Carddias from "../Componentes/Carddias.svelte";
 
     export let name;
+    export let visible;
 
     // API Key
     const key = "3e867330616c39fa60d18a1af5d82f16";
@@ -36,7 +35,7 @@
                 longitude = datosCard.coord.lon;
                 icon = datosCard.weather[0].icon;
 
-                // Cambiar a noche o día el fondo de pantalla
+                // Cambiar tiempo en el fondo de pantalla
 
                 var fondo = document.querySelector(".PanelCard");
 
@@ -313,9 +312,12 @@
             })
 
     });
+
+
 </script>
 
 <div class="center PanelCard">
+
     {#if datosCard!==null}
     <div class="white-text PanelPrincipal">
         <div class="container">
@@ -336,21 +338,44 @@
             </div>
         </div>
     </div>
-    <Carddias longitude={longitude} latitude={latitude}/>
+        <Carddias longitude={longitude} latitude={latitude}/>
     {/if}
+    <div class="container">
+        <div class="col s12">
+            <button on:click class="btn btn-large volver">Volver</button>
+        </div>
+    </div>
 </div>
 
 
 
 <style>
 
+.volver{
+    width: 100%;
+    background: white;
+    color: black;
+    border: 2px solid #333;
+}
+
+.PanelCard{
+  display: block; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 10000; /* Sit on top */
+  top:0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  padding-top:40px;
+  margin-bottom:20px;
+
+}
 
     .weather-container {
         display: flex;
         justify-content: center;
         align-content: center;
         flex-wrap: wrap;
-        padding-top: 30px;   
+        padding-top: 0px;   
     }
 
 
@@ -380,7 +405,7 @@
     .temperature-description p {
         color: #fff;
         text-align: center;
-        font-size: 40px !important;
+        font-size: 30px !important;
         font-weight: 300;
         text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
     }

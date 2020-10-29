@@ -1,5 +1,7 @@
 <script>
     //Fases lunares
+    import {_} from 'svelte-i18n';
+
 
     function load_moon_phases(obj, callback) {
     var gets = []
@@ -27,7 +29,6 @@ function example_2(moon) {
                 '<div>' +
                 '<span>' + nDay + '</span>' +
                 moon.phase[nDay].svg +
-                '<div>' + moon.phase[nDay].phaseName + '</div>' +
                 '</div>'
             )
         }
@@ -55,7 +56,7 @@ load_moon_phases(configMoon, example_2)
 <div class="container">
     <div class="row">
         <div class="fases_lunares col s12">
-            <p>Fases lunares do mes</p>
+            <p>{$_('PhasesMoon')}</p>
             <div id="ex2"></div>
         </div>
     </div>

@@ -17,6 +17,7 @@
     var datosPrincipal = null;
 
 
+
     // Comprobar la localización en el navegador
     function positionPromise() {
         return new Promise((resolv) => {
@@ -54,7 +55,7 @@
                     descripcion = datosPrincipal.weather[0].description;
 
                     // Cambiar a noche o día el fondo de pantalla
-
+                    
                     var fondo = document.querySelector("body");
 
                     function cambiarSoleado() {
@@ -360,6 +361,7 @@
 </div>
 
 <style>
+
 
     .loading{
         height: 100vh;

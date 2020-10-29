@@ -1,5 +1,7 @@
 <script>
     import Sidebar from '../Componentes/Sidebar.svelte'
+    import {_} from 'svelte-i18n';
+
     import {
         link
     } from 'svelte-spa-router'
@@ -7,7 +9,8 @@
         fade
     } from 'svelte/transition';
 
-	let current = 'TODOS';
+    let current = 'TODOS';
+    
 
     //Filtro
 
@@ -94,9 +97,17 @@
             tipo: 'BASIC'
         },
         {
-            name: 'Teatro García Barbón',
+            name: 'Dinoseto de Porta do Sol',
             lugar: 'Vigo',
-            imagen: 'Vigo_descargar',
+            imagen: 'Vigo_dinoseto_descargar',
+            etiqueta: 'Arte',
+            precio: '0,99€',
+            tipo: 'PREMIUM'
+        },
+        {
+            name: 'O Sireo de Porta do Sol',
+            lugar: 'Vigo',
+            imagen: 'Vigo_sireno_descargar',
             etiqueta: 'Arte',
             precio: '0,99€',
             tipo: 'PREMIUM'
@@ -116,6 +127,12 @@
     if (selectedCheckbox = []) {
         todos()
     }
+
+    // Activar los fondos ilustrados
+
+    //var fondo = document.querySelector("body");
+    //fondo.style.backgroundImage = "url('/images/fondos/vigo/fondo_vigo_soleado.png')";
+
 </script>
 <div class="fondo">
 
@@ -167,14 +184,14 @@
                 {#if visibleFiltro}
                 {#each selectedCheckbox as cidade }
                     
-                    <div class="col s6 m7">
+                 <!--   <div class="col s12 m7">
                       <div class="card" transition:fade="{{delay: 250, duration: 300}}">
-                          <div class="nombre_cidade col s12 center-align">
-                            <p>{cidade.name}<span style="display: block">{cidade.lugar}</span></p>
-                          </div>
                         <div class="card-image">
                           <img src="/images/descargar/{cidade.imagen}.png">
                         </div>
+                        <div class="nombre_cidade col s12 center-align">
+                            <p>{cidade.name}<span style="display: block">{cidade.lugar}</span></p>
+                          </div>
                         <div class="card-content black-text">
                             <div class="etiqueta col s6">
                                 <p>{cidade.etiqueta}</p>
@@ -188,6 +205,28 @@
                         </div>
                       </div>
                     </div>
+                --> 
+                    <div class="col s12 m7" transition:fade="{{delay: 250, duration: 300}}">
+                        <div class="card horizontal">
+                          <div class="card-image">
+                            <img src="/images/descargar/{cidade.imagen}.png">
+                        </div>
+                          <div class="card-stacked">
+                            <div class="card-content black-text">
+                                <p class="header nombre_cidade">{cidade.name}<span style="display: block">{cidade.lugar}</span></p>
+                                <div class="etiqueta col s6">
+                                    <p>{cidade.etiqueta}</p>
+                                </div>
+                                <div class="precio col s6">
+                                    <p>{cidade.precio}</p>
+                                </div> 
+                             </div>
+                            <div class="card-action">
+                                <a class="waves-effect waves-light btn-small">DESCARGAR</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                 {/each}
                 {/if}
             </div>
@@ -197,6 +236,10 @@
 
 
 <style>
+
+ 
+/* Tarjetas y fondo */
+
     .fondo {
         background: url('/images/fondo_perfil.svg');
         background-color: #333;
@@ -344,38 +387,45 @@
 
     .card-action {
         border-radius: 8px !important;
-        padding: 4px 10px;
+        padding: 4px 15px;
         border-top:0px;
+        margin-bottom: 10px;
     }
 
     .card-content{
         padding-top: 14px;
         border-radius: 0 0 2px 2px;
-        padding-bottom: 28px;
+        padding-bottom: 0px;
         padding-left: 18px;
         padding-right: 18px;
     }
 
     .nombre_cidade {
-        text-align: center;
+        text-align: left;
         color: #333;
+        font-size: 15px;
+        padding-bottom: 10px;
+    }
+
+    .card-content span{
+        text-align: left;
         font-size: 10px;
     }
 
     .card-image {
-        padding-left: 10px;
-        padding-right: 10px;
+        padding-left: 0px;
+        padding-right: 0px;
     }
 
     .etiqueta {
         padding: 0px;
         text-align: left;
-        font-size: 10px;
+        font-size: 12px;
     }
 
     .precio {
         text-align: right;
-        font-size: 10px;
+        font-size: 12px;
         padding: 0px;
     }
 

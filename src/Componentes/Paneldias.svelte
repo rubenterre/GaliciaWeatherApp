@@ -3,6 +3,9 @@
 
 import {onMount} from 'svelte';
 
+import {_} from 'svelte-i18n';
+
+
 //Datos de la api
 
 let COORDS = "";
@@ -139,8 +142,7 @@ let mestimesdiacinco = "";
                 var eldiaManana = new Date(DdiaMes * 1000);
                 diatimesdiaManana = eldiaManana.getDate();
                 var meses = ["Xan.", "Feb.", "Mar.", "Abr.", "Mai.", "Xuñ.", "Xul.", "Ago.", "Set.", "Out.", "Nov.",
-                    "Dec."
-                ];
+                    "Dec."];
                 mestimesdiaManana = meses[eldiaManana.getMonth()];
 
                 let DdiaPasado = data.daily[2].dt;
@@ -193,7 +195,7 @@ let mestimesdiacinco = "";
 
                 <div class="col s12 mas_una prox_dias centrarItems">
                     <div class="col s3 tit-diario">
-                        <p>Mañá</p>
+                        <p>{$_('tomorrow')}</p>
 
                         <div class="tit-mes font-mes">
                             <p>{diatimesdiaManana} de {mestimesdiaManana}</p>

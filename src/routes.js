@@ -5,6 +5,7 @@ import Creditos from './Paginas/Creditos.svelte'
 import Axustes from './Paginas/Axustes.svelte'
 import ErrorRuta from './Paginas/ErrorRuta.svelte'
 
+
 const routes = {
     '/':Inicio,
     '/Taboleiro':Taboleiro,
