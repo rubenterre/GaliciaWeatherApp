@@ -3,20 +3,7 @@
         createEventDispatcher
     } from 'svelte';
 
-    //import DraggableDraw from '../Componentes/Draggabledraw.svelte';
     import Cardtiempo from '../Componentes/Cardtiempo.svelte';
-
-
-   // let visible = false;
-   // let maxVH = 90;
-   // let minVH = 85;
-
-  //  function switchVisible() {
-   //     visible = !visible;
-   // }
-
-
-
 
     export let id;
     export let name;
@@ -68,20 +55,6 @@ let visible = false;
 </div>
 {/if}
 
-<!-- 
-
-{#if visible}
-<DraggableDraw bind:visible {maxVH} {minVH}>
-    <span slot="right" on:click={switchVisible}>Pechar</span>
-    <span slot="left" on:click={switchVisible}>Pechar</span>
-
-
-    <Cardtiempo name={name}/>
-
-</DraggableDraw>
-{/if}
-
--->
 <style>
 
 /* Modals */

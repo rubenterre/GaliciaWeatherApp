@@ -1,6 +1,4 @@
 <script>
-    import Sidebar from '../Componentes/Sidebar.svelte'
-    import {_} from 'svelte-i18n';
 
     import {
         link
@@ -10,7 +8,10 @@
     } from 'svelte/transition';
 
     let current = 'TODOS';
-    
+
+    const fondoDeSantiago = '<button class="waves-effect waves-light btn-small black white-text" style="width:100%"> ACTIVAR </button>'; 
+    const fondoDeDinoseto = '<button class="waves-effect waves-light btn-small black white-text" style="width:100%"> ACTIVAR </button>';
+    const fondoDeSireno = '<button class="waves-effect waves-light btn-small black white-text" style="width:100%"> ACTIVAR </button>';
 
     //Filtro
 
@@ -94,7 +95,8 @@
             imagen: 'SantiagoCompostela_descargar',
             etiqueta: 'Cidades',
             precio: 'GRATIS',
-            tipo: 'BASIC'
+            tipo: 'BASIC',
+            descargar: fondoDeSantiago
         },
         {
             name: 'Dinoseto de Porta do Sol',
@@ -102,7 +104,8 @@
             imagen: 'Vigo_dinoseto_descargar',
             etiqueta: 'Arte',
             precio: '0,99€',
-            tipo: 'PREMIUM'
+            tipo: 'PREMIUM',
+            descargar: fondoDeDinoseto
         },
         {
             name: 'O Sireo de Porta do Sol',
@@ -110,8 +113,19 @@
             imagen: 'Vigo_sireno_descargar',
             etiqueta: 'Arte',
             precio: '0,99€',
-            tipo: 'PREMIUM'
-        },
+            tipo: 'PREMIUM',
+            descargar: fondoDeSireno
+        }
+    ]
+
+    /*
+    <button class="waves-effect waves-light btn-small activacion" on:click={() => fondoSantiago = true} >Santiago</button> 
+    
+    `<button class="waves-effect waves-light btn-small activacion" on:click={() => fondoDinoseto = true} >Dinoseto</button>`
+
+    `<button class="waves-effect waves-light btn-small activacion" on:click={() => fondoSireno = true} >Sireno</button>`
+
+    ,
         {
             name: 'Praia das Catedráis',
             lugar: 'Ribadeo (Lugo)',
@@ -120,7 +134,7 @@
             precio: '0,99€',
             tipo: 'PREMIUM'
         }
-    ]
+    */
 
     console.log(cidades)
 
@@ -128,15 +142,9 @@
         todos()
     }
 
-    // Activar los fondos ilustrados
-
-    //var fondo = document.querySelector("body");
-    //fondo.style.backgroundImage = "url('/images/fondos/vigo/fondo_vigo_soleado.png')";
 
 </script>
 <div class="fondo">
-
-    <Sidebar />
 
     <div class="logoGW">
         <h1 class="logoGW_tit">GaliciaWeather<span class="logoGW_txt">O tempo de Galicia</span></h1>
@@ -184,28 +192,6 @@
                 {#if visibleFiltro}
                 {#each selectedCheckbox as cidade }
                     
-                 <!--   <div class="col s12 m7">
-                      <div class="card" transition:fade="{{delay: 250, duration: 300}}">
-                        <div class="card-image">
-                          <img src="/images/descargar/{cidade.imagen}.png">
-                        </div>
-                        <div class="nombre_cidade col s12 center-align">
-                            <p>{cidade.name}<span style="display: block">{cidade.lugar}</span></p>
-                          </div>
-                        <div class="card-content black-text">
-                            <div class="etiqueta col s6">
-                                <p>{cidade.etiqueta}</p>
-                            </div>
-                            <div class="precio col s6">
-                                <p>{cidade.precio}</p>
-                            </div>
-                        </div>
-                        <div class="card-action">
-                          <a class="waves-effect waves-light btn-small">DESCARGAR</a>
-                        </div>
-                      </div>
-                    </div>
-                --> 
                     <div class="col s12 m7" transition:fade="{{delay: 250, duration: 300}}">
                         <div class="card horizontal">
                           <div class="card-image">
@@ -222,7 +208,7 @@
                                 </div> 
                              </div>
                             <div class="card-action">
-                                <a class="waves-effect waves-light btn-small">DESCARGAR</a>
+                                {@html cidade.descargar}
                             </div>
                           </div>
                         </div>
@@ -281,12 +267,13 @@
         justify-content: center;
         align-items: center;
         align-content: center;
+
         }
 
     .logoGW_tit{
         text-align: center;
         font-size: 22px;
-        padding-top: 0px;
+        padding-top: 50px;
         margin-top: 0px;
         text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
     }

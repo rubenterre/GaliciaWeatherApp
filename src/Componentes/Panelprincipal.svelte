@@ -1,423 +1,252 @@
 <script>
-    import axios from "axios";
-    import { Pulse } from 'svelte-loading-spinners'
+
+import Santiago from '../Santiago/Santiago.svelte'
+import UbicacionActual from '../UbicacionGPS/UbicacionActual.svelte'
+import Vigo from '../Vigo/Vigo.svelte'
+import Coruna from '../ACoruna/Coruna.svelte'
+import Pontevedra from '../Pontevedra/Pontevedra.svelte'
+import Ourense from '../Ourense/Ourense.svelte';
+import Lugo from '../Lugo/Lugo.svelte'
 
 
-    import {
-        onMount
-    } from 'svelte';
+import {  link  } from 'svelte-spa-router'
 
-    // API Key
-    const KEY = "3e867330616c39fa60d18a1af5d82f16";
-
-    let COORDS = "";
-    let city = "";
-    let temperature = "";
-    let descripcion = "";
-    var datosPrincipal = null;
+import Drawer, {AppContent, Content, Header, Title, Subtitle, Scrim} from '@smui/drawer';
+  import Button, {Label} from '@smui/button';
+  import List, {Item, Text, Graphic, Separator, Subheader,PrimaryText, SecondaryText} from '@smui/list';
+  let myDrawer;
+  let myDrawerOpen = false;
+  import IconButton, {Icon} from '@smui/icon-button';
+  let usingEvents = false;
 
 
-
-    // Comprobar la localización en el navegador
-    function positionPromise() {
-        return new Promise((resolv) => {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    resolv(position)
-                }
-            )
-        })
-    }
-
-    onMount(async () => {
-        const coordenadas = await positionPromise();
-        console.log(coordenadas)
-
-        let latitude = coordenadas.coords.latitude;
-        let longitude = coordenadas.coords.longitude;
-        console.log(latitude)
+let fondoSireno = false;
+let fondoSantiago = false;
+let fondoUbicacionGPS = false;
+let fondoCoruna = false;
+let fondoPontevedra = false;
+let fondoOurense = false;
+let fondoLugo = false;
 
 
-        COORDS = `lat=${latitude}&lon=${longitude}`;
-        console.log(COORDS)
+$:if(fondoLugo){
+    fondoSantiago = false;
+    fondoSireno = false;
+    fondoUbicacionGPS = false;
+    fondoCoruna = false;
+    fondoPontevedra = false;
+    fondoOurense = false;
+    fondoLugo = true;
 
-        axios.get(
-                `http://api.openweathermap.org/data/2.5/weather?${COORDS}&appid=${KEY}&units=metric&lang=gl`
-            )
+}
 
-            .then(
-                data => {
-                    datosPrincipal = data.data;
-                    console.log(data.data);
 
-                    city = datosPrincipal.name;
-                    temperature = datosPrincipal.main.temp;
-                    descripcion = datosPrincipal.weather[0].description;
+$:if(fondoOurense){
+    fondoSantiago = false;
+    fondoSireno = false;
+    fondoUbicacionGPS = false;
+    fondoCoruna = false;
+    fondoPontevedra = false;
+    fondoOurense = true;
+    fondoLugo = false;
 
-                    // Cambiar a noche o día el fondo de pantalla
-                    
-                    var fondo = document.querySelector("body");
+}
 
-                    function cambiarSoleado() {
-                        fondo.classList.add("fondo_soleado");
-                        fondo.classList.remove("fondo_noite_clara");
-                        fondo.classList.remove("fondo_soleado_poucas_nubes");
-                        fondo.classList.remove("fondo_noite_poucas_nubes");
-                        fondo.classList.remove("fondo_dia_nublado");
-                        fondo.classList.remove("fondo_noite_nublado");
-                        fondo.classList.remove("fondo_nublado");
-                        fondo.classList.remove("fondo_moita_choiva");
-                        fondo.classList.remove("fondo_pouca_choiva");
-                        fondo.classList.remove("fondo_tormenta");
-                        fondo.classList.remove("fondo_neve");
-                        fondo.classList.remove("fondo_neboa");
+$:if(fondoSantiago){
+    fondoSantiago = true;
+    fondoSireno = false;
+    fondoUbicacionGPS = false;
+    fondoCoruna = false;
+    fondoPontevedra = false;
+    fondoOurense = false;
+    fondoLugo = false;
 
-                    }
+}
 
-                    function cambiarNoiteClara() {
-                        fondo.classList.remove("fondo_soleado");
-                        fondo.classList.add("fondo_noite_clara");
-                        fondo.classList.remove("fondo_soleado_poucas_nubes");
-                        fondo.classList.remove("fondo_noite_poucas_nubes");
-                        fondo.classList.remove("fondo_dia_nublado");
-                        fondo.classList.remove("fondo_noite_nublado");
-                        fondo.classList.remove("fondo_nublado");
-                        fondo.classList.remove("fondo_moita_choiva");
-                        fondo.classList.remove("fondo_pouca_choiva");
-                        fondo.classList.remove("fondo_tormenta");
-                        fondo.classList.remove("fondo_neve");
-                        fondo.classList.remove("fondo_neboa");
+$:if(fondoPontevedra){
+    fondoSantiago = false;
+    fondoSireno = false;
+    fondoUbicacionGPS = false;
+    fondoCoruna = false;
+    fondoPontevedra = true;
+    fondoOurense = false;
+    fondoLugo = false;
 
-                    }
+}
 
-                    function cambiarSoleadoPoucasNubes() {
-                        fondo.classList.remove("fondo_soleado");
-                        fondo.classList.remove("fondo_noite_clara");
-                        fondo.classList.add("fondo_soleado_poucas_nubes");
-                        fondo.classList.remove("fondo_noite_poucas_nubes");
-                        fondo.classList.remove("fondo_dia_nublado");
-                        fondo.classList.remove("fondo_noite_nublado");
-                        fondo.classList.remove("fondo_nublado");
-                        fondo.classList.remove("fondo_moita_choiva");
-                        fondo.classList.remove("fondo_pouca_choiva");
-                        fondo.classList.remove("fondo_tormenta");
-                        fondo.classList.remove("fondo_neve");
-                        fondo.classList.remove("fondo_neboa");
+$:if(fondoSireno){
+    fondoSireno = true;
+    fondoSantiago = false;
+    fondoUbicacionGPS = false;
+    fondoCoruna = false;
+    fondoPontevedra = false;
+    fondoOurense = false;
+    fondoLugo = false;
 
-                    }
+}
 
-                    function cambiarNoitePoucasNubes() {
-                        fondo.classList.remove("fondo_soleado");
-                        fondo.classList.remove("fondo_noite_clara");
-                        fondo.classList.remove("fondo_soleado_poucas_nubes");
-                        fondo.classList.add("fondo_noite_poucas_nubes");
-                        fondo.classList.remove("fondo_dia_nublado");
-                        fondo.classList.remove("fondo_noite_nublado");
-                        fondo.classList.remove("fondo_nublado");
-                        fondo.classList.remove("fondo_moita_choiva");
-                        fondo.classList.remove("fondo_pouca_choiva");
-                        fondo.classList.remove("fondo_tormenta");
-                        fondo.classList.remove("fondo_neve");
-                        fondo.classList.remove("fondo_neboa");
+$:if(fondoUbicacionGPS){
+    fondoUbicacionGPS = true;
+    fondoSantiago = false;
+    fondoSireno = false;
+    fondoCoruna = false;
+    fondoPontevedra = false;
+    fondoOurense = false;
+    fondoLugo = false;
 
-                    }
+}
+ 
+$:if(fondoCoruna){
+    fondoUbicacionGPS = false;
+    fondoSantiago = false;
+    fondoSireno = false;
+    fondoCoruna = true;
+    fondoPontevedra = false;
+    fondoOurense = false;
+    fondoLugo = false;
 
-                    function cambiarDiaNublado() {
-                        fondo.classList.remove("fondo_soleado");
-                        fondo.classList.remove("fondo_noite_clara");
-                        fondo.classList.remove("fondo_soleado_poucas_nubes");
-                        fondo.classList.remove("fondo_noite_poucas_nubes");
-                        fondo.classList.add("fondo_dia_nublado");
-                        fondo.classList.remove("fondo_noite_nublado");
-                        fondo.classList.remove("fondo_nublado");
-                        fondo.classList.remove("fondo_moita_choiva");
-                        fondo.classList.remove("fondo_pouca_choiva");
-                        fondo.classList.remove("fondo_tormenta");
-                        fondo.classList.remove("fondo_neve");
-                        fondo.classList.remove("fondo_neboa");
+}
 
-                    }
-
-                    function cambiarNoiteNublada() {
-                        fondo.classList.remove("fondo_soleado");
-                        fondo.classList.remove("fondo_noite_clara");
-                        fondo.classList.remove("fondo_soleado_poucas_nubes");
-                        fondo.classList.remove("fondo_noite_poucas_nubes");
-                        fondo.classList.remove("fondo_dia_nublado");
-                        fondo.classList.add("fondo_noite_nublado");
-                        fondo.classList.remove("fondo_nublado");
-                        fondo.classList.remove("fondo_moita_choiva");
-                        fondo.classList.remove("fondo_pouca_choiva");
-                        fondo.classList.remove("fondo_tormenta");
-                        fondo.classList.remove("fondo_neve");
-                        fondo.classList.remove("fondo_neboa");
-
-                    }
-
-                    function cambiarNublado() {
-                        fondo.classList.remove("fondo_soleado");
-                        fondo.classList.remove("fondo_noite_clara");
-                        fondo.classList.remove("fondo_soleado_poucas_nubes");
-                        fondo.classList.remove("fondo_noite_poucas_nubes");
-                        fondo.classList.remove("fondo_dia_nublado");
-                        fondo.classList.remove("fondo_noite_nublado");
-                        fondo.classList.add("fondo_nublado");
-                        fondo.classList.remove("fondo_moita_choiva");
-                        fondo.classList.remove("fondo_pouca_choiva");
-                        fondo.classList.remove("fondo_tormenta");
-                        fondo.classList.remove("fondo_neve");
-                        fondo.classList.remove("fondo_neboa");
-
-                    }
-
-                    function cambiarMoitaChoiva() {
-                        fondo.classList.remove("fondo_soleado");
-                        fondo.classList.remove("fondo_noite_clara");
-                        fondo.classList.remove("fondo_soleado_poucas_nubes");
-                        fondo.classList.remove("fondo_noite_poucas_nubes");
-                        fondo.classList.remove("fondo_dia_nublado");
-                        fondo.classList.remove("fondo_noite_nublado");
-                        fondo.classList.remove("fondo_nublado");
-                        fondo.classList.add("fondo_moita_choiva");
-                        fondo.classList.remove("fondo_pouca_choiva");
-                        fondo.classList.remove("fondo_tormenta");
-                        fondo.classList.remove("fondo_neve");
-                        fondo.classList.remove("fondo_neboa");
-
-                    }
-
-                    function cambiarPoucaChoiva() {
-                        fondo.classList.remove("fondo_soleado");
-                        fondo.classList.remove("fondo_noite_clara");
-                        fondo.classList.remove("fondo_soleado_poucas_nubes");
-                        fondo.classList.remove("fondo_noite_poucas_nubes");
-                        fondo.classList.remove("fondo_dia_nublado");
-                        fondo.classList.remove("fondo_noite_nublado");
-                        fondo.classList.remove("fondo_nublado");
-                        fondo.classList.remove("fondo_moita_choiva");
-                        fondo.classList.add("fondo_pouca_choiva");
-                        fondo.classList.remove("fondo_tormenta");
-                        fondo.classList.remove("fondo_neve");
-                        fondo.classList.remove("fondo_neboa");
-
-                    }
-
-                    function cambiarTormenta() {
-                        fondo.classList.remove("fondo_soleado");
-                        fondo.classList.remove("fondo_noite_clara");
-                        fondo.classList.remove("fondo_soleado_poucas_nubes");
-                        fondo.classList.remove("fondo_noite_poucas_nubes");
-                        fondo.classList.remove("fondo_dia_nublado");
-                        fondo.classList.remove("fondo_noite_nublado");
-                        fondo.classList.remove("fondo_nublado");
-                        fondo.classList.remove("fondo_moita_choiva");
-                        fondo.classList.remove("fondo_pouca_choiva");
-                        fondo.classList.add("fondo_tormenta");
-                        fondo.classList.remove("fondo_neve");
-                        fondo.classList.remove("fondo_neboa");
-
-                    }
-
-                    function cambiarNeve() {
-                        fondo.classList.remove("fondo_soleado");
-                        fondo.classList.remove("fondo_noite_clara");
-                        fondo.classList.remove("fondo_soleado_poucas_nubes");
-                        fondo.classList.remove("fondo_noite_poucas_nubes");
-                        fondo.classList.remove("fondo_dia_nublado");
-                        fondo.classList.remove("fondo_noite_nublado");
-                        fondo.classList.remove("fondo_nublado");
-                        fondo.classList.remove("fondo_moita_choiva");
-                        fondo.classList.remove("fondo_pouca_choiva");
-                        fondo.classList.remove("fondo_tormenta");
-                        fondo.classList.add("fondo_neve");
-                        fondo.classList.remove("fondo_neboa");
-
-                    }
-
-                    function cambiarNeboa() {
-                        fondo.classList.remove("fondo_soleado");
-                        fondo.classList.remove("fondo_noite_clara");
-                        fondo.classList.remove("fondo_soleado_poucas_nubes");
-                        fondo.classList.remove("fondo_noite_poucas_nubes");
-                        fondo.classList.remove("fondo_dia_nublado");
-                        fondo.classList.remove("fondo_noite_nublado");
-                        fondo.classList.remove("fondo_nublado");
-                        fondo.classList.remove("fondo_moita_choiva");
-                        fondo.classList.remove("fondo_pouca_choiva");
-                        fondo.classList.remove("fondo_tormenta");
-                        fondo.classList.remove("fondo_neve");
-                        fondo.classList.add("fondo_neboa");
-
-                    }
-
-                    switch (datosPrincipal.weather[0].icon) {
-                        case '01d':
-                            fondo = cambiarSoleado();
-                            break;
-
-                        case '01n':
-                            fondo = cambiarNoiteClara();
-                            break;
-
-                        case '02d':
-                            fondo = cambiarSoleadoPoucasNubes();
-                            break;
-
-                        case '02n':
-                            fondo = cambiarNoitePoucasNubes();
-                            break;
-
-                        case '03d':
-                            fondo = cambiarDiaNublado();
-                            break;
-
-                        case '03n':
-                            fondo = cambiarNoiteNublada();
-                            break;
-
-                        case '04d':
-                            fondo = cambiarNublado();
-                            break;
-
-                        case '04n':
-                            fondo = cambiarNublado();
-                            break;
-
-                        case '09d':
-                            fondo = cambiarMoitaChoiva();
-                            break;
-
-                        case '09n':
-                            fondo = cambiarMoitaChoiva();
-                            break;
-
-                        case '10d':
-                            fondo = cambiarPoucaChoiva();
-                            break;
-
-                        case '10n':
-                            fondo = cambiarPoucaChoiva();
-                            break;
-
-                        case '11d':
-                            fondo = cambiarTormenta();
-                            break;
-
-                        case '11n':
-                            fondo = cambiarTormenta();
-                            break;
-
-                        case '13d':
-                            fondo = cambiarNeve();
-                            break;
-
-                        case '13n':
-                            fondo = cambiarNeve();
-                            break;
-
-                        case '50d':
-                            fondo = cambiarNeboa();
-                            break;
-
-                        case '50n':
-                            fondo = cambiarNeboa();
-                            break;
-
-                        case 'unknown':
-                            fondo = cambiarColorDia();
-                            break;
-                    }
-                }
-            )
-    });
 </script>
 
-<div class="center">
-    {#if datosPrincipal!==null}
-    <div class="white-text PanelPrincipal">
-        <div class="container">
-            <div class="row">
-                <div class="weather-container">
-                    <div class="col s12 location">
-                        <p>{city}</p>
-                    </div>
-                    <div class="col s12 temperature-value center">
-                        <p>{Math.round(temperature)}°C</p>
-                    </div>
-                </div>
-                <div class="weather-datos">
-                    <div class="col s12 temperature-description center">
-                        <p>{descripcion}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    {:else}
-    <div class="loading center">
-        <Pulse size="60" color="#fff" unit="px"></Pulse>
-    </div>
-    {/if}
+
+<div class="drawer-container">
+  <Drawer variant="dismissible" bind:this={myDrawer} bind:open={myDrawerOpen}>
+    <Header class="center" >
+      <div class="GW_icon">
+        <img class="center" src="/images/GaliciaWeather.gif" alt="" width="50%">
+      </div>
+      <Title class="center" >GaliciaWeather<br><p style="padding-bottom:20px;color:#333;font-size:13px;font-weight:300;">O tempo de Galicia</p></Title>
+    </Header>
+    <Content>
+      <List class="grey darken-3">
+        <Item>
+          <Text class="white-text">
+            <p style="font-size:14px;font-weight:600;">Escolle unha cidade:</p>
+          </Text>
+        </Item>
+        <Item href="javascript:void(0)" on:click={() => fondoUbicacionGPS = true}>
+          <Icon class="material-icons">location_on</Icon> 
+          <Text>
+            Ubicación actual
+          </Text>
+        </Item>
+        <Item href="javascript:void(0)" on:click={() => fondoSantiago = true}>
+          <Icon class="material-icons">location_city</Icon> 
+          <Text>
+            Santiago de Compostela
+          </Text>
+        </Item>
+        <Item href="javascript:void(0)" on:click={() => fondoSireno = true}>
+          <Icon class="material-icons">location_city</Icon> 
+          <Text>
+            Vigo
+          </Text>
+        </Item>
+        <Item href="javascript:void(0)" on:click={() => fondoCoruna = true}>
+          <Icon class="material-icons">location_city</Icon> 
+          <Text>
+            A Coruña
+          </Text>
+        </Item>
+        <Item href="javascript:void(0)" on:click={() => fondoPontevedra = true}>
+          <Icon class="material-icons">location_city</Icon> 
+          <Text>
+            Pontevedra
+          </Text>
+        </Item>
+        <Item href="javascript:void(0)" on:click={() => fondoOurense = true}>
+          <Icon class="material-icons">location_city</Icon> 
+          <Text>
+            Ourense
+          </Text>
+        </Item>
+        <Item href="javascript:void(0)" on:click={() => fondoLugo = true}>
+          <Icon class="material-icons">location_city</Icon> 
+          <Text>
+            Lugo
+          </Text>
+        </Item>
+        <Item href="javascript:void(0)" on:click={() => fondoSireno = true}>
+          <Icon class="material-icons">location_city</Icon> 
+          <Text>
+            Ferrol
+          </Text>
+        </Item>
+        <Separator/>
+        <Item href="/#/Creditos" on:click={() => link}>
+          <Icon class="material-icons">info_outline</Icon>
+          <Text><a class="black-text" href="/Creditos" use:link >Información</a></Text>
+        </Item>
+      </List>
+    </Content>
+  </Drawer>
+
+  <AppContent class="app-content">
+    <main class="main-content">
+      <Button on:click={() => myDrawerOpen = !myDrawerOpen} class="transparent"><Label>
+        <IconButton on:click={() => usingEvents = !usingEvents} pressed={usingEvents}>
+          <Icon class="material-icons white-text transparent menu" on>clear</Icon>
+          <Icon class="material-icons white-text transparent menu">sort</Icon>
+        </IconButton>
+    </Label></Button>
+    </main>
+  </AppContent>
 </div>
 
-<style>
 
 
-    .loading{
-        height: 100vh;
-        width: 100vw;
-        padding-left: 45vw;
-        padding-top: 40vh;
-    }
+    {#if fondoSireno}
+    <Vigo/>
+    {:else if fondoSantiago}
+    <Santiago/>
+    {:else if fondoCoruna}
+    <Coruna/>
+    {:else if fondoPontevedra}
+    <Pontevedra/>
+    {:else if fondoOurense}
+    <Ourense/>
+    {:else if fondoLugo}
+    <Lugo/>
+    {:else if fondoUbicacionGPS}
+    <UbicacionActual/>
+    {:else}
+    <UbicacionActual/>
+    {/if}
 
-    .weather-container {
-        display: flex;
-        justify-content: center;
-        align-content: center;
-        flex-wrap: wrap;
-        padding-top: 30px;   
-    }
+    <style>
 
+      .GW_icon{
+        padding-top: 30px;
+      }
 
-    @media only screen and (min-width: 600px) {
-        .weather-datos {
-            padding-top: 8vh;
+:global(.menu){
+  text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
+}
+
+:global(.mdc-button:after){
+    background-color: var(--mdc-theme-primary, rgba(0,0,0,0.0))!important;
+}
+
+:global(.mdc-button:before){
+    background-color: var(--mdc-theme-primary, rgba(0,0,0,0.0))!important;
+}
+
+:global(button:focus){
+  background-color: transparent;
+  text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
+
+}
+
+:global(.main-content){
+  height: 60px;
+}
+
+ .idioma{
+          margin-top: 10px;
+          margin-right: 10px;
+          padding: 10px;
+          text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
         }
-    }
 
-
-    .temperature-value p {
-        padding: 0;
-        margin: 0;
-        color: #fff;
-        font-size: 90px !important;
-        font-weight: 600;
-        text-align: center;
-        cursor: pointer;
-        text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
-    }
-
-
-    .temperature-description {
-        padding-top: 10px;
-    }
-
-    .temperature-description p {
-        color: #fff;
-        text-align: center;
-        font-size: 40px !important;
-        font-weight: 300;
-        text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
-    }
-
-
-    .location p {
-        margin: 0;
-        padding: 0;
-        color: #fff;
-        text-align: center;
-        font-size: 18px !important;
-        font-weight: 600;
-        text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
-    }
-</style>
+      </style>

@@ -1,9 +1,24 @@
 <script>
     //Fases lunares
-    import {_} from 'svelte-i18n';
+
+/*
+
+let day = new Date().getDay()
+let mes = new Date().getMonth() + 1;
+let year = new Date().getFullYear();
+
+const fechaHoy = `${year}-${mes}-${day}`;
+console.log(fechaHoy)
 
 
-    function load_moon_phases(obj, callback) {
+const fetchLuna = (async () => {
+	const dataLuna = await fetch(`https://api.met.no/weatherapi/sunrise/2.0/.json?date=${fechaHoy}&lat=40&lon=-8&offset=%2B01%3A00`)
+    return await dataLuna.json()
+    })()
+
+*/
+
+function load_moon_phases(obj, callback) {
     var gets = []
     for (var i in obj) {
         gets.push(i + "=" + encodeURIComponent(obj[i]))
@@ -50,14 +65,16 @@ var configMoon = {
     texturize: true,
 }
 load_moon_phases(configMoon, example_2)
+
 </script>
 
 <div class="white-text">
 <div class="container">
     <div class="row">
         <div class="fases_lunares col s12">
-            <p>{$_('PhasesMoon')}</p>
-            <div id="ex2"></div>
+            <p>Fases da lúa deste mes</p>
+            <div id="ex2">
+            </div>
         </div>
     </div>
 </div>
@@ -109,4 +126,5 @@ load_moon_phases(configMoon, example_2)
     display: block;
     margin: 10px auto 0 auto;
 }
+
 </style>

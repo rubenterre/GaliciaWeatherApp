@@ -6,7 +6,6 @@
     import Carddias from "../Componentes/Carddias.svelte";
 
     export let name;
-    export let visible;
 
     // API Key
     const key = "3e867330616c39fa60d18a1af5d82f16";
@@ -317,7 +316,7 @@
 </script>
 
 <div class="center PanelCard">
-
+    <div>
     {#if datosCard!==null}
     <div class="white-text PanelPrincipal">
         <div class="container">
@@ -338,24 +337,43 @@
             </div>
         </div>
     </div>
+
         <Carddias longitude={longitude} latitude={latitude}/>
+
+        <!-- navbar bottom -->
+
+        <nav class="volver_btn">
+            <a href="index.html">
+                <div class="nav-fixed col s12 center-align">
+                    <button on:click class="btn btn-large volver">Volver</button>
+                </div>
+            </a>
+        </nav>
+        <!-- fin navbar bottom -->
     {/if}
-    <div class="container">
-        <div class="col s12">
-            <button on:click class="btn btn-large volver">Volver</button>
-        </div>
-    </div>
+</div>
+
 </div>
 
 
 
 <style>
 
+.volver_btn {
+    background-color: white;
+    overflow: hidden;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 999;
+    margin: 0 auto;
+    border: 0px;
+}
+
 .volver{
     width: 100%;
     background: white;
     color: black;
-    border: 2px solid #333;
 }
 
 .PanelCard{
@@ -367,7 +385,7 @@
   height: 100%; /* Full height */
   padding-top:40px;
   margin-bottom:20px;
-
+  overflow: scroll;
 }
 
     .weather-container {
