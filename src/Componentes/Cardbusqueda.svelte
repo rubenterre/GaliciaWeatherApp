@@ -15,7 +15,7 @@
 
     function removeTiempo() {
         dispatch('removeTiempo', {
-            id
+            name
         })
     }
 
@@ -40,7 +40,7 @@ let visible = false;
                         </span>
                         <a on:click={()=> abrirModal()} class="btn modal-trigger btn-floating halfway-fab waves-effect waves-light
                             black verTiempo"><i class="material-icons">visibility</i></a>
-                        <a on:click={()=> removeTiempo(id)} class="btn-floating halfway-fab waves-effect waves-light
+                        <a on:click={()=> removeTiempo(name)} class="btn-floating halfway-fab waves-effect waves-light
                             black"><i class="material-icons">delete</i></a>
                     </div>
                 </div>

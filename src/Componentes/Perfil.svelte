@@ -9,9 +9,9 @@
 
     let current = 'TODOS';
 
-    const fondoDeSantiago = '<button class="waves-effect waves-light btn-small black white-text" style="width:100%"> ACTIVAR </button>'; 
-    const fondoDeDinoseto = '<button class="waves-effect waves-light btn-small black white-text" style="width:100%"> ACTIVAR </button>';
-    const fondoDeSireno = '<button class="waves-effect waves-light btn-small black white-text" style="width:100%"> ACTIVAR </button>';
+    const fondoDeSantiago = '<button class="waves-effect waves-light btn-small black white-text" style="width:100%"> DESCARGAR </button>'; 
+    const fondoDeDinoseto = '<button class="waves-effect waves-light btn-small black white-text" style="width:100%"> DESCARGAR </button>';
+    const fondoDeSireno = '<button class="waves-effect waves-light btn-small black white-text" style="width:100%"> DESCARGADO </button>';
 
     //Filtro
 
@@ -90,30 +90,30 @@
     }
 
     let cidades = [{
-            name: 'Santiago de Compostela',
-            lugar: 'A Coruña',
-            imagen: 'SantiagoCompostela_descargar',
+            name: 'EuropeWeather',
+            lugar: 'European weather app',
+            imagen: 'EuropeWeatherApp',
             etiqueta: 'Cidades',
-            precio: 'GRATIS',
-            tipo: 'BASIC',
+            precio: '0,99€',
+            tipo: 'PREMIUM',
             descargar: fondoDeSantiago
         },
         {
-            name: 'Dinoseto de Porta do Sol',
-            lugar: 'Vigo',
-            imagen: 'Vigo_dinoseto_descargar',
+            name: 'VigoWeather',
+            lugar: 'O tempo de Vigo',
+            imagen: 'VigoWeatherApp',
             etiqueta: 'Arte',
             precio: '0,99€',
             tipo: 'PREMIUM',
             descargar: fondoDeDinoseto
         },
         {
-            name: 'O Sireo de Porta do Sol',
-            lugar: 'Vigo',
-            imagen: 'Vigo_sireno_descargar',
-            etiqueta: 'Arte',
-            precio: '0,99€',
-            tipo: 'PREMIUM',
+            name: 'GaliciaWeather',
+            lugar: 'O tempo de Galicia',
+            imagen: 'GaliciaWeatherApp',
+            etiqueta: 'Cidades',
+            precio: 'GRATIS',
+            tipo: 'BASICS',
             descargar: fondoDeSireno
         }
     ]

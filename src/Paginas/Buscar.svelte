@@ -1,7 +1,7 @@
 <script>
   import axios from "axios";
   import Cardbusqueda from '../Componentes/Cardbusqueda.svelte'
-  import {get,set} from 'idb-keyval';
+  import {del, get,keys,set} from 'idb-keyval';
 
 
 
@@ -23,42 +23,26 @@
 
   let cities = [];
 
-  get('names')
-    .then(arr => {
-      if (arr !== undefined)
-        cities = arr
-      console.log(cities)
+  function update () {
+    todos=[]
+    keys().then(ciudades=>{
+            var promises = [];
+            ciudades.forEach(ciudad=>{
+              promises.push(
+                get(ciudad)
+              )
+            })
+            Promise.all(promises).then(ciudades=>{
+              ciudades.forEach(ciudad=>{
+                console.log('ciudad:', ciudad)
+                todos = [...todos, ciudad];
+                console.log(todos)
+              })
+            })
+          })
+      }
 
-      for( var city of cities)
-     
-      axios.get(
-        `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${key}&units=metric&lang=gl`
-      )
-      .then(data => {
-        console.log(data)
-        incomeData = data.data;
-        name = incomeData.name;
-        temp = incomeData.main.temp;
-        icon = incomeData.weather[0].icon;
-        id = Math.random().toString(36).substr(2, 9);
-
-        todos.push({
-          id: id,
-          name: name,
-          temp: temp,
-          icon: icon
-        })
-
-        console.log(todos)
-
-        if (city)
-          todos = [...todos];
-
-        console.log(todos)
-      })
-      
-    })
-
+  update()
 
   function add() {
     if (name != "") {
@@ -81,40 +65,22 @@
         icon = incomeData.weather[0].icon;
         id = Math.random().toString(36).substr(2, 9);
 
-
-        todos.push({
+        var tarjeta = {
           id: id,
           name: name,
           temp: temp,
           icon: icon
-        })
-
-        console.log(todos)
-
-        if (input)
-          todos = [...todos];
-
-
-        console.log(todos)
-
-        add(input)
+        }
+        set(name,tarjeta)
+        update()
 
         input = "";
       })
+    }
 
-  };
-
-  function removeTiempo(id) {
-    const index = todos.findIndex(todo => todo.id === id);
-    console.log(id)
-    todos.splice(index, 1);
-    todos = todos;
-    
-    const indexSave = cities.findIndex(name => cities.name === name);
-    console.log(name)
-    cities.splice(indexSave, 1);
-    cities = cities;
-    set('names', cities);
+  function removeTiempo(name) {
+    del(name)
+    update()
   }
 
 
@@ -140,8 +106,8 @@
     <section class="ajax-section">
         <ul class:list={todos.length > 0}>
         {#if todos.length}
-          {#each todos as todo, i (todo.id) }
-              <Cardbusqueda id={todo.id} icon={todo.icon} name={todo.name} temp={todo.temp} on:removeTiempo={removeTiempo(todo.id)}
+          {#each todos as todo, i (todo.name) }
+              <Cardbusqueda id={todo.id} icon={todo.icon} name={todo.name} temp={todo.temp} on:removeTiempo={removeTiempo(todo.name)}
               />
           {/each}
         {/if}

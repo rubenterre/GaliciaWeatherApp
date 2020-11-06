@@ -51,6 +51,32 @@
                     <p class="about-version">Versión 2.2.1.</p>
                     <p class="about-txt">Esta aplicación está susentada pola base de datos de Openweathermaps.</p>
 
+                    <p class="about-txt">
+                        Desenvolto por Rubén Terré.
+                    </p>
+                    <img class="center logo_RT" src="/images/Ruben_Terre_Logo_blanco_131119.svg" alt="logo Rubén Terré" width="40%">
+                    <p class="about-txt">
+                        Para máis información sobre os meus traballos visita a miña web en <a
+                            href="https://www.rubenterre.com">www.rubenterre.com</a> ou a través dos seguintes
+                        canais:
+                    </p>
+
+                    <div class="col s12 icon_contact">
+                        <div class="col s4">
+                            <a href="https://www.behance.net/rubenterre"><img
+                                    src="/images/behance-square-brands_white.svg" alt="Benhance link" width="40%"></a>
+                        </div>
+                        <div class="col s4">
+                            <a href="https://github.com/rubenterre"><img src="/images/github-square-brands_white.svg"
+                                    alt="Github link" width="40%"></a>
+                        </div>
+                        <div class="col s4">
+                            <a href="https://www.linkedin.com/in/rubenterrelameiro"><img
+                                    src="/images/linkedin-brands_white.svg" alt="Linkedin link" width="40%"></a>
+                        </div>
+                    </div>
+
+
                     <p class="about-textoDos"><strong class="white-text">Actualizacións nas que estamos
                             traballando</strong></p>
                     <ul class="white-text left-align">
@@ -60,10 +86,11 @@
                         <li> 4- Notificacións Push</li>
                         <li> 5- Melloras no diseño</li>
                     </ul>
-<br>
+                    <br>
+
                     <h4 class="about-tit">MIT License</h4>
 
-                    <p class="about-version">Copyright (c) 2020 GaliciaWeather</p>
+                    <p class="about-version">Copyright (c) 2020 Rubén Terré - Diseño & Desarrollo web</p>
 
                     <p class="licencia-txt">Permission is hereby granted, free of charge, to any person obtaining a copy
                         of this software and associated documentation files (the "Software"), to deal
@@ -72,7 +99,8 @@
                         copies of the Software, and to permit persons to whom the Software is
                         furnished to do so, subject to the following conditions:</p>
 
-                    <p class="licencia-txt">The above copyright notice and this permission notice shall be included in all
+                    <p class="licencia-txt">The above copyright notice and this permission notice shall be included in
+                        all
                         copies or substantial portions of the Software.</p>
 
                     <p class="licencia-txt">THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -100,6 +128,16 @@
         padding: 0px;
         height: 100%;
         width: 100vw;
+    }
+
+    .logo_RT {
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .icon_contact {
+        margin-top: 40px;
+        margin-bottom: 40px;
     }
 
     /* Waves */
@@ -235,12 +273,12 @@
 
     .about-textoDos {
         padding-top: 40px;
-
+        margin-top: 40px;
     }
 
     /* Licencia */
 
-    .licencia-txt{
+    .licencia-txt {
         color: white;
         font-family: Roboto;
         font-size: 11px;
