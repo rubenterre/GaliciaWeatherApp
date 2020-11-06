@@ -49,7 +49,7 @@
                 <div class="col s12 center-align">
                     <h4 class="about-tit">GaliciaWeather</h4>
                     <p class="about-version">Versión 2.2.1.</p>
-                    <p class="about-txt">Esta aplicación está susentada pola base de datos de Openweathermaps.</p>
+                    <p class="about-txt">Esta aplicación está susentada pola base de datos de Openweathermaps e pola base de datos de fases lunares de iCalendar.</p>
 
                     <p class="about-txt">
                         Desenvolto por Rubén Terré.

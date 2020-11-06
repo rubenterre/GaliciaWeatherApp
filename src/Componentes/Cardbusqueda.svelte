@@ -51,7 +51,7 @@ let visible = false;
 
 {#if visible}
 <div>
-    <Cardtiempo name={name} on:click={abrirModal}/>
+    <Cardtiempo name={name} on:abrirModal={abrirModal(visible)}/>
 </div>
 {/if}
 

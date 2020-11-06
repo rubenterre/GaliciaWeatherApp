@@ -3,6 +3,10 @@
 
     import { onMount } from 'svelte';
 
+    import Button from '@smui/button';
+    import List, {Text} from '@smui/list';
+
+
     import Carddias from "../Componentes/Carddias.svelte";
 
     export let name;
@@ -313,6 +317,9 @@
     });
 
 
+    export let visible;
+
+
 </script>
 
 <div class="center PanelCard">
@@ -345,7 +352,9 @@
         <nav class="volver_btn">
             <a href="index.html">
                 <div class="nav-fixed col s12 center-align">
-                    <button on:click class="btn btn-large volver">Volver</button>
+                    <Button on:click={!visible} class="volver">
+                        <Text>Volver</Text>
+                    </Button>
                 </div>
             </a>
         </nav>
@@ -370,11 +379,13 @@
     border: 0px;
 }
 
-.volver{
+:global(.volver){
     width: 100%;
     background: white;
     color: black;
 }
+
+
 
 .PanelCard{
   display: block; /* Hidden by default */

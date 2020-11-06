@@ -16,7 +16,8 @@ const fetchLuna = (async () => {
     return await dataLuna.json()
     })()
 
-*/
+
+https://www.icalendar37.net/lunar/api/?lang=es&month=11&year=2020&size=100%25&lightColor=rgb(255%2C255%2C230)&shadeColor=transparent&texturize=true&LDZ=1604185200
 
 function load_moon_phases(obj, callback) {
     var gets = []
@@ -34,9 +35,25 @@ function load_moon_phases(obj, callback) {
     xmlhttp.open("GET", url, true)
     xmlhttp.send()
 }
+*/
 
-
-function example_2(moon) {
+function load_moon_phases(obj) {
+    var m = new Date();
+    var meses = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+                    "11","12"];
+    var mestimes = meses[m.getMonth()];
+    console.log(mestimes)
+    var y = new Date();
+    var year = y.getFullYear();
+    console.log(year)
+    var timestamp = ("LDZ=" + new Date(obj.year, obj.month - 1, 1) / 1000);
+    var url = "https://www.icalendar37.net/lunar/api/?";
+    const fetchLuna = (async () => {
+        const dataLuna = await fetch(`${url}?lang=es&month=${mestimes}&year=${year}&size=100%25&lightColor=rgb(255%2C255%2C230)&shadeColor=transparent&texturize=true&${timestamp}`)
+        return await dataLuna.json()
+    
+        .then(
+            function example_2(moon) {
     var phMax = []
     for (var nDay in moon.phase) {
         if (moon.phase[nDay].isPhaseLimit) {
@@ -55,25 +72,21 @@ function example_2(moon) {
     })
     document.getElementById("ex2").innerHTML = html
 }
-var configMoon = {
-    lang: 'es',
-    month: new Date().getMonth() + 1,
-    year: new Date().getFullYear(),
-    size: "100%",
-    lightColor: "rgb(255,255,230)",
-    shadeColor: "transparent",
-    texturize: true,
+        )
+    
+    })()
+    console.log(fetchLuna)
 }
-load_moon_phases(configMoon, example_2)
+
+load_moon_phases(load_moon_phases)
 
 </script>
-
 <div class="white-text">
 <div class="container">
     <div class="row">
         <div class="fases_lunares col s12">
             <p>Fases da lúa deste mes</p>
-            <div id="ex2">
+            <div id="ex2" class="no-active">
             </div>
         </div>
     </div>
@@ -91,6 +104,13 @@ load_moon_phases(configMoon, example_2)
     flex-direction: row;
     flex-wrap: nowrap;
     padding-bottom: 10px;
+    pointer-events: none;
+  cursor: default;
+}
+
+.no-active{
+  pointer-events: none;
+  cursor: default;
 }
 
 #ex2>b {

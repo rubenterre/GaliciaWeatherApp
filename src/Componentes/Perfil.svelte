@@ -9,8 +9,8 @@
 
     let current = 'TODOS';
 
-    const fondoDeSantiago = '<button class="waves-effect waves-light btn-small black white-text" style="width:100%"> DESCARGAR </button>'; 
-    const fondoDeDinoseto = '<button class="waves-effect waves-light btn-small black white-text" style="width:100%"> DESCARGAR </button>';
+    const fondoDeSantiago = '<button class="waves-effect waves-light btn-small black white-text" style="width:100%"> PRÓXIMAMENTE </button>'; 
+    const fondoDeDinoseto = '<button class="waves-effect waves-light btn-small black white-text" style="width:100%"> PRÓXIMAMENTE </button>';
     const fondoDeSireno = '<button class="waves-effect waves-light btn-small black white-text" style="width:100%"> DESCARGADO </button>';
 
     //Filtro
