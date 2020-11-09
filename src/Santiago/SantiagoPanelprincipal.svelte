@@ -1444,64 +1444,6 @@
 
 <style>
 
-.loading{
-    height: 100vh;
-    width: 100vw;
-    padding-left: 45vw;
-    padding-top: 40vh;
-}
-
-.weather-container {
-    display: flex;
-    justify-content: center;
-    align-content: center;
-    flex-wrap: wrap;
-    padding-top: 30px;   
-}
-
-
-@media only screen and (min-width: 600px) {
-    .weather-datos {
-        padding-top: 8vh;
-    }
-}
-
-
-.temperature-value p {
-    padding: 0;
-    margin: 0;
-    color: #fff;
-    font-size: 90px !important;
-    font-weight: 600;
-    text-align: center;
-    cursor: pointer;
-    text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
-}
-
-
-.temperature-description {
-    padding-top: 10px;
-}
-
-.temperature-description p {
-    color: #fff;
-    text-align: center;
-    font-size: 40px !important;
-    font-weight: 300;
-    text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
-}
-
-
-.location p {
-    margin: 0;
-    padding: 0;
-    color: #fff;
-    text-align: center;
-    font-size: 18px !important;
-    font-weight: 600;
-    text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
-}
-
 
        /* Fondos tiempo */
 

@@ -8,18 +8,19 @@ import Pontevedra from '../Pontevedra/Pontevedra.svelte'
 import Ourense from '../Ourense/Ourense.svelte';
 import Lugo from '../Lugo/Lugo.svelte'
 
+import CidadesBtn from '../Componentes/CidadesBtn.svelte'
 
 import {  link  } from 'svelte-spa-router'
 
 import Drawer, {AppContent, Content, Header, Title, Subtitle, Scrim} from '@smui/drawer';
   import Button, {Label} from '@smui/button';
   import List, {Item, Text, Graphic, Separator, Subheader,PrimaryText, SecondaryText} from '@smui/list';
-  import IconButton, {Icon} from '@smui/icon-button';
+  //import IconButton, {Icon} from '@smui/icon-button';
+
 
   import H6 from '@smui/common/H6.svelte';
   let myDrawer2;
   let myDrawer2Open = false;
-
 
 
 let fondoSireno = false;
@@ -43,6 +44,7 @@ $:if(fondoLugo){
 }
 
 
+
 $:if(fondoOurense){
     fondoSantiago = false;
     fondoSireno = false;
@@ -51,7 +53,6 @@ $:if(fondoOurense){
     fondoPontevedra = false;
     fondoOurense = true;
     fondoLugo = false;
-
 }
 
 $:if(fondoSantiago){
@@ -62,7 +63,6 @@ $:if(fondoSantiago){
     fondoPontevedra = false;
     fondoOurense = false;
     fondoLugo = false;
-
 }
 
 $:if(fondoPontevedra){
@@ -109,6 +109,8 @@ $:if(fondoCoruna){
 
 }
 
+
+
 </script>
 
 
@@ -129,9 +131,7 @@ $:if(fondoCoruna){
           </Item>
           <Item href="javascript:void(0)" on:click={() => fondoUbicacionGPS = true}>
             <Graphic class="material-icons" aria-hidden="true">location_on</Graphic>
-            <Text>
-              Ubicación actual
-            </Text>
+           <Text>Ubicación Actual</Text>
           </Item>
           <Item href="javascript:void(0)" on:click={() => fondoSantiago = true}>
             <Graphic class="material-icons" aria-hidden="true">location_city</Graphic>
@@ -190,14 +190,18 @@ $:if(fondoCoruna){
     <Scrim />
     <AppContent class="app-content">
       <main class="main-content">
-        <Button on:click={() => myDrawer2Open = !myDrawer2Open}><Label>
-        <IconButton>
-            <Icon class="material-icons white-text transparent menu">sort</Icon>
+        <Button on:click={() => myDrawer2Open = !myDrawer2Open}>
+          <Label>
+        <!--  <IconButton>
+          <Icon class="material-icons white-text transparent menu">location_city
+            </Icon>  
         </IconButton>
-      </Label>
-    </Button>
+        -->
+        <CidadesBtn/>
+          </Label>
+        </Button>
         <br />
-        <div style="height: 400px;">&nbsp;</div>
+        <div style="height: 300px;">&nbsp;</div>
       </main>
     </AppContent>
   </div>
@@ -249,12 +253,5 @@ $:if(fondoCoruna){
 :global(.main-content){
   height: 60px;
 }
-
- .idioma{
-          margin-top: 10px;
-          margin-right: 10px;
-          padding: 10px;
-          text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
-        }
 
       </style>

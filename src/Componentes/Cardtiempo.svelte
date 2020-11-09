@@ -1,10 +1,15 @@
 <script>
     import axios from "axios";
 
-    import { onMount } from 'svelte';
+    import {
+        onMount
+    } from 'svelte';
 
     import Button from '@smui/button';
-    import List, {Text} from '@smui/list';
+    import List, {
+        Text
+    } from '@smui/list';
+
 
 
     import Carddias from "../Componentes/Carddias.svelte";
@@ -317,14 +322,11 @@
     });
 
 
-    export let visible;
-
-
 </script>
 
 <div class="center PanelCard">
     <div>
-    {#if datosCard!==null}
+        {#if datosCard!==null}
     <div class="white-text PanelPrincipal">
         <div class="container">
             <div class="row">
@@ -347,20 +349,8 @@
 
         <Carddias longitude={longitude} latitude={latitude}/>
 
-        <!-- navbar bottom -->
-
-        <nav class="volver_btn">
-            <a href="index.html">
-                <div class="nav-fixed col s12 center-align">
-                    <Button on:click={!visible} class="volver">
-                        <Text>Volver</Text>
-                    </Button>
-                </div>
-            </a>
-        </nav>
-        <!-- fin navbar bottom -->
     {/if}
-</div>
+    </div>
 
 </div>
 
@@ -383,6 +373,11 @@
     width: 100%;
     background: white;
     color: black;
+}
+
+:global(.volver-txt){
+    padding-bottom: 40px;
+    font-size: 18px;
 }
 
 
