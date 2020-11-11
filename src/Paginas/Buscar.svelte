@@ -21,8 +21,6 @@
   let todos = [];
   let input = "";
 
-  let cities = [];
-
   function update () {
     todos=[]
     keys().then(ciudades=>{
@@ -44,12 +42,6 @@
 
   update()
 
-  function add() {
-    if (name != "") {
-      cities.push(name)
-      set('names', cities)
-    }
-  }
 
 
   function addTiempo() {

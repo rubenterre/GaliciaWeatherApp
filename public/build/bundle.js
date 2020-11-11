@@ -59930,7 +59930,7 @@ var app = (function () {
 
   const file$J = "src/Componentes/Panelprincipal.svelte";
 
-  // (224:8) <Title class="center" >
+  // (191:8) <Title class="center" >
   function create_default_slot_40(ctx) {
   	let t0;
   	let br;
@@ -59942,12 +59942,12 @@ var app = (function () {
   			br = element("br");
   			p = element("p");
   			p.textContent = "O tempo de Galicia";
-  			add_location(br, file$J, 223, 45, 5630);
+  			add_location(br, file$J, 190, 45, 5421);
   			set_style(p, "padding-bottom", "20px");
   			set_style(p, "color", "#333");
   			set_style(p, "font-size", "13px");
   			set_style(p, "font-weight", "300");
-  			add_location(p, file$J, 223, 49, 5634);
+  			add_location(p, file$J, 190, 49, 5425);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, t0, anchor);
@@ -59965,14 +59965,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_40.name,
   		type: "slot",
-  		source: "(224:8) <Title class=\\\"center\\\" >",
+  		source: "(191:8) <Title class=\\\"center\\\" >",
   		ctx
   	});
 
   	return block;
   }
 
-  // (220:6) <Header class="center" >
+  // (187:6) <Header class="center" >
   function create_default_slot_39(ctx) {
   	let div;
   	let img;
@@ -60000,9 +60000,9 @@ var app = (function () {
   			if (img.src !== (img_src_value = "/images/GaliciaWeather.gif")) attr_dev(img, "src", img_src_value);
   			attr_dev(img, "alt", "");
   			attr_dev(img, "width", "50%");
-  			add_location(img, file$J, 221, 10, 5497);
+  			add_location(img, file$J, 188, 10, 5288);
   			attr_dev(div, "class", "GW_icon svelte-e9bmhu");
-  			add_location(div, file$J, 220, 8, 5465);
+  			add_location(div, file$J, 187, 8, 5256);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div, anchor);
@@ -60040,14 +60040,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_39.name,
   		type: "slot",
-  		source: "(220:6) <Header class=\\\"center\\\" >",
+  		source: "(187:6) <Header class=\\\"center\\\" >",
   		ctx
   	});
 
   	return block;
   }
 
-  // (229:12) <Text class="white-text">
+  // (196:12) <Text class="white-text">
   function create_default_slot_38(ctx) {
   	let p;
 
@@ -60057,7 +60057,7 @@ var app = (function () {
   			p.textContent = "Escolle unha cidade:";
   			set_style(p, "font-size", "14px");
   			set_style(p, "font-weight", "600");
-  			add_location(p, file$J, 229, 14, 5877);
+  			add_location(p, file$J, 196, 14, 5668);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, p, anchor);
@@ -60071,14 +60071,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_38.name,
   		type: "slot",
-  		source: "(229:12) <Text class=\\\"white-text\\\">",
+  		source: "(196:12) <Text class=\\\"white-text\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (228:10) <Item>
+  // (195:10) <Item>
   function create_default_slot_37(ctx) {
   	let text_1;
   	let current;
@@ -60127,14 +60127,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_37.name,
   		type: "slot",
-  		source: "(228:10) <Item>",
+  		source: "(195:10) <Item>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (234:12) <Graphic class="material-icons" aria-hidden="true">
+  // (201:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_36(ctx) {
   	let t;
 
@@ -60154,14 +60154,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_36.name,
   		type: "slot",
-  		source: "(234:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(201:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (235:11) <Text>
+  // (202:11) <Text>
   function create_default_slot_35(ctx) {
   	let t;
 
@@ -60181,14 +60181,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_35.name,
   		type: "slot",
-  		source: "(235:11) <Text>",
+  		source: "(202:11) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (233:10) <Item href="javascript:void(0)" on:click={() => fondoUbicacionGPS = true}>
+  // (200:10) <Item href="javascript:void(0)" on:click={() => fondoUbicacionGPS = true}>
   function create_default_slot_34(ctx) {
   	let graphic;
   	let t;
@@ -60263,14 +60263,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_34.name,
   		type: "slot",
-  		source: "(233:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoUbicacionGPS = true}>",
+  		source: "(200:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoUbicacionGPS = true}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (240:12) <Graphic class="material-icons" aria-hidden="true">
+  // (207:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_33(ctx) {
   	let t;
 
@@ -60290,14 +60290,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_33.name,
   		type: "slot",
-  		source: "(240:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(207:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (241:12) <Text>
+  // (208:12) <Text>
   function create_default_slot_32(ctx) {
   	let t;
 
@@ -60317,14 +60317,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_32.name,
   		type: "slot",
-  		source: "(241:12) <Text>",
+  		source: "(208:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (239:10) <Item href="javascript:void(0)" on:click={() => fondoSantiago = true}>
+  // (206:10) <Item href="javascript:void(0)" on:click={() => fondoSantiago = true}>
   function create_default_slot_31(ctx) {
   	let graphic;
   	let t;
@@ -60399,14 +60399,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_31.name,
   		type: "slot",
-  		source: "(239:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoSantiago = true}>",
+  		source: "(206:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoSantiago = true}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (246:12) <Graphic class="material-icons" aria-hidden="true">
+  // (213:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_30(ctx) {
   	let t;
 
@@ -60426,14 +60426,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_30.name,
   		type: "slot",
-  		source: "(246:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(213:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (247:12) <Text>
+  // (214:12) <Text>
   function create_default_slot_29(ctx) {
   	let t;
 
@@ -60453,14 +60453,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_29.name,
   		type: "slot",
-  		source: "(247:12) <Text>",
+  		source: "(214:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (245:10) <Item href="javascript:void(0)" on:click={() => fondoSireno = true}>
+  // (212:10) <Item href="javascript:void(0)" on:click={() => fondoSireno = true}>
   function create_default_slot_28(ctx) {
   	let graphic;
   	let t;
@@ -60535,14 +60535,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_28.name,
   		type: "slot",
-  		source: "(245:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoSireno = true}>",
+  		source: "(212:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoSireno = true}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (252:12) <Graphic class="material-icons" aria-hidden="true">
+  // (219:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_27(ctx) {
   	let t;
 
@@ -60562,14 +60562,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_27.name,
   		type: "slot",
-  		source: "(252:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(219:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (253:12) <Text>
+  // (220:12) <Text>
   function create_default_slot_26(ctx) {
   	let t;
 
@@ -60589,14 +60589,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_26.name,
   		type: "slot",
-  		source: "(253:12) <Text>",
+  		source: "(220:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (251:10) <Item href="javascript:void(0)" on:click={() => fondoCoruna = true}>
+  // (218:10) <Item href="javascript:void(0)" on:click={() => fondoCoruna = true}>
   function create_default_slot_25(ctx) {
   	let graphic;
   	let t;
@@ -60671,14 +60671,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_25.name,
   		type: "slot",
-  		source: "(251:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoCoruna = true}>",
+  		source: "(218:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoCoruna = true}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (258:12) <Graphic class="material-icons" aria-hidden="true">
+  // (225:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_24(ctx) {
   	let t;
 
@@ -60698,14 +60698,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_24.name,
   		type: "slot",
-  		source: "(258:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(225:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (259:12) <Text>
+  // (226:12) <Text>
   function create_default_slot_23(ctx) {
   	let t;
 
@@ -60725,14 +60725,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_23.name,
   		type: "slot",
-  		source: "(259:12) <Text>",
+  		source: "(226:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (257:10) <Item href="javascript:void(0)" on:click={() => fondoPontevedra = true}>
+  // (224:10) <Item href="javascript:void(0)" on:click={() => fondoPontevedra = true}>
   function create_default_slot_22(ctx) {
   	let graphic;
   	let t;
@@ -60807,14 +60807,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_22.name,
   		type: "slot",
-  		source: "(257:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoPontevedra = true}>",
+  		source: "(224:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoPontevedra = true}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (264:12) <Graphic class="material-icons" aria-hidden="true">
+  // (231:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_21(ctx) {
   	let t;
 
@@ -60834,14 +60834,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_21.name,
   		type: "slot",
-  		source: "(264:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(231:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (265:12) <Text>
+  // (232:12) <Text>
   function create_default_slot_20(ctx) {
   	let t;
 
@@ -60861,14 +60861,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_20.name,
   		type: "slot",
-  		source: "(265:12) <Text>",
+  		source: "(232:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (263:10) <Item href="javascript:void(0)" on:click={() => fondoOurense = true}>
+  // (230:10) <Item href="javascript:void(0)" on:click={() => fondoOurense = true}>
   function create_default_slot_19(ctx) {
   	let graphic;
   	let t;
@@ -60943,14 +60943,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_19.name,
   		type: "slot",
-  		source: "(263:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoOurense = true}>",
+  		source: "(230:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoOurense = true}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (270:12) <Graphic class="material-icons" aria-hidden="true">
+  // (237:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_18(ctx) {
   	let t;
 
@@ -60970,14 +60970,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_18.name,
   		type: "slot",
-  		source: "(270:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(237:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (271:12) <Text>
+  // (238:12) <Text>
   function create_default_slot_17(ctx) {
   	let t;
 
@@ -60997,14 +60997,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_17.name,
   		type: "slot",
-  		source: "(271:12) <Text>",
+  		source: "(238:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (269:10) <Item href="javascript:void(0)" on:click={() => fondoLugo = true}>
+  // (236:10) <Item href="javascript:void(0)" on:click={() => fondoLugo = true}>
   function create_default_slot_16(ctx) {
   	let graphic;
   	let t;
@@ -61079,14 +61079,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_16.name,
   		type: "slot",
-  		source: "(269:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoLugo = true}>",
+  		source: "(236:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoLugo = true}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (276:10) <Subheader component={H6}>
+  // (243:10) <Subheader component={H6}>
   function create_default_slot_15(ctx) {
   	let t;
 
@@ -61106,14 +61106,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_15.name,
   		type: "slot",
-  		source: "(276:10) <Subheader component={H6}>",
+  		source: "(243:10) <Subheader component={H6}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (278:12) <Graphic class="material-icons" aria-hidden="true">
+  // (245:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_14(ctx) {
   	let t;
 
@@ -61133,14 +61133,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_14.name,
   		type: "slot",
-  		source: "(278:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(245:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (279:12) <Text>
+  // (246:12) <Text>
   function create_default_slot_13(ctx) {
   	let a;
 
@@ -61150,7 +61150,7 @@ var app = (function () {
   			a.textContent = "Compartir";
   			attr_dev(a, "class", "black-text");
   			attr_dev(a, "href", "");
-  			add_location(a, file$J, 278, 18, 7931);
+  			add_location(a, file$J, 245, 18, 7722);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, a, anchor);
@@ -61164,14 +61164,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_13.name,
   		type: "slot",
-  		source: "(279:12) <Text>",
+  		source: "(246:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (277:10) <Item href="">
+  // (244:10) <Item href="">
   function create_default_slot_12(ctx) {
   	let graphic;
   	let t;
@@ -61246,14 +61246,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_12.name,
   		type: "slot",
-  		source: "(277:10) <Item href=\\\"\\\">",
+  		source: "(244:10) <Item href=\\\"\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (282:12) <Graphic class="material-icons" aria-hidden="true">
+  // (249:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_11(ctx) {
   	let t;
 
@@ -61273,14 +61273,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_11.name,
   		type: "slot",
-  		source: "(282:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(249:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (283:12) <Text>
+  // (250:12) <Text>
   function create_default_slot_10(ctx) {
   	let a;
 
@@ -61290,7 +61290,7 @@ var app = (function () {
   			a.textContent = "Valore a nosa aplicación";
   			attr_dev(a, "class", "black-text");
   			attr_dev(a, "href", "");
-  			add_location(a, file$J, 282, 18, 8122);
+  			add_location(a, file$J, 249, 18, 7913);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, a, anchor);
@@ -61304,14 +61304,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_10.name,
   		type: "slot",
-  		source: "(283:12) <Text>",
+  		source: "(250:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (281:10) <Item href="">
+  // (248:10) <Item href="">
   function create_default_slot_9(ctx) {
   	let graphic;
   	let t;
@@ -61386,14 +61386,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_9.name,
   		type: "slot",
-  		source: "(281:10) <Item href=\\\"\\\">",
+  		source: "(248:10) <Item href=\\\"\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (286:12) <Graphic class="material-icons" aria-hidden="true">
+  // (253:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_8(ctx) {
   	let t;
 
@@ -61413,14 +61413,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_8.name,
   		type: "slot",
-  		source: "(286:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(253:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (287:12) <Text>
+  // (254:12) <Text>
   function create_default_slot_7(ctx) {
   	let a;
   	let link_action;
@@ -61433,7 +61433,7 @@ var app = (function () {
   			a.textContent = "Información";
   			attr_dev(a, "class", "black-text");
   			attr_dev(a, "href", "/Creditos");
-  			add_location(a, file$J, 286, 18, 8369);
+  			add_location(a, file$J, 253, 18, 8160);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, a, anchor);
@@ -61454,14 +61454,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_7.name,
   		type: "slot",
-  		source: "(287:12) <Text>",
+  		source: "(254:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (285:10) <Item href="/#/Creditos" on:click={() => link}>
+  // (252:10) <Item href="/#/Creditos" on:click={() => link}>
   function create_default_slot_6(ctx) {
   	let graphic;
   	let t;
@@ -61536,14 +61536,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_6.name,
   		type: "slot",
-  		source: "(285:10) <Item href=\\\"/#/Creditos\\\" on:click={() => link}>",
+  		source: "(252:10) <Item href=\\\"/#/Creditos\\\" on:click={() => link}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (227:8) <List class="grey darken-3">
+  // (194:8) <List class="grey darken-3">
   function create_default_slot_5(ctx) {
   	let item0;
   	let t0;
@@ -61904,14 +61904,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_5.name,
   		type: "slot",
-  		source: "(227:8) <List class=\\\"grey darken-3\\\">",
+  		source: "(194:8) <List class=\\\"grey darken-3\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (226:6) <Content>
+  // (193:6) <Content>
   function create_default_slot_4(ctx) {
   	let list;
   	let current;
@@ -61960,14 +61960,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_4.name,
   		type: "slot",
-  		source: "(226:6) <Content>",
+  		source: "(193:6) <Content>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (219:4) <Drawer variant="modal" bind:this={myDrawer2} bind:open={myDrawer2Open}>
+  // (186:4) <Drawer variant="modal" bind:this={myDrawer2} bind:open={myDrawer2Open}>
   function create_default_slot_3(ctx) {
   	let header;
   	let t;
@@ -62041,14 +62041,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_3.name,
   		type: "slot",
-  		source: "(219:4) <Drawer variant=\\\"modal\\\" bind:this={myDrawer2} bind:open={myDrawer2Open}>",
+  		source: "(186:4) <Drawer variant=\\\"modal\\\" bind:this={myDrawer2} bind:open={myDrawer2Open}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (297:10) <Label>
+  // (264:10) <Label>
   function create_default_slot_2(ctx) {
   	let cidadesbtn;
   	let current;
@@ -62080,14 +62080,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_2.name,
   		type: "slot",
-  		source: "(297:10) <Label>",
+  		source: "(264:10) <Label>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (296:8) <Button on:click={() => myDrawer2Open = !myDrawer2Open}>
+  // (263:8) <Button on:click={() => myDrawer2Open = !myDrawer2Open}>
   function create_default_slot_1(ctx) {
   	let label;
   	let current;
@@ -62135,14 +62135,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_1.name,
   		type: "slot",
-  		source: "(296:8) <Button on:click={() => myDrawer2Open = !myDrawer2Open}>",
+  		source: "(263:8) <Button on:click={() => myDrawer2Open = !myDrawer2Open}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (294:4) <AppContent class="app-content">
+  // (261:4) <AppContent class="app-content">
   function create_default_slot$2(ctx) {
   	let main;
   	let button;
@@ -62171,11 +62171,11 @@ var app = (function () {
   			t1 = space();
   			div = element("div");
   			div.textContent = " ";
-  			add_location(br, file$J, 305, 8, 8907);
+  			add_location(br, file$J, 272, 8, 8698);
   			set_style(div, "height", "300px");
-  			add_location(div, file$J, 306, 8, 8922);
+  			add_location(div, file$J, 273, 8, 8713);
   			attr_dev(main, "class", "main-content");
-  			add_location(main, file$J, 294, 6, 8565);
+  			add_location(main, file$J, 261, 6, 8356);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, main, anchor);
@@ -62214,14 +62214,14 @@ var app = (function () {
   		block,
   		id: create_default_slot$2.name,
   		type: "slot",
-  		source: "(294:4) <AppContent class=\\\"app-content\\\">",
+  		source: "(261:4) <AppContent class=\\\"app-content\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (328:4) {:else}
+  // (295:4) {:else}
   function create_else_block$b(ctx) {
   	let ubicacionactual;
   	let current;
@@ -62253,14 +62253,14 @@ var app = (function () {
   		block,
   		id: create_else_block$b.name,
   		type: "else",
-  		source: "(328:4) {:else}",
+  		source: "(295:4) {:else}",
   		ctx
   	});
 
   	return block;
   }
 
-  // (326:32) 
+  // (293:32) 
   function create_if_block_6$7(ctx) {
   	let ubicacionactual;
   	let current;
@@ -62292,14 +62292,14 @@ var app = (function () {
   		block,
   		id: create_if_block_6$7.name,
   		type: "if",
-  		source: "(326:32) ",
+  		source: "(293:32) ",
   		ctx
   	});
 
   	return block;
   }
 
-  // (324:24) 
+  // (291:24) 
   function create_if_block_5$7(ctx) {
   	let lugo;
   	let current;
@@ -62331,14 +62331,14 @@ var app = (function () {
   		block,
   		id: create_if_block_5$7.name,
   		type: "if",
-  		source: "(324:24) ",
+  		source: "(291:24) ",
   		ctx
   	});
 
   	return block;
   }
 
-  // (322:27) 
+  // (289:27) 
   function create_if_block_4$7(ctx) {
   	let ourense;
   	let current;
@@ -62370,14 +62370,14 @@ var app = (function () {
   		block,
   		id: create_if_block_4$7.name,
   		type: "if",
-  		source: "(322:27) ",
+  		source: "(289:27) ",
   		ctx
   	});
 
   	return block;
   }
 
-  // (320:30) 
+  // (287:30) 
   function create_if_block_3$7(ctx) {
   	let pontevedra;
   	let current;
@@ -62409,14 +62409,14 @@ var app = (function () {
   		block,
   		id: create_if_block_3$7.name,
   		type: "if",
-  		source: "(320:30) ",
+  		source: "(287:30) ",
   		ctx
   	});
 
   	return block;
   }
 
-  // (318:26) 
+  // (285:26) 
   function create_if_block_2$7(ctx) {
   	let coruna;
   	let current;
@@ -62448,14 +62448,14 @@ var app = (function () {
   		block,
   		id: create_if_block_2$7.name,
   		type: "if",
-  		source: "(318:26) ",
+  		source: "(285:26) ",
   		ctx
   	});
 
   	return block;
   }
 
-  // (316:28) 
+  // (283:28) 
   function create_if_block_1$8(ctx) {
   	let santiago;
   	let current;
@@ -62487,14 +62487,14 @@ var app = (function () {
   		block,
   		id: create_if_block_1$8.name,
   		type: "if",
-  		source: "(316:28) ",
+  		source: "(283:28) ",
   		ctx
   	});
 
   	return block;
   }
 
-  // (314:4) {#if fondoSireno}
+  // (281:4) {#if fondoSireno}
   function create_if_block$i(ctx) {
   	let vigo;
   	let current;
@@ -62526,7 +62526,7 @@ var app = (function () {
   		block,
   		id: create_if_block$i.name,
   		type: "if",
-  		source: "(314:4) {#if fondoSireno}",
+  		source: "(281:4) {#if fondoSireno}",
   		ctx
   	});
 
@@ -62614,7 +62614,7 @@ var app = (function () {
   			if_block.c();
   			if_block_anchor = empty();
   			attr_dev(div, "class", "drawer-container");
-  			add_location(div, file$J, 217, 2, 5318);
+  			add_location(div, file$J, 184, 2, 5109);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -62724,6 +62724,13 @@ var app = (function () {
   	let fondoPontevedra = false;
   	let fondoOurense = false;
   	let fondoLugo = false;
+  	fondoLugo = JSON.parse(localStorage.getItem("Lugo"));
+  	fondoOurense = JSON.parse(localStorage.getItem("Ourense"));
+  	fondoSantiago = JSON.parse(localStorage.getItem("Santiago"));
+  	fondoPontevedra = JSON.parse(localStorage.getItem("Pontevedra"));
+  	fondoSireno = JSON.parse(localStorage.getItem("Vigo"));
+  	fondoUbicacionGPS = JSON.parse(localStorage.getItem("Ubicacion"));
+  	fondoCoruna = JSON.parse(localStorage.getItem("Coruna"));
   	const writable_props = [];
 
   	Object.keys($$props).forEach(key => {
@@ -62818,6 +62825,13 @@ var app = (function () {
   				$$invalidate(6, fondoPontevedra = false);
   				$$invalidate(7, fondoOurense = false);
   				$$invalidate(8, fondoLugo = true);
+  				localStorage.removeItem("Ubicacion");
+  				localStorage.removeItem("Coruna");
+  				localStorage.removeItem("Vigo");
+  				localStorage.removeItem("Santiago");
+  				localStorage.removeItem("Pontevedra");
+  				localStorage.removeItem("Ourense");
+  				localStorage.setItem("Lugo", JSON.stringify(fondoLugo));
   			}
   		}
 
@@ -62830,6 +62844,13 @@ var app = (function () {
   				$$invalidate(6, fondoPontevedra = false);
   				$$invalidate(7, fondoOurense = true);
   				$$invalidate(8, fondoLugo = false);
+  				localStorage.removeItem("Ubicacion");
+  				localStorage.removeItem("Coruna");
+  				localStorage.removeItem("Vigo");
+  				localStorage.removeItem("Santiago");
+  				localStorage.removeItem("Pontevedra");
+  				localStorage.removeItem("Lugo");
+  				localStorage.setItem("Ourense", JSON.stringify(fondoOurense));
   			}
   		}
 
@@ -62842,6 +62863,13 @@ var app = (function () {
   				$$invalidate(6, fondoPontevedra = false);
   				$$invalidate(7, fondoOurense = false);
   				$$invalidate(8, fondoLugo = false);
+  				localStorage.removeItem("Ubicacion");
+  				localStorage.removeItem("Coruna");
+  				localStorage.removeItem("Vigo");
+  				localStorage.removeItem("Pontevedra");
+  				localStorage.removeItem("Ourense");
+  				localStorage.removeItem("Lugo");
+  				localStorage.setItem("Santiago", JSON.stringify(fondoSantiago));
   			}
   		}
 
@@ -62854,6 +62882,13 @@ var app = (function () {
   				$$invalidate(6, fondoPontevedra = true);
   				$$invalidate(7, fondoOurense = false);
   				$$invalidate(8, fondoLugo = false);
+  				localStorage.removeItem("Ubicacion");
+  				localStorage.removeItem("Coruna");
+  				localStorage.removeItem("Vigo");
+  				localStorage.removeItem("Santiago");
+  				localStorage.removeItem("Ourense");
+  				localStorage.removeItem("Lugo");
+  				localStorage.setItem("Pontevedra", JSON.stringify(fondoPontevedra));
   			}
   		}
 
@@ -62866,6 +62901,13 @@ var app = (function () {
   				$$invalidate(6, fondoPontevedra = false);
   				$$invalidate(7, fondoOurense = false);
   				$$invalidate(8, fondoLugo = false);
+  				localStorage.removeItem("Ubicacion");
+  				localStorage.removeItem("Coruna");
+  				localStorage.removeItem("Pontevedra");
+  				localStorage.removeItem("Santiago");
+  				localStorage.removeItem("Ourense");
+  				localStorage.removeItem("Lugo");
+  				localStorage.setItem("Vigo", JSON.stringify(fondoSireno));
   			}
   		}
 
@@ -62878,6 +62920,13 @@ var app = (function () {
   				$$invalidate(6, fondoPontevedra = false);
   				$$invalidate(7, fondoOurense = false);
   				$$invalidate(8, fondoLugo = false);
+  				localStorage.removeItem("Coruna");
+  				localStorage.removeItem("Vigo");
+  				localStorage.removeItem("Pontevedra");
+  				localStorage.removeItem("Santiago");
+  				localStorage.removeItem("Ourense");
+  				localStorage.removeItem("Lugo");
+  				localStorage.setItem("Ubicacion", JSON.stringify(fondoUbicacionGPS));
   			}
   		}
 
@@ -62890,6 +62939,13 @@ var app = (function () {
   				$$invalidate(6, fondoPontevedra = false);
   				$$invalidate(7, fondoOurense = false);
   				$$invalidate(8, fondoLugo = false);
+  				localStorage.removeItem("Ubicacion");
+  				localStorage.removeItem("Vigo");
+  				localStorage.removeItem("Pontevedra");
+  				localStorage.removeItem("Santiago");
+  				localStorage.removeItem("Ourense");
+  				localStorage.removeItem("Lugo");
+  				localStorage.setItem("Coruna", JSON.stringify(fondoCoruna));
   			}
   		}
   	};
@@ -65091,7 +65147,7 @@ var app = (function () {
   const { console: console_1$u } = globals;
   const file$O = "src/Componentes/Cardtiempo.svelte";
 
-  // (329:8) {#if datosCard!==null}
+  // (48:8) {#if datosCard!==null}
   function create_if_block$j(ctx) {
   	let div7;
   	let div6;
@@ -65144,28 +65200,28 @@ var app = (function () {
   			t5 = text(/*descripcion*/ ctx[2]);
   			t6 = space();
   			create_component(carddias.$$.fragment);
-  			attr_dev(p0, "class", "svelte-xnppwx");
-  			add_location(p0, file$O, 334, 24, 14046);
-  			attr_dev(div0, "class", "col s12 location svelte-xnppwx");
-  			add_location(div0, file$O, 333, 20, 13991);
-  			attr_dev(p1, "class", "svelte-xnppwx");
-  			add_location(p1, file$O, 337, 24, 14178);
-  			attr_dev(div1, "class", "col s12 temperature-value center svelte-xnppwx");
-  			add_location(div1, file$O, 336, 20, 14107);
-  			attr_dev(div2, "class", "weather-container svelte-xnppwx");
-  			add_location(div2, file$O, 332, 16, 13939);
-  			attr_dev(p2, "class", "svelte-xnppwx");
-  			add_location(p2, file$O, 342, 24, 14404);
-  			attr_dev(div3, "class", "col s12 temperature-description center svelte-xnppwx");
-  			add_location(div3, file$O, 341, 20, 14327);
-  			attr_dev(div4, "class", "weather-datos svelte-xnppwx");
-  			add_location(div4, file$O, 340, 16, 14279);
+  			attr_dev(p0, "class", "svelte-1buqc46");
+  			add_location(p0, file$O, 53, 24, 1254);
+  			attr_dev(div0, "class", "col s12 location svelte-1buqc46");
+  			add_location(div0, file$O, 52, 20, 1199);
+  			attr_dev(p1, "class", "svelte-1buqc46");
+  			add_location(p1, file$O, 56, 24, 1386);
+  			attr_dev(div1, "class", "col s12 temperature-value center svelte-1buqc46");
+  			add_location(div1, file$O, 55, 20, 1315);
+  			attr_dev(div2, "class", "weather-container svelte-1buqc46");
+  			add_location(div2, file$O, 51, 16, 1147);
+  			attr_dev(p2, "class", "svelte-1buqc46");
+  			add_location(p2, file$O, 61, 24, 1612);
+  			attr_dev(div3, "class", "col s12 temperature-description center svelte-1buqc46");
+  			add_location(div3, file$O, 60, 20, 1535);
+  			attr_dev(div4, "class", "weather-datos svelte-1buqc46");
+  			add_location(div4, file$O, 59, 16, 1487);
   			attr_dev(div5, "class", "row");
-  			add_location(div5, file$O, 331, 12, 13905);
+  			add_location(div5, file$O, 50, 12, 1113);
   			attr_dev(div6, "class", "container");
-  			add_location(div6, file$O, 330, 8, 13869);
+  			add_location(div6, file$O, 49, 8, 1077);
   			attr_dev(div7, "class", "white-text PanelPrincipal");
-  			add_location(div7, file$O, 329, 4, 13821);
+  			add_location(div7, file$O, 48, 4, 1029);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div7, anchor);
@@ -65218,7 +65274,7 @@ var app = (function () {
   		block,
   		id: create_if_block$j.name,
   		type: "if",
-  		source: "(329:8) {#if datosCard!==null}",
+  		source: "(48:8) {#if datosCard!==null}",
   		ctx
   	});
 
@@ -65236,9 +65292,9 @@ var app = (function () {
   			div1 = element("div");
   			div0 = element("div");
   			if (if_block) if_block.c();
-  			add_location(div0, file$O, 327, 4, 13780);
-  			attr_dev(div1, "class", "center PanelCard svelte-xnppwx");
-  			add_location(div1, file$O, 326, 0, 13745);
+  			add_location(div0, file$O, 46, 4, 988);
+  			attr_dev(div1, "class", "center PanelCard svelte-1buqc46");
+  			add_location(div1, file$O, 45, 0, 953);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -65310,7 +65366,6 @@ var app = (function () {
   	let descripcion = "";
   	let latitude = "";
   	let longitude = "";
-  	let icon = "";
   	var datosCard = null;
 
   	onMount(async () => {
@@ -65322,250 +65377,6 @@ var app = (function () {
   			$$invalidate(2, descripcion = datosCard.weather[0].description);
   			$$invalidate(3, latitude = datosCard.coord.lat);
   			$$invalidate(4, longitude = datosCard.coord.lon);
-  			icon = datosCard.weather[0].icon;
-
-  			// Cambiar tiempo en el fondo de pantalla
-  			var fondo = document.querySelector(".PanelCard");
-
-  			function cambiarSoleado() {
-  				fondo.classList.add("fondo_soleadoC");
-  				fondo.classList.remove("fondo_noite_claraC");
-  				fondo.classList.remove("fondo_soleado_poucas_nubesC");
-  				fondo.classList.remove("fondo_noite_poucas_nubesC");
-  				fondo.classList.remove("fondo_dia_nubladoC");
-  				fondo.classList.remove("fondo_noite_nubladoC");
-  				fondo.classList.remove("fondo_nubladoC");
-  				fondo.classList.remove("fondo_moita_choivaC");
-  				fondo.classList.remove("fondo_pouca_choivaC");
-  				fondo.classList.remove("fondo_tormentaC");
-  				fondo.classList.remove("fondo_neveC");
-  				fondo.classList.remove("fondo_neboaC");
-  			}
-
-  			function cambiarNoiteClara() {
-  				fondo.classList.remove("fondo_soleadoC");
-  				fondo.classList.add("fondo_noite_claraC");
-  				fondo.classList.remove("fondo_soleado_poucas_nubesC");
-  				fondo.classList.remove("fondo_noite_poucas_nubesC");
-  				fondo.classList.remove("fondo_dia_nubladoC");
-  				fondo.classList.remove("fondo_noite_nubladoC");
-  				fondo.classList.remove("fondo_nubladoC");
-  				fondo.classList.remove("fondo_moita_choivaC");
-  				fondo.classList.remove("fondo_pouca_choivaC");
-  				fondo.classList.remove("fondo_tormentaC");
-  				fondo.classList.remove("fondo_neveC");
-  				fondo.classList.remove("fondo_neboaC");
-  			}
-
-  			function cambiarSoleadoPoucasNubes() {
-  				fondo.classList.remove("fondo_soleadoC");
-  				fondo.classList.remove("fondo_noite_claraC");
-  				fondo.classList.add("fondo_soleado_poucas_nubesC");
-  				fondo.classList.remove("fondo_noite_poucas_nubesC");
-  				fondo.classList.remove("fondo_dia_nubladoC");
-  				fondo.classList.remove("fondo_noite_nubladoC");
-  				fondo.classList.remove("fondo_nubladoC");
-  				fondo.classList.remove("fondo_moita_choivaC");
-  				fondo.classList.remove("fondo_pouca_choivaC");
-  				fondo.classList.remove("fondo_tormentaC");
-  				fondo.classList.remove("fondo_neveC");
-  				fondo.classList.remove("fondo_neboaC");
-  			}
-
-  			function cambiarNoitePoucasNubes() {
-  				fondo.classList.remove("fondo_soleadoC");
-  				fondo.classList.remove("fondo_noite_claraC");
-  				fondo.classList.remove("fondo_soleado_poucas_nubesC");
-  				fondo.classList.add("fondo_noite_poucas_nubesC");
-  				fondo.classList.remove("fondo_dia_nubladoC");
-  				fondo.classList.remove("fondo_noite_nubladoC");
-  				fondo.classList.remove("fondo_nubladoC");
-  				fondo.classList.remove("fondo_moita_choivaC");
-  				fondo.classList.remove("fondo_pouca_choivaC");
-  				fondo.classList.remove("fondo_tormentaC");
-  				fondo.classList.remove("fondo_neveC");
-  				fondo.classList.remove("fondo_neboaC");
-  			}
-
-  			function cambiarDiaNublado() {
-  				fondo.classList.remove("fondo_soleadoC");
-  				fondo.classList.remove("fondo_noite_claraC");
-  				fondo.classList.remove("fondo_soleado_poucas_nubesC");
-  				fondo.classList.remove("fondo_noite_poucas_nubesC");
-  				fondo.classList.add("fondo_dia_nubladoC");
-  				fondo.classList.remove("fondo_noite_nubladoC");
-  				fondo.classList.remove("fondo_nubladoC");
-  				fondo.classList.remove("fondo_moita_choivaC");
-  				fondo.classList.remove("fondo_pouca_choivaC");
-  				fondo.classList.remove("fondo_tormentaC");
-  				fondo.classList.remove("fondo_neveC");
-  				fondo.classList.remove("fondo_neboaC");
-  			}
-
-  			function cambiarNoiteNublada() {
-  				fondo.classList.remove("fondo_soleadoC");
-  				fondo.classList.remove("fondo_noite_claraC");
-  				fondo.classList.remove("fondo_soleado_poucas_nubesC");
-  				fondo.classList.remove("fondo_noite_poucas_nubesC");
-  				fondo.classList.remove("fondo_dia_nubladoC");
-  				fondo.classList.add("fondo_noite_nubladoC");
-  				fondo.classList.remove("fondo_nubladoC");
-  				fondo.classList.remove("fondo_moita_choivaC");
-  				fondo.classList.remove("fondo_pouca_choivaC");
-  				fondo.classList.remove("fondo_tormentaC");
-  				fondo.classList.remove("fondo_neveC");
-  				fondo.classList.remove("fondo_neboaC");
-  			}
-
-  			function cambiarNublado() {
-  				fondo.classList.remove("fondo_soleadoC");
-  				fondo.classList.remove("fondo_noite_claraC");
-  				fondo.classList.remove("fondo_soleado_poucas_nubesC");
-  				fondo.classList.remove("fondo_noite_poucas_nubesC");
-  				fondo.classList.remove("fondo_dia_nubladoC");
-  				fondo.classList.remove("fondo_noite_nubladoC");
-  				fondo.classList.add("fondo_nubladoC");
-  				fondo.classList.remove("fondo_moita_choivaC");
-  				fondo.classList.remove("fondo_pouca_choivaC");
-  				fondo.classList.remove("fondo_tormentaC");
-  				fondo.classList.remove("fondo_neveC");
-  				fondo.classList.remove("fondo_neboaC");
-  			}
-
-  			function cambiarMoitaChoiva() {
-  				fondo.classList.remove("fondo_soleadoC");
-  				fondo.classList.remove("fondo_noite_claraC");
-  				fondo.classList.remove("fondo_soleado_poucas_nubesC");
-  				fondo.classList.remove("fondo_noite_poucas_nubesC");
-  				fondo.classList.remove("fondo_dia_nubladoC");
-  				fondo.classList.remove("fondo_noite_nubladoC");
-  				fondo.classList.remove("fondo_nubladoC");
-  				fondo.classList.add("fondo_moita_choivaC");
-  				fondo.classList.remove("fondo_pouca_choivaC");
-  				fondo.classList.remove("fondo_tormentaC");
-  				fondo.classList.remove("fondo_neveC");
-  				fondo.classList.remove("fondo_neboaC");
-  			}
-
-  			function cambiarPoucaChoiva() {
-  				fondo.classList.remove("fondo_soleadoC");
-  				fondo.classList.remove("fondo_noite_claraC");
-  				fondo.classList.remove("fondo_soleado_poucas_nubesC");
-  				fondo.classList.remove("fondo_noite_poucas_nubesC");
-  				fondo.classList.remove("fondo_dia_nubladoC");
-  				fondo.classList.remove("fondo_noite_nubladoC");
-  				fondo.classList.remove("fondo_nubladoC");
-  				fondo.classList.remove("fondo_moita_choivaC");
-  				fondo.classList.add("fondo_pouca_choivaC");
-  				fondo.classList.remove("fondo_tormentaC");
-  				fondo.classList.remove("fondo_neveC");
-  				fondo.classList.remove("fondo_neboaC");
-  			}
-
-  			function cambiarTormenta() {
-  				fondo.classList.remove("fondo_soleadoC");
-  				fondo.classList.remove("fondo_noite_claraC");
-  				fondo.classList.remove("fondo_soleado_poucas_nubesC");
-  				fondo.classList.remove("fondo_noite_poucas_nubesC");
-  				fondo.classList.remove("fondo_dia_nubladoC");
-  				fondo.classList.remove("fondo_noite_nubladoC");
-  				fondo.classList.remove("fondo_nubladoC");
-  				fondo.classList.remove("fondo_moita_choivaC");
-  				fondo.classList.remove("fondo_pouca_choivaC");
-  				fondo.classList.add("fondo_tormentaC");
-  				fondo.classList.remove("fondo_neveC");
-  				fondo.classList.remove("fondo_neboaC");
-  			}
-
-  			function cambiarNeve() {
-  				fondo.classList.remove("fondo_soleadoC");
-  				fondo.classList.remove("fondo_noite_claraC");
-  				fondo.classList.remove("fondo_soleado_poucas_nubesC");
-  				fondo.classList.remove("fondo_noite_poucas_nubesC");
-  				fondo.classList.remove("fondo_dia_nubladoC");
-  				fondo.classList.remove("fondo_noite_nubladoC");
-  				fondo.classList.remove("fondo_nubladoC");
-  				fondo.classList.remove("fondo_moita_choivaC");
-  				fondo.classList.remove("fondo_pouca_choivaC");
-  				fondo.classList.remove("fondo_tormentaC");
-  				fondo.classList.add("fondo_neveC");
-  				fondo.classList.remove("fondo_neboaC");
-  			}
-
-  			function cambiarNeboa() {
-  				fondo.classList.remove("fondo_soleadoC");
-  				fondo.classList.remove("fondo_noite_claraC");
-  				fondo.classList.remove("fondo_soleado_poucas_nubesC");
-  				fondo.classList.remove("fondo_noite_poucas_nubesC");
-  				fondo.classList.remove("fondo_dia_nubladoC");
-  				fondo.classList.remove("fondo_noite_nubladoC");
-  				fondo.classList.remove("fondo_nubladoC");
-  				fondo.classList.remove("fondo_moita_choivaC");
-  				fondo.classList.remove("fondo_pouca_choivaC");
-  				fondo.classList.remove("fondo_tormentaC");
-  				fondo.classList.remove("fondo_neveC");
-  				fondo.classList.add("fondo_neboaC");
-  			}
-
-  			switch (datosCard.weather[0].icon) {
-  				case "01d":
-  					fondo = cambiarSoleado();
-  					break;
-  				case "01n":
-  					fondo = cambiarNoiteClara();
-  					break;
-  				case "02d":
-  					fondo = cambiarSoleadoPoucasNubes();
-  					break;
-  				case "02n":
-  					fondo = cambiarNoitePoucasNubes();
-  					break;
-  				case "03d":
-  					fondo = cambiarDiaNublado();
-  					break;
-  				case "03n":
-  					fondo = cambiarNoiteNublada();
-  					break;
-  				case "04d":
-  					fondo = cambiarNublado();
-  					break;
-  				case "04n":
-  					fondo = cambiarNublado();
-  					break;
-  				case "09d":
-  					fondo = cambiarMoitaChoiva();
-  					break;
-  				case "09n":
-  					fondo = cambiarMoitaChoiva();
-  					break;
-  				case "10d":
-  					fondo = cambiarPoucaChoiva();
-  					break;
-  				case "10n":
-  					fondo = cambiarPoucaChoiva();
-  					break;
-  				case "11d":
-  					fondo = cambiarTormenta();
-  					break;
-  				case "11n":
-  					fondo = cambiarTormenta();
-  					break;
-  				case "13d":
-  					fondo = cambiarNeve();
-  					break;
-  				case "13n":
-  					fondo = cambiarNeve();
-  					break;
-  				case "50d":
-  					fondo = cambiarNeboa();
-  					break;
-  				case "50n":
-  					fondo = cambiarNeboa();
-  					break;
-  				case "unknown":
-  					fondo = cambiarColorDia();
-  					break;
-  			}
   		});
   	});
 
@@ -65582,9 +65393,6 @@ var app = (function () {
   	$$self.$capture_state = () => ({
   		axios: axios$1,
   		onMount,
-  		Button: Button_1,
-  		List,
-  		Text,
   		Carddias,
   		name,
   		key,
@@ -65593,7 +65401,6 @@ var app = (function () {
   		descripcion,
   		latitude,
   		longitude,
-  		icon,
   		datosCard
   	});
 
@@ -65604,7 +65411,6 @@ var app = (function () {
   		if ("descripcion" in $$props) $$invalidate(2, descripcion = $$props.descripcion);
   		if ("latitude" in $$props) $$invalidate(3, latitude = $$props.latitude);
   		if ("longitude" in $$props) $$invalidate(4, longitude = $$props.longitude);
-  		if ("icon" in $$props) icon = $$props.icon;
   		if ("datosCard" in $$props) $$invalidate(5, datosCard = $$props.datosCard);
   	};
 
@@ -66227,12 +66033,12 @@ var app = (function () {
 
   function get_each_context$1(ctx, list, i) {
   	const child_ctx = ctx.slice();
-  	child_ctx[14] = list[i];
-  	child_ctx[16] = i;
+  	child_ctx[12] = list[i];
+  	child_ctx[14] = i;
   	return child_ctx;
   }
 
-  // (101:6) {#if loading}
+  // (93:6) {#if loading}
   function create_if_block_1$9(ctx) {
   	let div;
 
@@ -66240,7 +66046,7 @@ var app = (function () {
   		c: function create() {
   			div = element("div");
   			attr_dev(div, "class", "loader svelte-u26sdc");
-  			add_location(div, file$Q, 101, 12, 2326);
+  			add_location(div, file$Q, 93, 12, 2204);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div, anchor);
@@ -66254,14 +66060,14 @@ var app = (function () {
   		block,
   		id: create_if_block_1$9.name,
   		type: "if",
-  		source: "(101:6) {#if loading}",
+  		source: "(93:6) {#if loading}",
   		ctx
   	});
 
   	return block;
   }
 
-  // (108:8) {#if todos.length}
+  // (100:8) {#if todos.length}
   function create_if_block$k(ctx) {
   	let each_blocks = [];
   	let each_1_lookup = new Map();
@@ -66269,7 +66075,7 @@ var app = (function () {
   	let current;
   	let each_value = /*todos*/ ctx[0];
   	validate_each_argument(each_value);
-  	const get_key = ctx => /*todo*/ ctx[14].name;
+  	const get_key = ctx => /*todo*/ ctx[12].name;
   	validate_each_keys(ctx, each_value, get_each_context$1, get_key);
 
   	for (let i = 0; i < each_value.length; i += 1) {
@@ -66333,14 +66139,14 @@ var app = (function () {
   		block,
   		id: create_if_block$k.name,
   		type: "if",
-  		source: "(108:8) {#if todos.length}",
+  		source: "(100:8) {#if todos.length}",
   		ctx
   	});
 
   	return block;
   }
 
-  // (109:10) {#each todos as todo, i (todo.name) }
+  // (101:10) {#each todos as todo, i (todo.name) }
   function create_each_block$1(key_2, ctx) {
   	let first;
   	let cardbusqueda;
@@ -66348,16 +66154,16 @@ var app = (function () {
 
   	cardbusqueda = new Cardbusqueda({
   			props: {
-  				id: /*todo*/ ctx[14].id,
-  				icon: /*todo*/ ctx[14].icon,
-  				name: /*todo*/ ctx[14].name,
-  				temp: /*todo*/ ctx[14].temp
+  				id: /*todo*/ ctx[12].id,
+  				icon: /*todo*/ ctx[12].icon,
+  				name: /*todo*/ ctx[12].name,
+  				temp: /*todo*/ ctx[12].temp
   			},
   			$$inline: true
   		});
 
   	cardbusqueda.$on("removeTiempo", function () {
-  		if (is_function(/*removeTiempo*/ ctx[4](/*todo*/ ctx[14].name))) /*removeTiempo*/ ctx[4](/*todo*/ ctx[14].name).apply(this, arguments);
+  		if (is_function(/*removeTiempo*/ ctx[4](/*todo*/ ctx[12].name))) /*removeTiempo*/ ctx[4](/*todo*/ ctx[12].name).apply(this, arguments);
   	});
 
   	const block = {
@@ -66376,10 +66182,10 @@ var app = (function () {
   		p: function update(new_ctx, dirty) {
   			ctx = new_ctx;
   			const cardbusqueda_changes = {};
-  			if (dirty & /*todos*/ 1) cardbusqueda_changes.id = /*todo*/ ctx[14].id;
-  			if (dirty & /*todos*/ 1) cardbusqueda_changes.icon = /*todo*/ ctx[14].icon;
-  			if (dirty & /*todos*/ 1) cardbusqueda_changes.name = /*todo*/ ctx[14].name;
-  			if (dirty & /*todos*/ 1) cardbusqueda_changes.temp = /*todo*/ ctx[14].temp;
+  			if (dirty & /*todos*/ 1) cardbusqueda_changes.id = /*todo*/ ctx[12].id;
+  			if (dirty & /*todos*/ 1) cardbusqueda_changes.icon = /*todo*/ ctx[12].icon;
+  			if (dirty & /*todos*/ 1) cardbusqueda_changes.name = /*todo*/ ctx[12].name;
+  			if (dirty & /*todos*/ 1) cardbusqueda_changes.temp = /*todo*/ ctx[12].temp;
   			cardbusqueda.$set(cardbusqueda_changes);
   		},
   		i: function intro(local) {
@@ -66401,7 +66207,7 @@ var app = (function () {
   		block,
   		id: create_each_block$1.name,
   		type: "each",
-  		source: "(109:10) {#each todos as todo, i (todo.name) }",
+  		source: "(101:10) {#each todos as todo, i (todo.name) }",
   		ctx
   	});
 
@@ -66466,32 +66272,32 @@ var app = (function () {
   			attr_dev(input_1, "placeholder", "Busca aquí unha cidade");
   			input_1.required = true;
   			attr_dev(input_1, "class", "svelte-u26sdc");
-  			add_location(input_1, file$Q, 92, 10, 1907);
+  			add_location(input_1, file$Q, 84, 10, 1785);
   			attr_dev(i0, "class", "material-icons");
-  			add_location(i0, file$Q, 94, 49, 2086);
+  			add_location(i0, file$Q, 86, 49, 1964);
   			attr_dev(label, "class", "label-icon");
   			attr_dev(label, "for", "search");
-  			add_location(label, file$Q, 94, 10, 2047);
+  			add_location(label, file$Q, 86, 10, 1925);
   			attr_dev(i1, "class", "material-icons");
-  			add_location(i1, file$Q, 95, 10, 2141);
+  			add_location(i1, file$Q, 87, 10, 2019);
   			attr_dev(span, "class", "msg");
-  			add_location(span, file$Q, 96, 10, 2187);
+  			add_location(span, file$Q, 88, 10, 2065);
   			attr_dev(div0, "class", "input-field");
-  			add_location(div0, file$Q, 91, 8, 1871);
+  			add_location(div0, file$Q, 83, 8, 1749);
   			attr_dev(button, "class", "transparent");
-  			add_location(button, file$Q, 98, 8, 2236);
+  			add_location(button, file$Q, 90, 8, 2114);
   			attr_dev(form, "class", "forminput");
-  			add_location(form, file$Q, 90, 6, 1801);
+  			add_location(form, file$Q, 82, 6, 1679);
   			attr_dev(div1, "class", "nav-wrapper");
-  			add_location(div1, file$Q, 89, 4, 1769);
+  			add_location(div1, file$Q, 81, 4, 1647);
   			attr_dev(nav, "class", "navbar-fixed navbarbaja grey darken-4 svelte-u26sdc");
-  			add_location(nav, file$Q, 88, 2, 1713);
+  			add_location(nav, file$Q, 80, 2, 1591);
   			toggle_class(ul, "list", /*todos*/ ctx[0].length > 0);
-  			add_location(ul, file$Q, 106, 8, 2434);
+  			add_location(ul, file$Q, 98, 8, 2312);
   			attr_dev(section, "class", "ajax-section svelte-u26sdc");
-  			add_location(section, file$Q, 105, 4, 2395);
+  			add_location(section, file$Q, 97, 4, 2273);
   			attr_dev(main, "class", "svelte-u26sdc");
-  			add_location(main, file$Q, 87, 0, 1704);
+  			add_location(main, file$Q, 79, 0, 1582);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -66607,7 +66413,6 @@ var app = (function () {
   	let todos = [];
 
   	let input = "";
-  	let cities = [];
 
   	function update() {
   		$$invalidate(0, todos = []);
@@ -66630,13 +66435,6 @@ var app = (function () {
   	}
 
   	update();
-
-  	function add() {
-  		if (name != "") {
-  			cities.push(name);
-  			set("names", cities);
-  		}
-  	}
 
   	function addTiempo() {
   		axios$1.get(`http://api.openweathermap.org/data/2.5/weather?q=${input}&appid=${key$1}&units=metric&lang=gl`).then(data => {
@@ -66685,9 +66483,7 @@ var app = (function () {
   		key: key$1,
   		todos,
   		input,
-  		cities,
   		update,
-  		add,
   		addTiempo,
   		removeTiempo
   	});
@@ -66701,7 +66497,6 @@ var app = (function () {
   		if ("incomeData" in $$props) incomeData = $$props.incomeData;
   		if ("todos" in $$props) $$invalidate(0, todos = $$props.todos);
   		if ("input" in $$props) $$invalidate(1, input = $$props.input);
-  		if ("cities" in $$props) cities = $$props.cities;
   	};
 
   	if ($$props && "$$inject" in $$props) {
