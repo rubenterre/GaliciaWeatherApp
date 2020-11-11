@@ -1,15 +1,11 @@
 <script>
   import Dialog, {Title, Content, Actions, InitialFocus} from '@smui/dialog';
   import Button, {Label} from '@smui/button';
-  import List, {Item, Graphic, Text} from '@smui/list';
 
   let simpleDialog;
 
-  let abrir = false;
+  let clicked;
 
- function clicked(){
-     abrir = !abrir
- }
 
 import { createEventDispatcher } from 'svelte';
 
@@ -59,11 +55,6 @@ import { createEventDispatcher } from 'svelte';
         </div>
         <div>
             <Actions style="z-index: 99999;line-height: 9px; margin-bottom: 100vh;padding: 0px!important;margin-top: 0px;">
-               <!--  
-                <Button class="botonVolver" on:click={() => clicked = 'Volver'} style="padding:0px;">
-                  <Label style="color:#333;background:white;font-size:20px;padding:10px;">X</Label>
-                </Button>
-               --> 
                <Button style="height:30px!important;border:0px;">
                    <a on:click={() => clicked = 'Volver'}  class="botonVolver waves-effect waves-light btn">X</a>
                </Button>

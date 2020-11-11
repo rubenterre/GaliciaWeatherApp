@@ -40,10 +40,7 @@ $:if(fondoLugo){
     fondoPontevedra = false;
     fondoOurense = false;
     fondoLugo = true;
-
 }
-
-
 
 $:if(fondoOurense){
     fondoSantiago = false;
@@ -53,6 +50,8 @@ $:if(fondoOurense){
     fondoPontevedra = false;
     fondoOurense = true;
     fondoLugo = false;
+
+
 }
 
 $:if(fondoSantiago){
@@ -63,6 +62,8 @@ $:if(fondoSantiago){
     fondoPontevedra = false;
     fondoOurense = false;
     fondoLugo = false;
+
+
 }
 
 $:if(fondoPontevedra){
@@ -109,7 +110,107 @@ $:if(fondoCoruna){
 
 }
 
+/*
+function FondoLugo(){
+  if(fondoLugo = true){
+      localStorage.removeItem('Ourense');
+      localStorage.removeItem('Vigo')
+      localStorage.removeItem('Pontevedra')
+      localStorage.removeItem('Santiago')
+      localStorage.removeItem('Ubicacion')
+      localStorage.removeItem('Coruna')
 
+      localStorage.setItem('Lugo',fondoLugo)
+      localStorage.getItem('Lugo')
+    }
+}
+
+
+function FondoOurense(){
+  if(fondoOurense = true){
+      localStorage.removeItem('Lugo');
+      localStorage.removeItem('Vigo')
+      localStorage.removeItem('Pontevedra')
+      localStorage.removeItem('Santiago')
+      localStorage.removeItem('Ubicacion')
+      localStorage.removeItem('Coruna')
+
+      localStorage.setItem('Ourense',fondoOurense)
+      localStorage.getItem('Ourense')
+    }
+}
+
+function FondoCoruna(){
+  if(fondoCoruna = true){
+      localStorage.removeItem('Lugo');
+      localStorage.removeItem('Vigo')
+      localStorage.removeItem('Pontevedra')
+      localStorage.removeItem('Santiago')
+      localStorage.removeItem('Ubicacion')
+      localStorage.removeItem('Ourense')
+
+      localStorage.setItem('Coruna',fondoCoruna)
+      localStorage.getItem('Coruna')
+    }
+}
+
+
+function FondoPontevedra(){
+  if(fondoPontevedra = true){
+      localStorage.removeItem('Lugo');
+      localStorage.removeItem('Vigo')
+      localStorage.removeItem('Ourense')
+      localStorage.removeItem('Santiago')
+      localStorage.removeItem('Ubicacion')
+      localStorage.removeItem('Coruna')
+
+      localStorage.setItem('Pontevedra',fondoPontevedra)
+      localStorage.getItem('Pontevedra')
+    }
+}
+
+function FondoVigo(){
+  if(fondoSireno = true){
+      localStorage.removeItem('Lugo');
+      localStorage.removeItem('Santiago')
+      localStorage.removeItem('Ourense')
+      localStorage.removeItem('Pontevedra')
+      localStorage.removeItem('Ubicacion')
+      localStorage.removeItem('Coruna')
+
+      localStorage.setItem('Vigo',fondoSireno)
+      localStorage.getItem('Vigo')
+    }
+}
+
+function FondoSantiago(){
+  if(fondoSantiago = true){
+      localStorage.removeItem('Lugo');
+      localStorage.removeItem('Vigo')
+      localStorage.removeItem('Ourense')
+      localStorage.removeItem('Pontevedra')
+      localStorage.removeItem('Ubicacion')
+      localStorage.removeItem('Coruna')
+
+      localStorage.setItem('Santiago',fondoSantiago)
+      localStorage.getItem('Santiago')
+    }
+}
+
+function FondoUbicacion(){
+  if(fondoUbicacionGPS = true){
+      localStorage.removeItem('Lugo');
+      localStorage.removeItem('Vigo')
+      localStorage.removeItem('Ourense')
+      localStorage.removeItem('Pontevedra')
+      localStorage.removeItem('Santiago')
+      localStorage.removeItem('Coruna')
+
+      localStorage.setItem('Ubicacion',fondoUbicacionGPS)
+      localStorage.getItem('Ubicacion')
+    }
+}
+*/
 
 </script>
 
@@ -131,7 +232,9 @@ $:if(fondoCoruna){
           </Item>
           <Item href="javascript:void(0)" on:click={() => fondoUbicacionGPS = true}>
             <Graphic class="material-icons" aria-hidden="true">location_on</Graphic>
-           <Text>Ubicación Actual</Text>
+           <Text>
+             Ubicación Actual
+           </Text>
           </Item>
           <Item href="javascript:void(0)" on:click={() => fondoSantiago = true}>
             <Graphic class="material-icons" aria-hidden="true">location_city</Graphic>

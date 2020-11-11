@@ -59930,7 +59930,7 @@ var app = (function () {
 
   const file$J = "src/Componentes/Panelprincipal.svelte";
 
-  // (123:8) <Title class="center" >
+  // (224:8) <Title class="center" >
   function create_default_slot_40(ctx) {
   	let t0;
   	let br;
@@ -59942,12 +59942,12 @@ var app = (function () {
   			br = element("br");
   			p = element("p");
   			p.textContent = "O tempo de Galicia";
-  			add_location(br, file$J, 122, 45, 2838);
+  			add_location(br, file$J, 223, 45, 5630);
   			set_style(p, "padding-bottom", "20px");
   			set_style(p, "color", "#333");
   			set_style(p, "font-size", "13px");
   			set_style(p, "font-weight", "300");
-  			add_location(p, file$J, 122, 49, 2842);
+  			add_location(p, file$J, 223, 49, 5634);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, t0, anchor);
@@ -59965,14 +59965,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_40.name,
   		type: "slot",
-  		source: "(123:8) <Title class=\\\"center\\\" >",
+  		source: "(224:8) <Title class=\\\"center\\\" >",
   		ctx
   	});
 
   	return block;
   }
 
-  // (119:6) <Header class="center" >
+  // (220:6) <Header class="center" >
   function create_default_slot_39(ctx) {
   	let div;
   	let img;
@@ -60000,9 +60000,9 @@ var app = (function () {
   			if (img.src !== (img_src_value = "/images/GaliciaWeather.gif")) attr_dev(img, "src", img_src_value);
   			attr_dev(img, "alt", "");
   			attr_dev(img, "width", "50%");
-  			add_location(img, file$J, 120, 10, 2705);
+  			add_location(img, file$J, 221, 10, 5497);
   			attr_dev(div, "class", "GW_icon svelte-e9bmhu");
-  			add_location(div, file$J, 119, 8, 2673);
+  			add_location(div, file$J, 220, 8, 5465);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div, anchor);
@@ -60040,14 +60040,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_39.name,
   		type: "slot",
-  		source: "(119:6) <Header class=\\\"center\\\" >",
+  		source: "(220:6) <Header class=\\\"center\\\" >",
   		ctx
   	});
 
   	return block;
   }
 
-  // (128:12) <Text class="white-text">
+  // (229:12) <Text class="white-text">
   function create_default_slot_38(ctx) {
   	let p;
 
@@ -60057,7 +60057,7 @@ var app = (function () {
   			p.textContent = "Escolle unha cidade:";
   			set_style(p, "font-size", "14px");
   			set_style(p, "font-weight", "600");
-  			add_location(p, file$J, 128, 14, 3085);
+  			add_location(p, file$J, 229, 14, 5877);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, p, anchor);
@@ -60071,14 +60071,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_38.name,
   		type: "slot",
-  		source: "(128:12) <Text class=\\\"white-text\\\">",
+  		source: "(229:12) <Text class=\\\"white-text\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (127:10) <Item>
+  // (228:10) <Item>
   function create_default_slot_37(ctx) {
   	let text_1;
   	let current;
@@ -60127,14 +60127,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_37.name,
   		type: "slot",
-  		source: "(127:10) <Item>",
+  		source: "(228:10) <Item>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (133:12) <Graphic class="material-icons" aria-hidden="true">
+  // (234:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_36(ctx) {
   	let t;
 
@@ -60154,14 +60154,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_36.name,
   		type: "slot",
-  		source: "(133:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(234:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (134:11) <Text>
+  // (235:11) <Text>
   function create_default_slot_35(ctx) {
   	let t;
 
@@ -60181,14 +60181,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_35.name,
   		type: "slot",
-  		source: "(134:11) <Text>",
+  		source: "(235:11) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (132:10) <Item href="javascript:void(0)" on:click={() => fondoUbicacionGPS = true}>
+  // (233:10) <Item href="javascript:void(0)" on:click={() => fondoUbicacionGPS = true}>
   function create_default_slot_34(ctx) {
   	let graphic;
   	let t;
@@ -60263,14 +60263,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_34.name,
   		type: "slot",
-  		source: "(132:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoUbicacionGPS = true}>",
+  		source: "(233:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoUbicacionGPS = true}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (137:12) <Graphic class="material-icons" aria-hidden="true">
+  // (240:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_33(ctx) {
   	let t;
 
@@ -60290,14 +60290,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_33.name,
   		type: "slot",
-  		source: "(137:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(240:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (138:12) <Text>
+  // (241:12) <Text>
   function create_default_slot_32(ctx) {
   	let t;
 
@@ -60317,14 +60317,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_32.name,
   		type: "slot",
-  		source: "(138:12) <Text>",
+  		source: "(241:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (136:10) <Item href="javascript:void(0)" on:click={() => fondoSantiago = true}>
+  // (239:10) <Item href="javascript:void(0)" on:click={() => fondoSantiago = true}>
   function create_default_slot_31(ctx) {
   	let graphic;
   	let t;
@@ -60399,14 +60399,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_31.name,
   		type: "slot",
-  		source: "(136:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoSantiago = true}>",
+  		source: "(239:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoSantiago = true}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (143:12) <Graphic class="material-icons" aria-hidden="true">
+  // (246:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_30(ctx) {
   	let t;
 
@@ -60426,14 +60426,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_30.name,
   		type: "slot",
-  		source: "(143:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(246:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (144:12) <Text>
+  // (247:12) <Text>
   function create_default_slot_29(ctx) {
   	let t;
 
@@ -60453,14 +60453,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_29.name,
   		type: "slot",
-  		source: "(144:12) <Text>",
+  		source: "(247:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (142:10) <Item href="javascript:void(0)" on:click={() => fondoSireno = true}>
+  // (245:10) <Item href="javascript:void(0)" on:click={() => fondoSireno = true}>
   function create_default_slot_28(ctx) {
   	let graphic;
   	let t;
@@ -60535,14 +60535,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_28.name,
   		type: "slot",
-  		source: "(142:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoSireno = true}>",
+  		source: "(245:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoSireno = true}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (149:12) <Graphic class="material-icons" aria-hidden="true">
+  // (252:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_27(ctx) {
   	let t;
 
@@ -60562,14 +60562,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_27.name,
   		type: "slot",
-  		source: "(149:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(252:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (150:12) <Text>
+  // (253:12) <Text>
   function create_default_slot_26(ctx) {
   	let t;
 
@@ -60589,14 +60589,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_26.name,
   		type: "slot",
-  		source: "(150:12) <Text>",
+  		source: "(253:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (148:10) <Item href="javascript:void(0)" on:click={() => fondoCoruna = true}>
+  // (251:10) <Item href="javascript:void(0)" on:click={() => fondoCoruna = true}>
   function create_default_slot_25(ctx) {
   	let graphic;
   	let t;
@@ -60671,14 +60671,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_25.name,
   		type: "slot",
-  		source: "(148:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoCoruna = true}>",
+  		source: "(251:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoCoruna = true}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (155:12) <Graphic class="material-icons" aria-hidden="true">
+  // (258:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_24(ctx) {
   	let t;
 
@@ -60698,14 +60698,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_24.name,
   		type: "slot",
-  		source: "(155:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(258:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (156:12) <Text>
+  // (259:12) <Text>
   function create_default_slot_23(ctx) {
   	let t;
 
@@ -60725,14 +60725,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_23.name,
   		type: "slot",
-  		source: "(156:12) <Text>",
+  		source: "(259:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (154:10) <Item href="javascript:void(0)" on:click={() => fondoPontevedra = true}>
+  // (257:10) <Item href="javascript:void(0)" on:click={() => fondoPontevedra = true}>
   function create_default_slot_22(ctx) {
   	let graphic;
   	let t;
@@ -60807,14 +60807,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_22.name,
   		type: "slot",
-  		source: "(154:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoPontevedra = true}>",
+  		source: "(257:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoPontevedra = true}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (161:12) <Graphic class="material-icons" aria-hidden="true">
+  // (264:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_21(ctx) {
   	let t;
 
@@ -60834,14 +60834,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_21.name,
   		type: "slot",
-  		source: "(161:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(264:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (162:12) <Text>
+  // (265:12) <Text>
   function create_default_slot_20(ctx) {
   	let t;
 
@@ -60861,14 +60861,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_20.name,
   		type: "slot",
-  		source: "(162:12) <Text>",
+  		source: "(265:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (160:10) <Item href="javascript:void(0)" on:click={() => fondoOurense = true}>
+  // (263:10) <Item href="javascript:void(0)" on:click={() => fondoOurense = true}>
   function create_default_slot_19(ctx) {
   	let graphic;
   	let t;
@@ -60943,14 +60943,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_19.name,
   		type: "slot",
-  		source: "(160:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoOurense = true}>",
+  		source: "(263:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoOurense = true}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (167:12) <Graphic class="material-icons" aria-hidden="true">
+  // (270:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_18(ctx) {
   	let t;
 
@@ -60970,14 +60970,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_18.name,
   		type: "slot",
-  		source: "(167:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(270:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (168:12) <Text>
+  // (271:12) <Text>
   function create_default_slot_17(ctx) {
   	let t;
 
@@ -60997,14 +60997,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_17.name,
   		type: "slot",
-  		source: "(168:12) <Text>",
+  		source: "(271:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (166:10) <Item href="javascript:void(0)" on:click={() => fondoLugo = true}>
+  // (269:10) <Item href="javascript:void(0)" on:click={() => fondoLugo = true}>
   function create_default_slot_16(ctx) {
   	let graphic;
   	let t;
@@ -61079,14 +61079,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_16.name,
   		type: "slot",
-  		source: "(166:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoLugo = true}>",
+  		source: "(269:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoLugo = true}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (173:10) <Subheader component={H6}>
+  // (276:10) <Subheader component={H6}>
   function create_default_slot_15(ctx) {
   	let t;
 
@@ -61106,14 +61106,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_15.name,
   		type: "slot",
-  		source: "(173:10) <Subheader component={H6}>",
+  		source: "(276:10) <Subheader component={H6}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (175:12) <Graphic class="material-icons" aria-hidden="true">
+  // (278:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_14(ctx) {
   	let t;
 
@@ -61133,14 +61133,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_14.name,
   		type: "slot",
-  		source: "(175:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(278:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (176:12) <Text>
+  // (279:12) <Text>
   function create_default_slot_13(ctx) {
   	let a;
 
@@ -61150,7 +61150,7 @@ var app = (function () {
   			a.textContent = "Compartir";
   			attr_dev(a, "class", "black-text");
   			attr_dev(a, "href", "");
-  			add_location(a, file$J, 175, 18, 5113);
+  			add_location(a, file$J, 278, 18, 7931);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, a, anchor);
@@ -61164,14 +61164,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_13.name,
   		type: "slot",
-  		source: "(176:12) <Text>",
+  		source: "(279:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (174:10) <Item href="">
+  // (277:10) <Item href="">
   function create_default_slot_12(ctx) {
   	let graphic;
   	let t;
@@ -61246,14 +61246,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_12.name,
   		type: "slot",
-  		source: "(174:10) <Item href=\\\"\\\">",
+  		source: "(277:10) <Item href=\\\"\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (179:12) <Graphic class="material-icons" aria-hidden="true">
+  // (282:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_11(ctx) {
   	let t;
 
@@ -61273,14 +61273,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_11.name,
   		type: "slot",
-  		source: "(179:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(282:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (180:12) <Text>
+  // (283:12) <Text>
   function create_default_slot_10(ctx) {
   	let a;
 
@@ -61290,7 +61290,7 @@ var app = (function () {
   			a.textContent = "Valore a nosa aplicación";
   			attr_dev(a, "class", "black-text");
   			attr_dev(a, "href", "");
-  			add_location(a, file$J, 179, 18, 5304);
+  			add_location(a, file$J, 282, 18, 8122);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, a, anchor);
@@ -61304,14 +61304,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_10.name,
   		type: "slot",
-  		source: "(180:12) <Text>",
+  		source: "(283:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (178:10) <Item href="">
+  // (281:10) <Item href="">
   function create_default_slot_9(ctx) {
   	let graphic;
   	let t;
@@ -61386,14 +61386,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_9.name,
   		type: "slot",
-  		source: "(178:10) <Item href=\\\"\\\">",
+  		source: "(281:10) <Item href=\\\"\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (183:12) <Graphic class="material-icons" aria-hidden="true">
+  // (286:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_8(ctx) {
   	let t;
 
@@ -61413,14 +61413,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_8.name,
   		type: "slot",
-  		source: "(183:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(286:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (184:12) <Text>
+  // (287:12) <Text>
   function create_default_slot_7(ctx) {
   	let a;
   	let link_action;
@@ -61433,7 +61433,7 @@ var app = (function () {
   			a.textContent = "Información";
   			attr_dev(a, "class", "black-text");
   			attr_dev(a, "href", "/Creditos");
-  			add_location(a, file$J, 183, 18, 5551);
+  			add_location(a, file$J, 286, 18, 8369);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, a, anchor);
@@ -61454,14 +61454,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_7.name,
   		type: "slot",
-  		source: "(184:12) <Text>",
+  		source: "(287:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (182:10) <Item href="/#/Creditos" on:click={() => link}>
+  // (285:10) <Item href="/#/Creditos" on:click={() => link}>
   function create_default_slot_6(ctx) {
   	let graphic;
   	let t;
@@ -61536,14 +61536,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_6.name,
   		type: "slot",
-  		source: "(182:10) <Item href=\\\"/#/Creditos\\\" on:click={() => link}>",
+  		source: "(285:10) <Item href=\\\"/#/Creditos\\\" on:click={() => link}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (126:8) <List class="grey darken-3">
+  // (227:8) <List class="grey darken-3">
   function create_default_slot_5(ctx) {
   	let item0;
   	let t0;
@@ -61904,14 +61904,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_5.name,
   		type: "slot",
-  		source: "(126:8) <List class=\\\"grey darken-3\\\">",
+  		source: "(227:8) <List class=\\\"grey darken-3\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (125:6) <Content>
+  // (226:6) <Content>
   function create_default_slot_4(ctx) {
   	let list;
   	let current;
@@ -61960,14 +61960,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_4.name,
   		type: "slot",
-  		source: "(125:6) <Content>",
+  		source: "(226:6) <Content>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (118:4) <Drawer variant="modal" bind:this={myDrawer2} bind:open={myDrawer2Open}>
+  // (219:4) <Drawer variant="modal" bind:this={myDrawer2} bind:open={myDrawer2Open}>
   function create_default_slot_3(ctx) {
   	let header;
   	let t;
@@ -62041,14 +62041,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_3.name,
   		type: "slot",
-  		source: "(118:4) <Drawer variant=\\\"modal\\\" bind:this={myDrawer2} bind:open={myDrawer2Open}>",
+  		source: "(219:4) <Drawer variant=\\\"modal\\\" bind:this={myDrawer2} bind:open={myDrawer2Open}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (194:10) <Label>
+  // (297:10) <Label>
   function create_default_slot_2(ctx) {
   	let cidadesbtn;
   	let current;
@@ -62080,14 +62080,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_2.name,
   		type: "slot",
-  		source: "(194:10) <Label>",
+  		source: "(297:10) <Label>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (193:8) <Button on:click={() => myDrawer2Open = !myDrawer2Open}>
+  // (296:8) <Button on:click={() => myDrawer2Open = !myDrawer2Open}>
   function create_default_slot_1(ctx) {
   	let label;
   	let current;
@@ -62135,14 +62135,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_1.name,
   		type: "slot",
-  		source: "(193:8) <Button on:click={() => myDrawer2Open = !myDrawer2Open}>",
+  		source: "(296:8) <Button on:click={() => myDrawer2Open = !myDrawer2Open}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (191:4) <AppContent class="app-content">
+  // (294:4) <AppContent class="app-content">
   function create_default_slot$2(ctx) {
   	let main;
   	let button;
@@ -62171,11 +62171,11 @@ var app = (function () {
   			t1 = space();
   			div = element("div");
   			div.textContent = " ";
-  			add_location(br, file$J, 202, 8, 6089);
+  			add_location(br, file$J, 305, 8, 8907);
   			set_style(div, "height", "300px");
-  			add_location(div, file$J, 203, 8, 6104);
+  			add_location(div, file$J, 306, 8, 8922);
   			attr_dev(main, "class", "main-content");
-  			add_location(main, file$J, 191, 6, 5747);
+  			add_location(main, file$J, 294, 6, 8565);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, main, anchor);
@@ -62214,14 +62214,14 @@ var app = (function () {
   		block,
   		id: create_default_slot$2.name,
   		type: "slot",
-  		source: "(191:4) <AppContent class=\\\"app-content\\\">",
+  		source: "(294:4) <AppContent class=\\\"app-content\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (225:4) {:else}
+  // (328:4) {:else}
   function create_else_block$b(ctx) {
   	let ubicacionactual;
   	let current;
@@ -62253,14 +62253,14 @@ var app = (function () {
   		block,
   		id: create_else_block$b.name,
   		type: "else",
-  		source: "(225:4) {:else}",
+  		source: "(328:4) {:else}",
   		ctx
   	});
 
   	return block;
   }
 
-  // (223:32) 
+  // (326:32) 
   function create_if_block_6$7(ctx) {
   	let ubicacionactual;
   	let current;
@@ -62292,14 +62292,14 @@ var app = (function () {
   		block,
   		id: create_if_block_6$7.name,
   		type: "if",
-  		source: "(223:32) ",
+  		source: "(326:32) ",
   		ctx
   	});
 
   	return block;
   }
 
-  // (221:24) 
+  // (324:24) 
   function create_if_block_5$7(ctx) {
   	let lugo;
   	let current;
@@ -62331,14 +62331,14 @@ var app = (function () {
   		block,
   		id: create_if_block_5$7.name,
   		type: "if",
-  		source: "(221:24) ",
+  		source: "(324:24) ",
   		ctx
   	});
 
   	return block;
   }
 
-  // (219:27) 
+  // (322:27) 
   function create_if_block_4$7(ctx) {
   	let ourense;
   	let current;
@@ -62370,14 +62370,14 @@ var app = (function () {
   		block,
   		id: create_if_block_4$7.name,
   		type: "if",
-  		source: "(219:27) ",
+  		source: "(322:27) ",
   		ctx
   	});
 
   	return block;
   }
 
-  // (217:30) 
+  // (320:30) 
   function create_if_block_3$7(ctx) {
   	let pontevedra;
   	let current;
@@ -62409,14 +62409,14 @@ var app = (function () {
   		block,
   		id: create_if_block_3$7.name,
   		type: "if",
-  		source: "(217:30) ",
+  		source: "(320:30) ",
   		ctx
   	});
 
   	return block;
   }
 
-  // (215:26) 
+  // (318:26) 
   function create_if_block_2$7(ctx) {
   	let coruna;
   	let current;
@@ -62448,14 +62448,14 @@ var app = (function () {
   		block,
   		id: create_if_block_2$7.name,
   		type: "if",
-  		source: "(215:26) ",
+  		source: "(318:26) ",
   		ctx
   	});
 
   	return block;
   }
 
-  // (213:28) 
+  // (316:28) 
   function create_if_block_1$8(ctx) {
   	let santiago;
   	let current;
@@ -62487,14 +62487,14 @@ var app = (function () {
   		block,
   		id: create_if_block_1$8.name,
   		type: "if",
-  		source: "(213:28) ",
+  		source: "(316:28) ",
   		ctx
   	});
 
   	return block;
   }
 
-  // (211:4) {#if fondoSireno}
+  // (314:4) {#if fondoSireno}
   function create_if_block$i(ctx) {
   	let vigo;
   	let current;
@@ -62526,7 +62526,7 @@ var app = (function () {
   		block,
   		id: create_if_block$i.name,
   		type: "if",
-  		source: "(211:4) {#if fondoSireno}",
+  		source: "(314:4) {#if fondoSireno}",
   		ctx
   	});
 
@@ -62614,7 +62614,7 @@ var app = (function () {
   			if_block.c();
   			if_block_anchor = empty();
   			attr_dev(div, "class", "drawer-container");
-  			add_location(div, file$J, 116, 2, 2526);
+  			add_location(div, file$J, 217, 2, 5318);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -65647,7 +65647,7 @@ var app = (function () {
   /* src/Componentes/Cardbusqueda.svelte generated by Svelte v3.25.0 */
   const file$P = "src/Componentes/Cardbusqueda.svelte";
 
-  // (67:15) <Button style="height:30px!important;border:0px;">
+  // (58:15) <Button style="height:30px!important;border:0px;">
   function create_default_slot_2$1(ctx) {
   	let a;
   	let mounted;
@@ -65658,7 +65658,7 @@ var app = (function () {
   			a = element("a");
   			a.textContent = "X";
   			attr_dev(a, "class", "botonVolver waves-effect waves-light btn");
-  			add_location(a, file$P, 67, 19, 2233);
+  			add_location(a, file$P, 58, 19, 1857);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, a, anchor);
@@ -65680,14 +65680,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_2$1.name,
   		type: "slot",
-  		source: "(67:15) <Button style=\\\"height:30px!important;border:0px;\\\">",
+  		source: "(58:15) <Button style=\\\"height:30px!important;border:0px;\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (61:12) <Actions style="z-index: 99999;line-height: 9px; margin-bottom: 100vh;padding: 0px!important;margin-top: 0px;">
+  // (57:12) <Actions style="z-index: 99999;line-height: 9px; margin-bottom: 100vh;padding: 0px!important;margin-top: 0px;">
   function create_default_slot_1$1(ctx) {
   	let button;
   	let current;
@@ -65712,7 +65712,7 @@ var app = (function () {
   		p: function update(ctx, dirty) {
   			const button_changes = {};
 
-  			if (dirty & /*$$scope, clicked*/ 8208) {
+  			if (dirty & /*$$scope, clicked*/ 4112) {
   				button_changes.$$scope = { dirty, ctx };
   			}
 
@@ -65736,14 +65736,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_1$1.name,
   		type: "slot",
-  		source: "(61:12) <Actions style=\\\"z-index: 99999;line-height: 9px; margin-bottom: 100vh;padding: 0px!important;margin-top: 0px;\\\">",
+  		source: "(57:12) <Actions style=\\\"z-index: 99999;line-height: 9px; margin-bottom: 100vh;padding: 0px!important;margin-top: 0px;\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (56:4) <Dialog bind:this={simpleDialog}>
+  // (52:4) <Dialog bind:this={simpleDialog}>
   function create_default_slot$3(ctx) {
   	let div0;
   	let cardtiempo;
@@ -65773,8 +65773,8 @@ var app = (function () {
   			t = space();
   			div1 = element("div");
   			create_component(actions.$$.fragment);
-  			add_location(div0, file$P, 56, 8, 1680);
-  			add_location(div1, file$P, 59, 8, 1748);
+  			add_location(div0, file$P, 52, 8, 1574);
+  			add_location(div1, file$P, 55, 8, 1642);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div0, anchor);
@@ -65790,7 +65790,7 @@ var app = (function () {
   			cardtiempo.$set(cardtiempo_changes);
   			const actions_changes = {};
 
-  			if (dirty & /*$$scope, clicked*/ 8208) {
+  			if (dirty & /*$$scope, clicked*/ 4112) {
   				actions_changes.$$scope = { dirty, ctx };
   			}
 
@@ -65820,7 +65820,7 @@ var app = (function () {
   		block,
   		id: create_default_slot$3.name,
   		type: "slot",
-  		source: "(56:4) <Dialog bind:this={simpleDialog}>",
+  		source: "(52:4) <Dialog bind:this={simpleDialog}>",
   		ctx
   	});
 
@@ -65897,33 +65897,33 @@ var app = (function () {
   			if (img.src !== (img_src_value = "/images/tarxetas/" + /*icon*/ ctx[1] + ".gif")) attr_dev(img, "src", img_src_value);
   			attr_dev(img, "alt", "icono do tempo");
   			attr_dev(img, "class", "fondo_card svelte-tmmm7l");
-  			add_location(img, file$P, 39, 24, 845);
-  			add_location(br, file$P, 40, 80, 1005);
+  			add_location(img, file$P, 35, 24, 739);
+  			add_location(br, file$P, 36, 80, 899);
   			attr_dev(p, "class", "city-name svelte-tmmm7l");
-  			add_location(p, file$P, 41, 28, 1038);
+  			add_location(p, file$P, 37, 28, 932);
   			attr_dev(span, "class", "card-title city-temp svelte-tmmm7l");
-  			add_location(span, file$P, 40, 24, 949);
+  			add_location(span, file$P, 36, 24, 843);
   			attr_dev(i0, "class", "material-icons");
-  			add_location(i0, file$P, 44, 45, 1286);
+  			add_location(i0, file$P, 40, 45, 1180);
   			attr_dev(a0, "class", "btn modal-trigger btn-floating halfway-fab waves-effect waves-light\n                            black verTiempo svelte-tmmm7l");
-  			add_location(a0, file$P, 43, 24, 1126);
+  			add_location(a0, file$P, 39, 24, 1020);
   			attr_dev(i1, "class", "material-icons");
-  			add_location(i1, file$P, 46, 35, 1485);
+  			add_location(i1, file$P, 42, 35, 1379);
   			attr_dev(a1, "class", "btn-floating halfway-fab waves-effect waves-light\n                            black");
-  			add_location(a1, file$P, 45, 24, 1355);
+  			add_location(a1, file$P, 41, 24, 1249);
   			attr_dev(div0, "class", "card-image svelte-tmmm7l");
-  			add_location(div0, file$P, 38, 20, 796);
+  			add_location(div0, file$P, 34, 20, 690);
   			attr_dev(div1, "class", "card svelte-tmmm7l");
-  			add_location(div1, file$P, 37, 16, 757);
+  			add_location(div1, file$P, 33, 16, 651);
   			attr_dev(div2, "class", "col s12 m6");
-  			add_location(div2, file$P, 36, 12, 716);
+  			add_location(div2, file$P, 32, 12, 610);
   			attr_dev(div3, "class", "row");
-  			add_location(div3, file$P, 35, 8, 686);
+  			add_location(div3, file$P, 31, 8, 580);
   			attr_dev(div4, "class", "ulwrpper");
-  			add_location(div4, file$P, 34, 4, 655);
+  			add_location(div4, file$P, 30, 4, 549);
   			attr_dev(li, "class", "data");
-  			add_location(li, file$P, 33, 0, 633);
-  			add_location(div5, file$P, 54, 0, 1628);
+  			add_location(li, file$P, 29, 0, 527);
+  			add_location(div5, file$P, 50, 0, 1522);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -65973,7 +65973,7 @@ var app = (function () {
   			if (!current || dirty & /*name*/ 1) set_data_dev(t4, /*name*/ ctx[0]);
   			const dialog_changes = {};
 
-  			if (dirty & /*$$scope, clicked, name*/ 8209) {
+  			if (dirty & /*$$scope, clicked, name*/ 4113) {
   				dialog_changes.$$scope = { dirty, ctx };
   			}
 
@@ -66014,12 +66014,7 @@ var app = (function () {
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("Cardbusqueda", slots, []);
   	let simpleDialog;
-  	let abrir = false;
-
-  	function clicked() {
-  		abrir = !abrir;
-  	}
-
+  	let clicked;
   	const dispatch = createEventDispatcher();
 
   	function removeTiempo() {
@@ -66062,12 +66057,7 @@ var app = (function () {
   		InitialFocus,
   		Button: Button_1,
   		Label,
-  		List,
-  		Item,
-  		Graphic,
-  		Text,
   		simpleDialog,
-  		abrir,
   		clicked,
   		createEventDispatcher,
   		dispatch,
@@ -66081,7 +66071,7 @@ var app = (function () {
 
   	$$self.$inject_state = $$props => {
   		if ("simpleDialog" in $$props) $$invalidate(3, simpleDialog = $$props.simpleDialog);
-  		if ("abrir" in $$props) abrir = $$props.abrir;
+  		if ("clicked" in $$props) $$invalidate(4, clicked = $$props.clicked);
   		if ("id" in $$props) $$invalidate(6, id = $$props.id);
   		if ("name" in $$props) $$invalidate(0, name = $$props.name);
   		if ("icon" in $$props) $$invalidate(1, icon = $$props.icon);
