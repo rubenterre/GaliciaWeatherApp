@@ -136,6 +136,18 @@ body {
     .weather-datos {
         padding-top: 8vh;
     }
+
+    .datosTecnicosCard{
+        padding-bottom: 50px;
+    }
+
+    p{
+        font-size: 17px;
+    }
+
+    .descripcion{
+        font-size: 17px!important;
+    }
     }
     
     
