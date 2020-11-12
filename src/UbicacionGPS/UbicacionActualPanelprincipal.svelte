@@ -45,7 +45,7 @@
     console.log(COORDS)
 
     axios.get(
-            `http://api.openweathermap.org/data/2.5/weather?${COORDS}&appid=${KEY}&units=metric&lang=gl`
+            `https://api.openweathermap.org/data/2.5/weather?${COORDS}&appid=${KEY}&units=metric&lang=gl`
         )
 
         .then(

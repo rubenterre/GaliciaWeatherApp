@@ -47,7 +47,7 @@
   function addTiempo() {
 
     axios.get(
-        `http://api.openweathermap.org/data/2.5/weather?q=${input}&appid=${key}&units=metric&lang=gl`
+        `https://api.openweathermap.org/data/2.5/weather?q=${input}&appid=${key}&units=metric&lang=gl`
       )
       .then(data => {
         console.log(data)
