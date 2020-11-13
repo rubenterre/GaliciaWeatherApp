@@ -19,7 +19,6 @@ import { createEventDispatcher } from 'svelte';
 
     import Cardtiempo from '../Componentes/Cardtiempo.svelte';
 
-    export let id;
     export let name;
     export let icon;
     export let temp;
