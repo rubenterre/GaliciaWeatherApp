@@ -15509,7 +15509,7 @@ var app = (function () {
   			div = element("div");
   			create_component(pulse.$$.fragment);
   			attr_dev(div, "class", "loading center");
-  			add_location(div, file$1, 1438, 0, 91677);
+  			add_location(div, file$1, 1438, 0, 91678);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div, anchor);
@@ -15583,25 +15583,25 @@ var app = (function () {
   			div3 = element("div");
   			p2 = element("p");
   			t5 = text(/*descripcion*/ ctx[2]);
-  			add_location(p0, file$1, 1423, 20, 91247);
+  			add_location(p0, file$1, 1423, 20, 91248);
   			attr_dev(div0, "class", "col s12 location center");
-  			add_location(div0, file$1, 1422, 16, 91189);
-  			add_location(p1, file$1, 1426, 20, 91367);
+  			add_location(div0, file$1, 1422, 16, 91190);
+  			add_location(p1, file$1, 1426, 20, 91368);
   			attr_dev(div1, "class", "col s12 temperature-value center");
-  			add_location(div1, file$1, 1425, 16, 91300);
+  			add_location(div1, file$1, 1425, 16, 91301);
   			attr_dev(div2, "class", "weather-container");
-  			add_location(div2, file$1, 1421, 12, 91141);
-  			add_location(p2, file$1, 1431, 20, 91573);
+  			add_location(div2, file$1, 1421, 12, 91142);
+  			add_location(p2, file$1, 1431, 20, 91574);
   			attr_dev(div3, "class", "col s12 temperature-description center");
-  			add_location(div3, file$1, 1430, 16, 91500);
+  			add_location(div3, file$1, 1430, 16, 91501);
   			attr_dev(div4, "class", "weather-datos");
-  			add_location(div4, file$1, 1429, 12, 91456);
+  			add_location(div4, file$1, 1429, 12, 91457);
   			attr_dev(div5, "class", "row");
-  			add_location(div5, file$1, 1420, 8, 91111);
+  			add_location(div5, file$1, 1420, 8, 91112);
   			attr_dev(div6, "class", "container");
-  			add_location(div6, file$1, 1419, 4, 91079);
+  			add_location(div6, file$1, 1419, 4, 91080);
   			attr_dev(div7, "class", "white-text PanelPrincipal");
-  			add_location(div7, file$1, 1418, 0, 91035);
+  			add_location(div7, file$1, 1418, 0, 91036);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div7, anchor);
@@ -15666,7 +15666,7 @@ var app = (function () {
   			div = element("div");
   			if_block.c();
   			attr_dev(div, "class", "center");
-  			add_location(div, file$1, 1416, 0, 90982);
+  			add_location(div, file$1, 1416, 0, 90983);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -15745,7 +15745,7 @@ var app = (function () {
   		COORDS = `lat=${latitude}&lon=${longitude}`;
   		console.log(COORDS);
 
-  		axios$1.get(`http://api.openweathermap.org/data/2.5/weather?${COORDS}&appid=${KEY}&units=metric&lang=gl`).then(data => {
+  		axios$1.get(`https://api.openweathermap.org/data/2.5/weather?${COORDS}&appid=${KEY}&units=metric&lang=gl`).then(data => {
   			$$invalidate(3, datosPrincipal = data.data);
   			console.log(data.data);
   			$$invalidate(0, city = datosPrincipal.name);
@@ -19656,18 +19656,18 @@ var app = (function () {
   			p.textContent = "Fases da lúa deste mes";
   			t1 = space();
   			div0 = element("div");
-  			add_location(p, file$4, 134, 12, 4063);
+  			add_location(p, file$4, 57, 12, 1564);
   			attr_dev(div0, "id", "ex2");
   			attr_dev(div0, "class", "no-active svelte-1lroa8d");
-  			add_location(div0, file$4, 135, 12, 4105);
+  			add_location(div0, file$4, 58, 12, 1606);
   			attr_dev(div1, "class", "fases_lunares col s12");
-  			add_location(div1, file$4, 133, 8, 4015);
+  			add_location(div1, file$4, 56, 8, 1516);
   			attr_dev(div2, "class", "row svelte-1lroa8d");
-  			add_location(div2, file$4, 132, 4, 3989);
+  			add_location(div2, file$4, 55, 4, 1490);
   			attr_dev(div3, "class", "container svelte-1lroa8d");
-  			add_location(div3, file$4, 131, 0, 3961);
+  			add_location(div3, file$4, 54, 0, 1462);
   			attr_dev(div4, "class", "white-text svelte-1lroa8d");
-  			add_location(div4, file$4, 130, 0, 3936);
+  			add_location(div4, file$4, 53, 0, 1437);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -20278,7 +20278,7 @@ var app = (function () {
   			img8 = element("img");
   			t32 = space();
   			p8 = element("p");
-  			p8.textContent = "Amancer";
+  			p8.textContent = "Amencer";
   			t34 = space();
   			div16 = element("div");
   			p9 = element("p");
@@ -20376,7 +20376,7 @@ var app = (function () {
   			add_location(div15, file$5, 160, 16, 5685);
   			if (img8.src !== (img8_src_value = "images/sunrise.png")) attr_dev(img8, "src", img8_src_value);
   			attr_dev(img8, "width", "20%");
-  			attr_dev(img8, "alt", "Amancer");
+  			attr_dev(img8, "alt", "Amencer");
   			add_location(img8, file$5, 172, 20, 6209);
   			attr_dev(p8, "class", "tit_icon");
   			add_location(p8, file$5, 173, 20, 6286);
@@ -20713,7 +20713,7 @@ var app = (function () {
   						$$invalidate(6, visibilidad = datosGlobal.current.visibility);
   						$$invalidate(7, uvi = datosGlobal.current.uvi);
 
-  						//Amancer e Solpor
+  						//Amencer e Solpor
   						let DatosSunrise = document.querySelector(".sunrise p");
 
   						let sunrise = [datosGlobal.current.sunrise];
@@ -20993,7 +20993,7 @@ var app = (function () {
   			div = element("div");
   			create_component(pulse.$$.fragment);
   			attr_dev(div, "class", "loading center");
-  			add_location(div, file$7, 1454, 0, 87097);
+  			add_location(div, file$7, 1454, 0, 87098);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div, anchor);
@@ -21076,28 +21076,28 @@ var app = (function () {
   			div3 = element("div");
   			p3 = element("p");
   			t8 = text(/*descripcion*/ ctx[2]);
-  			add_location(p0, file$7, 1438, 16, 86634);
+  			add_location(p0, file$7, 1438, 16, 86635);
   			attr_dev(i, "class", "material-icons");
-  			add_location(i, file$7, 1439, 19, 86667);
-  			add_location(p1, file$7, 1439, 16, 86664);
+  			add_location(i, file$7, 1439, 19, 86668);
+  			add_location(p1, file$7, 1439, 16, 86665);
   			attr_dev(div0, "class", "col s12 location center");
-  			add_location(div0, file$7, 1437, 12, 86580);
-  			add_location(p2, file$7, 1442, 16, 86823);
+  			add_location(div0, file$7, 1437, 12, 86581);
+  			add_location(p2, file$7, 1442, 16, 86824);
   			attr_dev(div1, "class", "col s12 temperature-value center");
-  			add_location(div1, file$7, 1441, 12, 86760);
+  			add_location(div1, file$7, 1441, 12, 86761);
   			attr_dev(div2, "class", "weather-container");
-  			add_location(div2, file$7, 1436, 8, 86536);
-  			add_location(p3, file$7, 1447, 16, 87009);
+  			add_location(div2, file$7, 1436, 8, 86537);
+  			add_location(p3, file$7, 1447, 16, 87010);
   			attr_dev(div3, "class", "col s12 temperature-description center");
-  			add_location(div3, file$7, 1446, 12, 86940);
+  			add_location(div3, file$7, 1446, 12, 86941);
   			attr_dev(div4, "class", "weather-datos");
-  			add_location(div4, file$7, 1445, 8, 86900);
+  			add_location(div4, file$7, 1445, 8, 86901);
   			attr_dev(div5, "class", "row");
-  			add_location(div5, file$7, 1435, 4, 86510);
+  			add_location(div5, file$7, 1435, 4, 86511);
   			attr_dev(div6, "class", "container");
-  			add_location(div6, file$7, 1434, 0, 86482);
+  			add_location(div6, file$7, 1434, 0, 86483);
   			attr_dev(div7, "class", "white-text PanelPrincipal");
-  			add_location(div7, file$7, 1433, 0, 86442);
+  			add_location(div7, file$7, 1433, 0, 86443);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div7, anchor);
@@ -21166,7 +21166,7 @@ var app = (function () {
   			div = element("div");
   			if_block.c();
   			attr_dev(div, "class", "center");
-  			add_location(div, file$7, 1431, 0, 86393);
+  			add_location(div, file$7, 1431, 0, 86394);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -21256,7 +21256,7 @@ var app = (function () {
   		COORDS = `lat=${latitude}&lon=${longitude}`;
   		console.log(COORDS);
 
-  		axios$1.get(`http://api.openweathermap.org/data/2.5/weather?${COORDS}&appid=${KEY$4}&units=metric&lang=gl`).then(data => {
+  		axios$1.get(`https://api.openweathermap.org/data/2.5/weather?${COORDS}&appid=${KEY$4}&units=metric&lang=gl`).then(data => {
   			$$invalidate(3, datosPrincipal = data.data);
   			console.log(data.data);
   			$$invalidate(0, city = datosPrincipal.name);
@@ -25661,7 +25661,7 @@ var app = (function () {
   			img8 = element("img");
   			t32 = space();
   			p8 = element("p");
-  			p8.textContent = "Amancer";
+  			p8.textContent = "Amencer";
   			t34 = space();
   			div16 = element("div");
   			p9 = element("p");
@@ -25759,7 +25759,7 @@ var app = (function () {
   			add_location(div15, file$a, 175, 16, 6114);
   			if (img8.src !== (img8_src_value = "images/sunrise.png")) attr_dev(img8, "src", img8_src_value);
   			attr_dev(img8, "width", "20%");
-  			attr_dev(img8, "alt", "Amancer");
+  			attr_dev(img8, "alt", "Amencer");
   			add_location(img8, file$a, 187, 20, 6638);
   			attr_dev(p8, "class", "tit_icon");
   			add_location(p8, file$a, 188, 20, 6715);
@@ -26109,7 +26109,7 @@ var app = (function () {
   						$$invalidate(6, visibilidad = datosGlobal.current.visibility);
   						$$invalidate(7, uvi = datosGlobal.current.uvi);
 
-  						//Amancer e Solpor
+  						//Amencer e Solpor
   						let DatosSunrise = document.querySelector(".sunrise p");
 
   						let sunrise = [datosGlobal.current.sunrise];
@@ -26298,7 +26298,7 @@ var app = (function () {
   			div = element("div");
   			create_component(pulse.$$.fragment);
   			attr_dev(div, "class", "loading center");
-  			add_location(div, file$b, 1436, 0, 91567);
+  			add_location(div, file$b, 1436, 0, 91568);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div, anchor);
@@ -26372,25 +26372,25 @@ var app = (function () {
   			div3 = element("div");
   			p2 = element("p");
   			t5 = text(/*descripcion*/ ctx[2]);
-  			add_location(p0, file$b, 1421, 16, 91185);
+  			add_location(p0, file$b, 1421, 16, 91186);
   			attr_dev(div0, "class", "col s12 location");
-  			add_location(div0, file$b, 1420, 12, 91138);
-  			add_location(p1, file$b, 1424, 16, 91293);
+  			add_location(div0, file$b, 1420, 12, 91139);
+  			add_location(p1, file$b, 1424, 16, 91294);
   			attr_dev(div1, "class", "col s12 temperature-value center");
-  			add_location(div1, file$b, 1423, 12, 91230);
+  			add_location(div1, file$b, 1423, 12, 91231);
   			attr_dev(div2, "class", "weather-container");
-  			add_location(div2, file$b, 1419, 8, 91094);
-  			add_location(p2, file$b, 1429, 16, 91479);
+  			add_location(div2, file$b, 1419, 8, 91095);
+  			add_location(p2, file$b, 1429, 16, 91480);
   			attr_dev(div3, "class", "col s12 temperature-description center");
-  			add_location(div3, file$b, 1428, 12, 91410);
+  			add_location(div3, file$b, 1428, 12, 91411);
   			attr_dev(div4, "class", "weather-datos");
-  			add_location(div4, file$b, 1427, 8, 91370);
+  			add_location(div4, file$b, 1427, 8, 91371);
   			attr_dev(div5, "class", "row");
-  			add_location(div5, file$b, 1418, 4, 91068);
+  			add_location(div5, file$b, 1418, 4, 91069);
   			attr_dev(div6, "class", "container");
-  			add_location(div6, file$b, 1417, 0, 91040);
+  			add_location(div6, file$b, 1417, 0, 91041);
   			attr_dev(div7, "class", "white-text PanelPrincipal");
-  			add_location(div7, file$b, 1416, 0, 91000);
+  			add_location(div7, file$b, 1416, 0, 91001);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div7, anchor);
@@ -26455,7 +26455,7 @@ var app = (function () {
   			div = element("div");
   			if_block.c();
   			attr_dev(div, "class", "center");
-  			add_location(div, file$b, 1414, 0, 90947);
+  			add_location(div, file$b, 1414, 0, 90948);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -26533,7 +26533,7 @@ var app = (function () {
   		COORDS = `lat=${latitude}&lon=${longitude}`;
   		console.log(COORDS);
 
-  		axios$1.get(`http://api.openweathermap.org/data/2.5/weather?${COORDS}&appid=${KEY$8}&units=metric&lang=gl`).then(data => {
+  		axios$1.get(`https://api.openweathermap.org/data/2.5/weather?${COORDS}&appid=${KEY$8}&units=metric&lang=gl`).then(data => {
   			$$invalidate(3, datosPrincipal = data.data);
   			console.log(data.data);
   			$$invalidate(0, city = datosPrincipal.name);
@@ -30911,7 +30911,7 @@ var app = (function () {
   			img8 = element("img");
   			t32 = space();
   			p8 = element("p");
-  			p8.textContent = "Amancer";
+  			p8.textContent = "Amencer";
   			t34 = space();
   			div16 = element("div");
   			p9 = element("p");
@@ -31009,7 +31009,7 @@ var app = (function () {
   			add_location(div15, file$e, 160, 16, 5681);
   			if (img8.src !== (img8_src_value = "images/sunrise.png")) attr_dev(img8, "src", img8_src_value);
   			attr_dev(img8, "width", "20%");
-  			attr_dev(img8, "alt", "Amancer");
+  			attr_dev(img8, "alt", "Amencer");
   			add_location(img8, file$e, 172, 20, 6205);
   			attr_dev(p8, "class", "tit_icon");
   			add_location(p8, file$e, 173, 20, 6282);
@@ -31346,7 +31346,7 @@ var app = (function () {
   						$$invalidate(6, visibilidad = datosGlobal.current.visibility);
   						$$invalidate(7, uvi = datosGlobal.current.uvi);
 
-  						//Amancer e Solpor
+  						//Amencer e Solpor
   						let DatosSunrise = document.querySelector(".sunrise p");
 
   						let sunrise = [datosGlobal.current.sunrise];
@@ -31535,7 +31535,7 @@ var app = (function () {
   			div = element("div");
   			create_component(pulse.$$.fragment);
   			attr_dev(div, "class", "loading center");
-  			add_location(div, file$f, 1442, 0, 91755);
+  			add_location(div, file$f, 1442, 0, 91756);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div, anchor);
@@ -31609,25 +31609,25 @@ var app = (function () {
   			div3 = element("div");
   			p2 = element("p");
   			t5 = text(/*descripcion*/ ctx[2]);
-  			add_location(p0, file$f, 1427, 20, 91325);
+  			add_location(p0, file$f, 1427, 20, 91326);
   			attr_dev(div0, "class", "col s12 location center");
-  			add_location(div0, file$f, 1426, 16, 91267);
-  			add_location(p1, file$f, 1430, 20, 91445);
+  			add_location(div0, file$f, 1426, 16, 91268);
+  			add_location(p1, file$f, 1430, 20, 91446);
   			attr_dev(div1, "class", "col s12 temperature-value center");
-  			add_location(div1, file$f, 1429, 16, 91378);
+  			add_location(div1, file$f, 1429, 16, 91379);
   			attr_dev(div2, "class", "weather-container");
-  			add_location(div2, file$f, 1425, 12, 91219);
-  			add_location(p2, file$f, 1435, 20, 91651);
+  			add_location(div2, file$f, 1425, 12, 91220);
+  			add_location(p2, file$f, 1435, 20, 91652);
   			attr_dev(div3, "class", "col s12 temperature-description center");
-  			add_location(div3, file$f, 1434, 16, 91578);
+  			add_location(div3, file$f, 1434, 16, 91579);
   			attr_dev(div4, "class", "weather-datos");
-  			add_location(div4, file$f, 1433, 12, 91534);
+  			add_location(div4, file$f, 1433, 12, 91535);
   			attr_dev(div5, "class", "row");
-  			add_location(div5, file$f, 1424, 8, 91189);
+  			add_location(div5, file$f, 1424, 8, 91190);
   			attr_dev(div6, "class", "container");
-  			add_location(div6, file$f, 1423, 4, 91157);
+  			add_location(div6, file$f, 1423, 4, 91158);
   			attr_dev(div7, "class", "white-text PanelPrincipal");
-  			add_location(div7, file$f, 1422, 0, 91113);
+  			add_location(div7, file$f, 1422, 0, 91114);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div7, anchor);
@@ -31692,7 +31692,7 @@ var app = (function () {
   			div = element("div");
   			if_block.c();
   			attr_dev(div, "class", "center");
-  			add_location(div, file$f, 1420, 0, 91060);
+  			add_location(div, file$f, 1420, 0, 91061);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -31772,7 +31772,7 @@ var app = (function () {
   		COORDS = `lat=${latitude}&lon=${longitude}`;
   		console.log(COORDS);
 
-  		axios$1.get(`http://api.openweathermap.org/data/2.5/weather?${COORDS}&appid=${KEY$c}&units=metric&lang=gl`).then(data => {
+  		axios$1.get(`https://api.openweathermap.org/data/2.5/weather?${COORDS}&appid=${KEY$c}&units=metric&lang=gl`).then(data => {
   			$$invalidate(3, datosPrincipal = data.data);
   			console.log(data.data);
   			$$invalidate(0, city = datosPrincipal.name);
@@ -36780,7 +36780,7 @@ var app = (function () {
   			div = element("div");
   			create_component(pulse.$$.fragment);
   			attr_dev(div, "class", "loading center");
-  			add_location(div, file$j, 1451, 0, 91721);
+  			add_location(div, file$j, 1451, 0, 91722);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div, anchor);
@@ -36854,25 +36854,25 @@ var app = (function () {
   			div3 = element("div");
   			p2 = element("p");
   			t5 = text(/*descripcion*/ ctx[2]);
-  			add_location(p0, file$j, 1436, 20, 91291);
+  			add_location(p0, file$j, 1436, 20, 91292);
   			attr_dev(div0, "class", "col s12 location center");
-  			add_location(div0, file$j, 1435, 16, 91233);
-  			add_location(p1, file$j, 1439, 20, 91411);
+  			add_location(div0, file$j, 1435, 16, 91234);
+  			add_location(p1, file$j, 1439, 20, 91412);
   			attr_dev(div1, "class", "col s12 temperature-value center");
-  			add_location(div1, file$j, 1438, 16, 91344);
+  			add_location(div1, file$j, 1438, 16, 91345);
   			attr_dev(div2, "class", "weather-container");
-  			add_location(div2, file$j, 1434, 12, 91185);
-  			add_location(p2, file$j, 1444, 20, 91617);
+  			add_location(div2, file$j, 1434, 12, 91186);
+  			add_location(p2, file$j, 1444, 20, 91618);
   			attr_dev(div3, "class", "col s12 temperature-description center");
-  			add_location(div3, file$j, 1443, 16, 91544);
+  			add_location(div3, file$j, 1443, 16, 91545);
   			attr_dev(div4, "class", "weather-datos");
-  			add_location(div4, file$j, 1442, 12, 91500);
+  			add_location(div4, file$j, 1442, 12, 91501);
   			attr_dev(div5, "class", "row");
-  			add_location(div5, file$j, 1433, 8, 91155);
+  			add_location(div5, file$j, 1433, 8, 91156);
   			attr_dev(div6, "class", "container");
-  			add_location(div6, file$j, 1432, 4, 91123);
+  			add_location(div6, file$j, 1432, 4, 91124);
   			attr_dev(div7, "class", "white-text PanelPrincipal");
-  			add_location(div7, file$j, 1431, 0, 91079);
+  			add_location(div7, file$j, 1431, 0, 91080);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div7, anchor);
@@ -36937,7 +36937,7 @@ var app = (function () {
   			div = element("div");
   			if_block.c();
   			attr_dev(div, "class", "center");
-  			add_location(div, file$j, 1429, 0, 91026);
+  			add_location(div, file$j, 1429, 0, 91027);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -37017,7 +37017,7 @@ var app = (function () {
   		COORDS = `lat=${latitude}&lon=${longitude}`;
   		console.log(COORDS);
 
-  		axios$1.get(`http://api.openweathermap.org/data/2.5/weather?${COORDS}&appid=${KEY$g}&units=metric&lang=gl`).then(data => {
+  		axios$1.get(`https://api.openweathermap.org/data/2.5/weather?${COORDS}&appid=${KEY$g}&units=metric&lang=gl`).then(data => {
   			$$invalidate(3, datosPrincipal = data.data);
   			console.log(data.data);
   			$$invalidate(0, city = datosPrincipal.name);
@@ -41399,7 +41399,7 @@ var app = (function () {
   			img8 = element("img");
   			t32 = space();
   			p8 = element("p");
-  			p8.textContent = "Amancer";
+  			p8.textContent = "Amencer";
   			t34 = space();
   			div16 = element("div");
   			p9 = element("p");
@@ -41497,7 +41497,7 @@ var app = (function () {
   			add_location(div15, file$m, 163, 16, 5748);
   			if (img8.src !== (img8_src_value = "images/sunrise.png")) attr_dev(img8, "src", img8_src_value);
   			attr_dev(img8, "width", "20%");
-  			attr_dev(img8, "alt", "Amancer");
+  			attr_dev(img8, "alt", "Amencer");
   			add_location(img8, file$m, 175, 20, 6272);
   			attr_dev(p8, "class", "tit_icon");
   			add_location(p8, file$m, 176, 20, 6349);
@@ -41836,7 +41836,7 @@ var app = (function () {
   						$$invalidate(6, visibilidad = datosGlobal.current.visibility);
   						$$invalidate(7, uvi = datosGlobal.current.uvi);
 
-  						//Amancer e Solpor
+  						//Amencer e Solpor
   						let DatosSunrise = document.querySelector(".sunrise p");
 
   						let sunrise = [datosGlobal.current.sunrise];
@@ -42025,7 +42025,7 @@ var app = (function () {
   			div = element("div");
   			create_component(pulse.$$.fragment);
   			attr_dev(div, "class", "loading center");
-  			add_location(div, file$n, 1439, 0, 91710);
+  			add_location(div, file$n, 1439, 0, 91711);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div, anchor);
@@ -42099,25 +42099,25 @@ var app = (function () {
   			div3 = element("div");
   			p2 = element("p");
   			t5 = text(/*descripcion*/ ctx[2]);
-  			add_location(p0, file$n, 1424, 20, 91280);
+  			add_location(p0, file$n, 1424, 20, 91281);
   			attr_dev(div0, "class", "col s12 location center");
-  			add_location(div0, file$n, 1423, 16, 91222);
-  			add_location(p1, file$n, 1427, 20, 91400);
+  			add_location(div0, file$n, 1423, 16, 91223);
+  			add_location(p1, file$n, 1427, 20, 91401);
   			attr_dev(div1, "class", "col s12 temperature-value center");
-  			add_location(div1, file$n, 1426, 16, 91333);
+  			add_location(div1, file$n, 1426, 16, 91334);
   			attr_dev(div2, "class", "weather-container");
-  			add_location(div2, file$n, 1422, 12, 91174);
-  			add_location(p2, file$n, 1432, 20, 91606);
+  			add_location(div2, file$n, 1422, 12, 91175);
+  			add_location(p2, file$n, 1432, 20, 91607);
   			attr_dev(div3, "class", "col s12 temperature-description center");
-  			add_location(div3, file$n, 1431, 16, 91533);
+  			add_location(div3, file$n, 1431, 16, 91534);
   			attr_dev(div4, "class", "weather-datos");
-  			add_location(div4, file$n, 1430, 12, 91489);
+  			add_location(div4, file$n, 1430, 12, 91490);
   			attr_dev(div5, "class", "row");
-  			add_location(div5, file$n, 1421, 8, 91144);
+  			add_location(div5, file$n, 1421, 8, 91145);
   			attr_dev(div6, "class", "container");
-  			add_location(div6, file$n, 1420, 4, 91112);
+  			add_location(div6, file$n, 1420, 4, 91113);
   			attr_dev(div7, "class", "white-text PanelPrincipal");
-  			add_location(div7, file$n, 1419, 0, 91068);
+  			add_location(div7, file$n, 1419, 0, 91069);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div7, anchor);
@@ -42182,7 +42182,7 @@ var app = (function () {
   			div = element("div");
   			if_block.c();
   			attr_dev(div, "class", "center");
-  			add_location(div, file$n, 1417, 0, 91015);
+  			add_location(div, file$n, 1417, 0, 91016);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -42262,7 +42262,7 @@ var app = (function () {
   		COORDS = `lat=${latitude}&lon=${longitude}`;
   		console.log(COORDS);
 
-  		axios$1.get(`http://api.openweathermap.org/data/2.5/weather?${COORDS}&appid=${KEY$k}&units=metric&lang=gl`).then(data => {
+  		axios$1.get(`https://api.openweathermap.org/data/2.5/weather?${COORDS}&appid=${KEY$k}&units=metric&lang=gl`).then(data => {
   			$$invalidate(3, datosPrincipal = data.data);
   			console.log(data.data);
   			$$invalidate(0, city = datosPrincipal.name);
@@ -46644,7 +46644,7 @@ var app = (function () {
   			img8 = element("img");
   			t32 = space();
   			p8 = element("p");
-  			p8.textContent = "Amancer";
+  			p8.textContent = "Amencer";
   			t34 = space();
   			div16 = element("div");
   			p9 = element("p");
@@ -46742,7 +46742,7 @@ var app = (function () {
   			add_location(div15, file$q, 163, 16, 5749);
   			if (img8.src !== (img8_src_value = "images/sunrise.png")) attr_dev(img8, "src", img8_src_value);
   			attr_dev(img8, "width", "20%");
-  			attr_dev(img8, "alt", "Amancer");
+  			attr_dev(img8, "alt", "Amencer");
   			add_location(img8, file$q, 175, 20, 6273);
   			attr_dev(p8, "class", "tit_icon");
   			add_location(p8, file$q, 176, 20, 6350);
@@ -47081,7 +47081,7 @@ var app = (function () {
   						$$invalidate(6, visibilidad = datosGlobal.current.visibility);
   						$$invalidate(7, uvi = datosGlobal.current.uvi);
 
-  						//Amancer e Solpor
+  						//Amencer e Solpor
   						let DatosSunrise = document.querySelector(".sunrise p");
 
   						let sunrise = [datosGlobal.current.sunrise];
@@ -47270,7 +47270,7 @@ var app = (function () {
   			div = element("div");
   			create_component(pulse.$$.fragment);
   			attr_dev(div, "class", "loading center");
-  			add_location(div, file$r, 1451, 0, 91729);
+  			add_location(div, file$r, 1451, 0, 91730);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div, anchor);
@@ -47348,25 +47348,25 @@ var app = (function () {
   			div3 = element("div");
   			p2 = element("p");
   			t7 = text(/*descripcion*/ ctx[2]);
-  			add_location(p0, file$r, 1436, 20, 91292);
+  			add_location(p0, file$r, 1436, 20, 91293);
   			attr_dev(div0, "class", "col s12 location center");
-  			add_location(div0, file$r, 1435, 16, 91234);
-  			add_location(p1, file$r, 1439, 20, 91419);
+  			add_location(div0, file$r, 1435, 16, 91235);
+  			add_location(p1, file$r, 1439, 20, 91420);
   			attr_dev(div1, "class", "col s12 temperature-value center");
-  			add_location(div1, file$r, 1438, 16, 91352);
+  			add_location(div1, file$r, 1438, 16, 91353);
   			attr_dev(div2, "class", "weather-container");
-  			add_location(div2, file$r, 1434, 12, 91186);
-  			add_location(p2, file$r, 1444, 20, 91625);
+  			add_location(div2, file$r, 1434, 12, 91187);
+  			add_location(p2, file$r, 1444, 20, 91626);
   			attr_dev(div3, "class", "col s12 temperature-description center");
-  			add_location(div3, file$r, 1443, 16, 91552);
+  			add_location(div3, file$r, 1443, 16, 91553);
   			attr_dev(div4, "class", "weather-datos");
-  			add_location(div4, file$r, 1442, 12, 91508);
+  			add_location(div4, file$r, 1442, 12, 91509);
   			attr_dev(div5, "class", "row");
-  			add_location(div5, file$r, 1433, 8, 91156);
+  			add_location(div5, file$r, 1433, 8, 91157);
   			attr_dev(div6, "class", "container");
-  			add_location(div6, file$r, 1432, 4, 91124);
+  			add_location(div6, file$r, 1432, 4, 91125);
   			attr_dev(div7, "class", "white-text PanelPrincipal");
-  			add_location(div7, file$r, 1431, 0, 91080);
+  			add_location(div7, file$r, 1431, 0, 91081);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div7, anchor);
@@ -47433,7 +47433,7 @@ var app = (function () {
   			div = element("div");
   			if_block.c();
   			attr_dev(div, "class", "center");
-  			add_location(div, file$r, 1429, 0, 91027);
+  			add_location(div, file$r, 1429, 0, 91028);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -47513,7 +47513,7 @@ var app = (function () {
   		COORDS = `lat=${latitude}&lon=${longitude}`;
   		console.log(COORDS);
 
-  		axios$1.get(`http://api.openweathermap.org/data/2.5/weather?${COORDS}&appid=${KEY$o}&units=metric&lang=gl`).then(data => {
+  		axios$1.get(`https://api.openweathermap.org/data/2.5/weather?${COORDS}&appid=${KEY$o}&units=metric&lang=gl`).then(data => {
   			$$invalidate(3, datosPrincipal = data.data);
   			console.log(data.data);
   			$$invalidate(0, city = datosPrincipal.name);
@@ -51895,7 +51895,7 @@ var app = (function () {
   			img8 = element("img");
   			t32 = space();
   			p8 = element("p");
-  			p8.textContent = "Amancer";
+  			p8.textContent = "Amencer";
   			t34 = space();
   			div16 = element("div");
   			p9 = element("p");
@@ -51993,7 +51993,7 @@ var app = (function () {
   			add_location(div15, file$u, 163, 16, 5749);
   			if (img8.src !== (img8_src_value = "images/sunrise.png")) attr_dev(img8, "src", img8_src_value);
   			attr_dev(img8, "width", "20%");
-  			attr_dev(img8, "alt", "Amancer");
+  			attr_dev(img8, "alt", "Amencer");
   			add_location(img8, file$u, 175, 20, 6273);
   			attr_dev(p8, "class", "tit_icon");
   			add_location(p8, file$u, 176, 20, 6350);
@@ -52332,7 +52332,7 @@ var app = (function () {
   						$$invalidate(6, visibilidad = datosGlobal.current.visibility);
   						$$invalidate(7, uvi = datosGlobal.current.uvi);
 
-  						//Amancer e Solpor
+  						//Amencer e Solpor
   						let DatosSunrise = document.querySelector(".sunrise p");
 
   						let sunrise = [datosGlobal.current.sunrise];
@@ -53135,6 +53135,7 @@ var app = (function () {
           returnFocusOnDeactivate: false,
       });
   }
+  //# sourceMappingURL=util.js.map
 
   /*! *****************************************************************************
   Copyright (c) Microsoft Corporation.
@@ -53283,6 +53284,7 @@ var app = (function () {
       };
       return MDCFoundation;
   }());
+  //# sourceMappingURL=foundation.js.map
 
   /**
    * @license
@@ -53380,6 +53382,7 @@ var app = (function () {
       };
       return MDCComponent;
   }());
+  //# sourceMappingURL=component.js.map
 
   /**
    * @license
@@ -53426,6 +53429,7 @@ var app = (function () {
           || element.msMatchesSelector;
       return nativeMatches.call(element, selector);
   }
+  //# sourceMappingURL=ponyfill.js.map
 
   /**
    * @license
@@ -53476,6 +53480,7 @@ var app = (function () {
   var numbers = {
       UNSET_INDEX: -1,
   };
+  //# sourceMappingURL=constants.js.map
 
   /**
    * @license
@@ -53933,6 +53938,7 @@ var app = (function () {
       };
       return MDCListFoundation;
   }(MDCFoundation));
+  //# sourceMappingURL=foundation.js.map
 
   /**
    * @license
@@ -54181,6 +54187,7 @@ var app = (function () {
       };
       return MDCList;
   }(MDCComponent));
+  //# sourceMappingURL=component.js.map
 
   /**
    * @license
@@ -54219,6 +54226,7 @@ var app = (function () {
       OPEN_EVENT: 'MDCDrawer:opened',
       SCRIM_SELECTOR: '.mdc-drawer-scrim',
   };
+  //# sourceMappingURL=constants.js.map
 
   /**
    * @license
@@ -54400,6 +54408,7 @@ var app = (function () {
       };
       return MDCDismissibleDrawerFoundation;
   }(MDCFoundation));
+  //# sourceMappingURL=foundation.js.map
 
   /**
    * @license
@@ -54449,6 +54458,7 @@ var app = (function () {
       };
       return MDCModalDrawerFoundation;
   }(MDCDismissibleDrawerFoundation));
+  //# sourceMappingURL=foundation.js.map
 
   /**
    * @license
@@ -54594,6 +54604,7 @@ var app = (function () {
       };
       return MDCDrawer;
   }(MDCComponent));
+  //# sourceMappingURL=component.js.map
 
   function forwardEventsBuilder(component, additionalEvents = []) {
     const events = [
@@ -55762,7 +55773,7 @@ var app = (function () {
   	}
   }
 
-  var Subtitle = classAdderBuilder({
+  classAdderBuilder({
     class: 'mdc-drawer__subtitle',
     component: H2,
     contexts: {}
@@ -56149,6 +56160,7 @@ var app = (function () {
       }
       return { x: normalizedX, y: normalizedY };
   }
+  //# sourceMappingURL=util.js.map
 
   /**
    * @license
@@ -56200,6 +56212,7 @@ var app = (function () {
       }
       return supportsPassive_ ? { passive: true } : false;
   }
+  //# sourceMappingURL=events.js.map
 
   /**
    * @license
@@ -56248,6 +56261,7 @@ var app = (function () {
       PADDING: 10,
       TAP_DELAY_MS: 300,
   };
+  //# sourceMappingURL=constants.js.map
 
   /**
    * @license
@@ -56702,6 +56716,7 @@ var app = (function () {
       };
       return MDCRippleFoundation;
   }(MDCFoundation));
+  //# sourceMappingURL=foundation.js.map
 
   /**
    * @license
@@ -56807,6 +56822,7 @@ var app = (function () {
       };
       return MDCRipple;
   }(MDCComponent));
+  //# sourceMappingURL=component.js.map
 
   function Ripple(node, props = {ripple: false, unbounded: false, color: null, classForward: () => {}}) {
     let instance = null;
@@ -59269,13 +59285,13 @@ var app = (function () {
     contexts: {}
   });
 
-  var PrimaryText = classAdderBuilder({
+  classAdderBuilder({
     class: 'mdc-list-item__primary-text',
     component: Span,
     contexts: {}
   });
 
-  var SecondaryText = classAdderBuilder({
+  classAdderBuilder({
     class: 'mdc-list-item__secondary-text',
     component: Span,
     contexts: {}
@@ -59914,8 +59930,8 @@ var app = (function () {
 
   const file$J = "src/Componentes/Panelprincipal.svelte";
 
-  // (191:8) <Title class="center" >
-  function create_default_slot_40(ctx) {
+  // (193:8) <Title class="center" >
+  function create_default_slot_34(ctx) {
   	let t0;
   	let br;
   	let p;
@@ -59926,12 +59942,12 @@ var app = (function () {
   			br = element("br");
   			p = element("p");
   			p.textContent = "O tempo de Galicia";
-  			add_location(br, file$J, 190, 45, 5421);
+  			add_location(br, file$J, 192, 45, 5389);
   			set_style(p, "padding-bottom", "20px");
   			set_style(p, "color", "#333");
   			set_style(p, "font-size", "13px");
   			set_style(p, "font-weight", "300");
-  			add_location(p, file$J, 190, 49, 5425);
+  			add_location(p, file$J, 192, 49, 5393);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, t0, anchor);
@@ -59947,17 +59963,17 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_default_slot_40.name,
+  		id: create_default_slot_34.name,
   		type: "slot",
-  		source: "(191:8) <Title class=\\\"center\\\" >",
+  		source: "(193:8) <Title class=\\\"center\\\" >",
   		ctx
   	});
 
   	return block;
   }
 
-  // (187:6) <Header class="center" >
-  function create_default_slot_39(ctx) {
+  // (189:6) <Header class="center" >
+  function create_default_slot_33(ctx) {
   	let div;
   	let img;
   	let img_src_value;
@@ -59968,7 +59984,7 @@ var app = (function () {
   	title = new Title({
   			props: {
   				class: "center",
-  				$$slots: { default: [create_default_slot_40] },
+  				$$slots: { default: [create_default_slot_34] },
   				$$scope: { ctx }
   			},
   			$$inline: true
@@ -59984,9 +60000,9 @@ var app = (function () {
   			if (img.src !== (img_src_value = "/images/GaliciaWeather.gif")) attr_dev(img, "src", img_src_value);
   			attr_dev(img, "alt", "");
   			attr_dev(img, "width", "50%");
-  			add_location(img, file$J, 188, 10, 5288);
+  			add_location(img, file$J, 190, 10, 5256);
   			attr_dev(div, "class", "GW_icon svelte-e9bmhu");
-  			add_location(div, file$J, 187, 8, 5256);
+  			add_location(div, file$J, 189, 8, 5224);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div, anchor);
@@ -60022,17 +60038,17 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_default_slot_39.name,
+  		id: create_default_slot_33.name,
   		type: "slot",
-  		source: "(187:6) <Header class=\\\"center\\\" >",
+  		source: "(189:6) <Header class=\\\"center\\\" >",
   		ctx
   	});
 
   	return block;
   }
 
-  // (196:12) <Text class="white-text">
-  function create_default_slot_38(ctx) {
+  // (198:12) <Text class="white-text">
+  function create_default_slot_32(ctx) {
   	let p;
 
   	const block = {
@@ -60041,7 +60057,7 @@ var app = (function () {
   			p.textContent = "Escolle unha cidade:";
   			set_style(p, "font-size", "14px");
   			set_style(p, "font-weight", "600");
-  			add_location(p, file$J, 196, 14, 5668);
+  			add_location(p, file$J, 198, 14, 5636);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, p, anchor);
@@ -60053,24 +60069,24 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_default_slot_38.name,
+  		id: create_default_slot_32.name,
   		type: "slot",
-  		source: "(196:12) <Text class=\\\"white-text\\\">",
+  		source: "(198:12) <Text class=\\\"white-text\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (195:10) <Item>
-  function create_default_slot_37(ctx) {
+  // (197:10) <Item>
+  function create_default_slot_31(ctx) {
   	let text_1;
   	let current;
 
   	text_1 = new Text({
   			props: {
   				class: "white-text",
-  				$$slots: { default: [create_default_slot_38] },
+  				$$slots: { default: [create_default_slot_32] },
   				$$scope: { ctx }
   			},
   			$$inline: true
@@ -60109,17 +60125,17 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_default_slot_37.name,
+  		id: create_default_slot_31.name,
   		type: "slot",
-  		source: "(195:10) <Item>",
+  		source: "(197:10) <Item>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (201:12) <Graphic class="material-icons" aria-hidden="true">
-  function create_default_slot_36(ctx) {
+  // (203:12) <Graphic class="material-icons" aria-hidden="true">
+  function create_default_slot_30(ctx) {
   	let t;
 
   	const block = {
@@ -60136,17 +60152,17 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_default_slot_36.name,
+  		id: create_default_slot_30.name,
   		type: "slot",
-  		source: "(201:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(203:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (202:11) <Text>
-  function create_default_slot_35(ctx) {
+  // (204:11) <Text>
+  function create_default_slot_29(ctx) {
   	let t;
 
   	const block = {
@@ -60163,288 +60179,16 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_default_slot_35.name,
-  		type: "slot",
-  		source: "(202:11) <Text>",
-  		ctx
-  	});
-
-  	return block;
-  }
-
-  // (200:10) <Item href="javascript:void(0)" on:click={() => fondoUbicacionGPS = true}>
-  function create_default_slot_34(ctx) {
-  	let graphic;
-  	let t;
-  	let text_1;
-  	let current;
-
-  	graphic = new Graphic({
-  			props: {
-  				class: "material-icons",
-  				"aria-hidden": "true",
-  				$$slots: { default: [create_default_slot_36] },
-  				$$scope: { ctx }
-  			},
-  			$$inline: true
-  		});
-
-  	text_1 = new Text({
-  			props: {
-  				$$slots: { default: [create_default_slot_35] },
-  				$$scope: { ctx }
-  			},
-  			$$inline: true
-  		});
-
-  	const block = {
-  		c: function create() {
-  			create_component(graphic.$$.fragment);
-  			t = space();
-  			create_component(text_1.$$.fragment);
-  		},
-  		m: function mount(target, anchor) {
-  			mount_component(graphic, target, anchor);
-  			insert_dev(target, t, anchor);
-  			mount_component(text_1, target, anchor);
-  			current = true;
-  		},
-  		p: function update(ctx, dirty) {
-  			const graphic_changes = {};
-
-  			if (dirty & /*$$scope*/ 1048576) {
-  				graphic_changes.$$scope = { dirty, ctx };
-  			}
-
-  			graphic.$set(graphic_changes);
-  			const text_1_changes = {};
-
-  			if (dirty & /*$$scope*/ 1048576) {
-  				text_1_changes.$$scope = { dirty, ctx };
-  			}
-
-  			text_1.$set(text_1_changes);
-  		},
-  		i: function intro(local) {
-  			if (current) return;
-  			transition_in(graphic.$$.fragment, local);
-  			transition_in(text_1.$$.fragment, local);
-  			current = true;
-  		},
-  		o: function outro(local) {
-  			transition_out(graphic.$$.fragment, local);
-  			transition_out(text_1.$$.fragment, local);
-  			current = false;
-  		},
-  		d: function destroy(detaching) {
-  			destroy_component(graphic, detaching);
-  			if (detaching) detach_dev(t);
-  			destroy_component(text_1, detaching);
-  		}
-  	};
-
-  	dispatch_dev("SvelteRegisterBlock", {
-  		block,
-  		id: create_default_slot_34.name,
-  		type: "slot",
-  		source: "(200:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoUbicacionGPS = true}>",
-  		ctx
-  	});
-
-  	return block;
-  }
-
-  // (207:12) <Graphic class="material-icons" aria-hidden="true">
-  function create_default_slot_33(ctx) {
-  	let t;
-
-  	const block = {
-  		c: function create() {
-  			t = text("location_city");
-  		},
-  		m: function mount(target, anchor) {
-  			insert_dev(target, t, anchor);
-  		},
-  		d: function destroy(detaching) {
-  			if (detaching) detach_dev(t);
-  		}
-  	};
-
-  	dispatch_dev("SvelteRegisterBlock", {
-  		block,
-  		id: create_default_slot_33.name,
-  		type: "slot",
-  		source: "(207:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
-  		ctx
-  	});
-
-  	return block;
-  }
-
-  // (208:12) <Text>
-  function create_default_slot_32(ctx) {
-  	let t;
-
-  	const block = {
-  		c: function create() {
-  			t = text("Santiago de Compostela");
-  		},
-  		m: function mount(target, anchor) {
-  			insert_dev(target, t, anchor);
-  		},
-  		d: function destroy(detaching) {
-  			if (detaching) detach_dev(t);
-  		}
-  	};
-
-  	dispatch_dev("SvelteRegisterBlock", {
-  		block,
-  		id: create_default_slot_32.name,
-  		type: "slot",
-  		source: "(208:12) <Text>",
-  		ctx
-  	});
-
-  	return block;
-  }
-
-  // (206:10) <Item href="javascript:void(0)" on:click={() => fondoSantiago = true}>
-  function create_default_slot_31(ctx) {
-  	let graphic;
-  	let t;
-  	let text_1;
-  	let current;
-
-  	graphic = new Graphic({
-  			props: {
-  				class: "material-icons",
-  				"aria-hidden": "true",
-  				$$slots: { default: [create_default_slot_33] },
-  				$$scope: { ctx }
-  			},
-  			$$inline: true
-  		});
-
-  	text_1 = new Text({
-  			props: {
-  				$$slots: { default: [create_default_slot_32] },
-  				$$scope: { ctx }
-  			},
-  			$$inline: true
-  		});
-
-  	const block = {
-  		c: function create() {
-  			create_component(graphic.$$.fragment);
-  			t = space();
-  			create_component(text_1.$$.fragment);
-  		},
-  		m: function mount(target, anchor) {
-  			mount_component(graphic, target, anchor);
-  			insert_dev(target, t, anchor);
-  			mount_component(text_1, target, anchor);
-  			current = true;
-  		},
-  		p: function update(ctx, dirty) {
-  			const graphic_changes = {};
-
-  			if (dirty & /*$$scope*/ 1048576) {
-  				graphic_changes.$$scope = { dirty, ctx };
-  			}
-
-  			graphic.$set(graphic_changes);
-  			const text_1_changes = {};
-
-  			if (dirty & /*$$scope*/ 1048576) {
-  				text_1_changes.$$scope = { dirty, ctx };
-  			}
-
-  			text_1.$set(text_1_changes);
-  		},
-  		i: function intro(local) {
-  			if (current) return;
-  			transition_in(graphic.$$.fragment, local);
-  			transition_in(text_1.$$.fragment, local);
-  			current = true;
-  		},
-  		o: function outro(local) {
-  			transition_out(graphic.$$.fragment, local);
-  			transition_out(text_1.$$.fragment, local);
-  			current = false;
-  		},
-  		d: function destroy(detaching) {
-  			destroy_component(graphic, detaching);
-  			if (detaching) detach_dev(t);
-  			destroy_component(text_1, detaching);
-  		}
-  	};
-
-  	dispatch_dev("SvelteRegisterBlock", {
-  		block,
-  		id: create_default_slot_31.name,
-  		type: "slot",
-  		source: "(206:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoSantiago = true}>",
-  		ctx
-  	});
-
-  	return block;
-  }
-
-  // (213:12) <Graphic class="material-icons" aria-hidden="true">
-  function create_default_slot_30(ctx) {
-  	let t;
-
-  	const block = {
-  		c: function create() {
-  			t = text("location_city");
-  		},
-  		m: function mount(target, anchor) {
-  			insert_dev(target, t, anchor);
-  		},
-  		d: function destroy(detaching) {
-  			if (detaching) detach_dev(t);
-  		}
-  	};
-
-  	dispatch_dev("SvelteRegisterBlock", {
-  		block,
-  		id: create_default_slot_30.name,
-  		type: "slot",
-  		source: "(213:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
-  		ctx
-  	});
-
-  	return block;
-  }
-
-  // (214:12) <Text>
-  function create_default_slot_29(ctx) {
-  	let t;
-
-  	const block = {
-  		c: function create() {
-  			t = text("Vigo");
-  		},
-  		m: function mount(target, anchor) {
-  			insert_dev(target, t, anchor);
-  		},
-  		d: function destroy(detaching) {
-  			if (detaching) detach_dev(t);
-  		}
-  	};
-
-  	dispatch_dev("SvelteRegisterBlock", {
-  		block,
   		id: create_default_slot_29.name,
   		type: "slot",
-  		source: "(214:12) <Text>",
+  		source: "(204:11) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (212:10) <Item href="javascript:void(0)" on:click={() => fondoSireno = true}>
+  // (202:10) <Item href="javascript:void(0)" on:click={() => fondoUbicacionGPS = true}>
   function create_default_slot_28(ctx) {
   	let graphic;
   	let t;
@@ -60519,14 +60263,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_28.name,
   		type: "slot",
-  		source: "(212:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoSireno = true}>",
+  		source: "(202:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoUbicacionGPS = true}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (219:12) <Graphic class="material-icons" aria-hidden="true">
+  // (209:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_27(ctx) {
   	let t;
 
@@ -60546,20 +60290,20 @@ var app = (function () {
   		block,
   		id: create_default_slot_27.name,
   		type: "slot",
-  		source: "(219:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(209:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (220:12) <Text>
+  // (210:12) <Text>
   function create_default_slot_26(ctx) {
   	let t;
 
   	const block = {
   		c: function create() {
-  			t = text("A Coruña");
+  			t = text("Santiago de Compostela");
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, t, anchor);
@@ -60573,14 +60317,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_26.name,
   		type: "slot",
-  		source: "(220:12) <Text>",
+  		source: "(210:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (218:10) <Item href="javascript:void(0)" on:click={() => fondoCoruna = true}>
+  // (208:10) <Item href="javascript:void(0)" on:click={() => fondoSantiago = true}>
   function create_default_slot_25(ctx) {
   	let graphic;
   	let t;
@@ -60655,14 +60399,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_25.name,
   		type: "slot",
-  		source: "(218:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoCoruna = true}>",
+  		source: "(208:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoSantiago = true}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (225:12) <Graphic class="material-icons" aria-hidden="true">
+  // (215:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_24(ctx) {
   	let t;
 
@@ -60682,20 +60426,20 @@ var app = (function () {
   		block,
   		id: create_default_slot_24.name,
   		type: "slot",
-  		source: "(225:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(215:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (226:12) <Text>
+  // (216:12) <Text>
   function create_default_slot_23(ctx) {
   	let t;
 
   	const block = {
   		c: function create() {
-  			t = text("Pontevedra");
+  			t = text("Vigo");
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, t, anchor);
@@ -60709,14 +60453,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_23.name,
   		type: "slot",
-  		source: "(226:12) <Text>",
+  		source: "(216:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (224:10) <Item href="javascript:void(0)" on:click={() => fondoPontevedra = true}>
+  // (214:10) <Item href="javascript:void(0)" on:click={() => fondoSireno = true}>
   function create_default_slot_22(ctx) {
   	let graphic;
   	let t;
@@ -60791,14 +60535,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_22.name,
   		type: "slot",
-  		source: "(224:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoPontevedra = true}>",
+  		source: "(214:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoSireno = true}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (231:12) <Graphic class="material-icons" aria-hidden="true">
+  // (221:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_21(ctx) {
   	let t;
 
@@ -60818,20 +60562,20 @@ var app = (function () {
   		block,
   		id: create_default_slot_21.name,
   		type: "slot",
-  		source: "(231:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(221:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (232:12) <Text>
+  // (222:12) <Text>
   function create_default_slot_20(ctx) {
   	let t;
 
   	const block = {
   		c: function create() {
-  			t = text("Ourense");
+  			t = text("A Coruña");
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, t, anchor);
@@ -60845,14 +60589,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_20.name,
   		type: "slot",
-  		source: "(232:12) <Text>",
+  		source: "(222:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (230:10) <Item href="javascript:void(0)" on:click={() => fondoOurense = true}>
+  // (220:10) <Item href="javascript:void(0)" on:click={() => fondoCoruna = true}>
   function create_default_slot_19(ctx) {
   	let graphic;
   	let t;
@@ -60927,14 +60671,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_19.name,
   		type: "slot",
-  		source: "(230:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoOurense = true}>",
+  		source: "(220:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoCoruna = true}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (237:12) <Graphic class="material-icons" aria-hidden="true">
+  // (227:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_18(ctx) {
   	let t;
 
@@ -60954,20 +60698,20 @@ var app = (function () {
   		block,
   		id: create_default_slot_18.name,
   		type: "slot",
-  		source: "(237:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(227:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (238:12) <Text>
+  // (228:12) <Text>
   function create_default_slot_17(ctx) {
   	let t;
 
   	const block = {
   		c: function create() {
-  			t = text("Lugo");
+  			t = text("Pontevedra");
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, t, anchor);
@@ -60981,14 +60725,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_17.name,
   		type: "slot",
-  		source: "(238:12) <Text>",
+  		source: "(228:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (236:10) <Item href="javascript:void(0)" on:click={() => fondoLugo = true}>
+  // (226:10) <Item href="javascript:void(0)" on:click={() => fondoPontevedra = true}>
   function create_default_slot_16(ctx) {
   	let graphic;
   	let t;
@@ -61063,15 +60807,287 @@ var app = (function () {
   		block,
   		id: create_default_slot_16.name,
   		type: "slot",
-  		source: "(236:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoLugo = true}>",
+  		source: "(226:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoPontevedra = true}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (243:10) <Subheader component={H6}>
+  // (233:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_15(ctx) {
+  	let t;
+
+  	const block = {
+  		c: function create() {
+  			t = text("location_city");
+  		},
+  		m: function mount(target, anchor) {
+  			insert_dev(target, t, anchor);
+  		},
+  		d: function destroy(detaching) {
+  			if (detaching) detach_dev(t);
+  		}
+  	};
+
+  	dispatch_dev("SvelteRegisterBlock", {
+  		block,
+  		id: create_default_slot_15.name,
+  		type: "slot",
+  		source: "(233:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		ctx
+  	});
+
+  	return block;
+  }
+
+  // (234:12) <Text>
+  function create_default_slot_14(ctx) {
+  	let t;
+
+  	const block = {
+  		c: function create() {
+  			t = text("Ourense");
+  		},
+  		m: function mount(target, anchor) {
+  			insert_dev(target, t, anchor);
+  		},
+  		d: function destroy(detaching) {
+  			if (detaching) detach_dev(t);
+  		}
+  	};
+
+  	dispatch_dev("SvelteRegisterBlock", {
+  		block,
+  		id: create_default_slot_14.name,
+  		type: "slot",
+  		source: "(234:12) <Text>",
+  		ctx
+  	});
+
+  	return block;
+  }
+
+  // (232:10) <Item href="javascript:void(0)" on:click={() => fondoOurense = true}>
+  function create_default_slot_13(ctx) {
+  	let graphic;
+  	let t;
+  	let text_1;
+  	let current;
+
+  	graphic = new Graphic({
+  			props: {
+  				class: "material-icons",
+  				"aria-hidden": "true",
+  				$$slots: { default: [create_default_slot_15] },
+  				$$scope: { ctx }
+  			},
+  			$$inline: true
+  		});
+
+  	text_1 = new Text({
+  			props: {
+  				$$slots: { default: [create_default_slot_14] },
+  				$$scope: { ctx }
+  			},
+  			$$inline: true
+  		});
+
+  	const block = {
+  		c: function create() {
+  			create_component(graphic.$$.fragment);
+  			t = space();
+  			create_component(text_1.$$.fragment);
+  		},
+  		m: function mount(target, anchor) {
+  			mount_component(graphic, target, anchor);
+  			insert_dev(target, t, anchor);
+  			mount_component(text_1, target, anchor);
+  			current = true;
+  		},
+  		p: function update(ctx, dirty) {
+  			const graphic_changes = {};
+
+  			if (dirty & /*$$scope*/ 1048576) {
+  				graphic_changes.$$scope = { dirty, ctx };
+  			}
+
+  			graphic.$set(graphic_changes);
+  			const text_1_changes = {};
+
+  			if (dirty & /*$$scope*/ 1048576) {
+  				text_1_changes.$$scope = { dirty, ctx };
+  			}
+
+  			text_1.$set(text_1_changes);
+  		},
+  		i: function intro(local) {
+  			if (current) return;
+  			transition_in(graphic.$$.fragment, local);
+  			transition_in(text_1.$$.fragment, local);
+  			current = true;
+  		},
+  		o: function outro(local) {
+  			transition_out(graphic.$$.fragment, local);
+  			transition_out(text_1.$$.fragment, local);
+  			current = false;
+  		},
+  		d: function destroy(detaching) {
+  			destroy_component(graphic, detaching);
+  			if (detaching) detach_dev(t);
+  			destroy_component(text_1, detaching);
+  		}
+  	};
+
+  	dispatch_dev("SvelteRegisterBlock", {
+  		block,
+  		id: create_default_slot_13.name,
+  		type: "slot",
+  		source: "(232:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoOurense = true}>",
+  		ctx
+  	});
+
+  	return block;
+  }
+
+  // (239:12) <Graphic class="material-icons" aria-hidden="true">
+  function create_default_slot_12(ctx) {
+  	let t;
+
+  	const block = {
+  		c: function create() {
+  			t = text("location_city");
+  		},
+  		m: function mount(target, anchor) {
+  			insert_dev(target, t, anchor);
+  		},
+  		d: function destroy(detaching) {
+  			if (detaching) detach_dev(t);
+  		}
+  	};
+
+  	dispatch_dev("SvelteRegisterBlock", {
+  		block,
+  		id: create_default_slot_12.name,
+  		type: "slot",
+  		source: "(239:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		ctx
+  	});
+
+  	return block;
+  }
+
+  // (240:12) <Text>
+  function create_default_slot_11(ctx) {
+  	let t;
+
+  	const block = {
+  		c: function create() {
+  			t = text("Lugo");
+  		},
+  		m: function mount(target, anchor) {
+  			insert_dev(target, t, anchor);
+  		},
+  		d: function destroy(detaching) {
+  			if (detaching) detach_dev(t);
+  		}
+  	};
+
+  	dispatch_dev("SvelteRegisterBlock", {
+  		block,
+  		id: create_default_slot_11.name,
+  		type: "slot",
+  		source: "(240:12) <Text>",
+  		ctx
+  	});
+
+  	return block;
+  }
+
+  // (238:10) <Item href="javascript:void(0)" on:click={() => fondoLugo = true}>
+  function create_default_slot_10(ctx) {
+  	let graphic;
+  	let t;
+  	let text_1;
+  	let current;
+
+  	graphic = new Graphic({
+  			props: {
+  				class: "material-icons",
+  				"aria-hidden": "true",
+  				$$slots: { default: [create_default_slot_12] },
+  				$$scope: { ctx }
+  			},
+  			$$inline: true
+  		});
+
+  	text_1 = new Text({
+  			props: {
+  				$$slots: { default: [create_default_slot_11] },
+  				$$scope: { ctx }
+  			},
+  			$$inline: true
+  		});
+
+  	const block = {
+  		c: function create() {
+  			create_component(graphic.$$.fragment);
+  			t = space();
+  			create_component(text_1.$$.fragment);
+  		},
+  		m: function mount(target, anchor) {
+  			mount_component(graphic, target, anchor);
+  			insert_dev(target, t, anchor);
+  			mount_component(text_1, target, anchor);
+  			current = true;
+  		},
+  		p: function update(ctx, dirty) {
+  			const graphic_changes = {};
+
+  			if (dirty & /*$$scope*/ 1048576) {
+  				graphic_changes.$$scope = { dirty, ctx };
+  			}
+
+  			graphic.$set(graphic_changes);
+  			const text_1_changes = {};
+
+  			if (dirty & /*$$scope*/ 1048576) {
+  				text_1_changes.$$scope = { dirty, ctx };
+  			}
+
+  			text_1.$set(text_1_changes);
+  		},
+  		i: function intro(local) {
+  			if (current) return;
+  			transition_in(graphic.$$.fragment, local);
+  			transition_in(text_1.$$.fragment, local);
+  			current = true;
+  		},
+  		o: function outro(local) {
+  			transition_out(graphic.$$.fragment, local);
+  			transition_out(text_1.$$.fragment, local);
+  			current = false;
+  		},
+  		d: function destroy(detaching) {
+  			destroy_component(graphic, detaching);
+  			if (detaching) detach_dev(t);
+  			destroy_component(text_1, detaching);
+  		}
+  	};
+
+  	dispatch_dev("SvelteRegisterBlock", {
+  		block,
+  		id: create_default_slot_10.name,
+  		type: "slot",
+  		source: "(238:10) <Item href=\\\"javascript:void(0)\\\" on:click={() => fondoLugo = true}>",
+  		ctx
+  	});
+
+  	return block;
+  }
+
+  // (245:10) <Subheader component={H6}>
+  function create_default_slot_9(ctx) {
   	let t;
 
   	const block = {
@@ -61088,296 +61104,16 @@ var app = (function () {
 
   	dispatch_dev("SvelteRegisterBlock", {
   		block,
-  		id: create_default_slot_15.name,
-  		type: "slot",
-  		source: "(243:10) <Subheader component={H6}>",
-  		ctx
-  	});
-
-  	return block;
-  }
-
-  // (245:12) <Graphic class="material-icons" aria-hidden="true">
-  function create_default_slot_14(ctx) {
-  	let t;
-
-  	const block = {
-  		c: function create() {
-  			t = text("share");
-  		},
-  		m: function mount(target, anchor) {
-  			insert_dev(target, t, anchor);
-  		},
-  		d: function destroy(detaching) {
-  			if (detaching) detach_dev(t);
-  		}
-  	};
-
-  	dispatch_dev("SvelteRegisterBlock", {
-  		block,
-  		id: create_default_slot_14.name,
-  		type: "slot",
-  		source: "(245:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
-  		ctx
-  	});
-
-  	return block;
-  }
-
-  // (246:12) <Text>
-  function create_default_slot_13(ctx) {
-  	let a;
-
-  	const block = {
-  		c: function create() {
-  			a = element("a");
-  			a.textContent = "Compartir";
-  			attr_dev(a, "class", "black-text");
-  			attr_dev(a, "href", "");
-  			add_location(a, file$J, 245, 18, 7722);
-  		},
-  		m: function mount(target, anchor) {
-  			insert_dev(target, a, anchor);
-  		},
-  		d: function destroy(detaching) {
-  			if (detaching) detach_dev(a);
-  		}
-  	};
-
-  	dispatch_dev("SvelteRegisterBlock", {
-  		block,
-  		id: create_default_slot_13.name,
-  		type: "slot",
-  		source: "(246:12) <Text>",
-  		ctx
-  	});
-
-  	return block;
-  }
-
-  // (244:10) <Item href="">
-  function create_default_slot_12(ctx) {
-  	let graphic;
-  	let t;
-  	let text_1;
-  	let current;
-
-  	graphic = new Graphic({
-  			props: {
-  				class: "material-icons",
-  				"aria-hidden": "true",
-  				$$slots: { default: [create_default_slot_14] },
-  				$$scope: { ctx }
-  			},
-  			$$inline: true
-  		});
-
-  	text_1 = new Text({
-  			props: {
-  				$$slots: { default: [create_default_slot_13] },
-  				$$scope: { ctx }
-  			},
-  			$$inline: true
-  		});
-
-  	const block = {
-  		c: function create() {
-  			create_component(graphic.$$.fragment);
-  			t = space();
-  			create_component(text_1.$$.fragment);
-  		},
-  		m: function mount(target, anchor) {
-  			mount_component(graphic, target, anchor);
-  			insert_dev(target, t, anchor);
-  			mount_component(text_1, target, anchor);
-  			current = true;
-  		},
-  		p: function update(ctx, dirty) {
-  			const graphic_changes = {};
-
-  			if (dirty & /*$$scope*/ 1048576) {
-  				graphic_changes.$$scope = { dirty, ctx };
-  			}
-
-  			graphic.$set(graphic_changes);
-  			const text_1_changes = {};
-
-  			if (dirty & /*$$scope*/ 1048576) {
-  				text_1_changes.$$scope = { dirty, ctx };
-  			}
-
-  			text_1.$set(text_1_changes);
-  		},
-  		i: function intro(local) {
-  			if (current) return;
-  			transition_in(graphic.$$.fragment, local);
-  			transition_in(text_1.$$.fragment, local);
-  			current = true;
-  		},
-  		o: function outro(local) {
-  			transition_out(graphic.$$.fragment, local);
-  			transition_out(text_1.$$.fragment, local);
-  			current = false;
-  		},
-  		d: function destroy(detaching) {
-  			destroy_component(graphic, detaching);
-  			if (detaching) detach_dev(t);
-  			destroy_component(text_1, detaching);
-  		}
-  	};
-
-  	dispatch_dev("SvelteRegisterBlock", {
-  		block,
-  		id: create_default_slot_12.name,
-  		type: "slot",
-  		source: "(244:10) <Item href=\\\"\\\">",
-  		ctx
-  	});
-
-  	return block;
-  }
-
-  // (249:12) <Graphic class="material-icons" aria-hidden="true">
-  function create_default_slot_11(ctx) {
-  	let t;
-
-  	const block = {
-  		c: function create() {
-  			t = text("star");
-  		},
-  		m: function mount(target, anchor) {
-  			insert_dev(target, t, anchor);
-  		},
-  		d: function destroy(detaching) {
-  			if (detaching) detach_dev(t);
-  		}
-  	};
-
-  	dispatch_dev("SvelteRegisterBlock", {
-  		block,
-  		id: create_default_slot_11.name,
-  		type: "slot",
-  		source: "(249:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
-  		ctx
-  	});
-
-  	return block;
-  }
-
-  // (250:12) <Text>
-  function create_default_slot_10(ctx) {
-  	let a;
-
-  	const block = {
-  		c: function create() {
-  			a = element("a");
-  			a.textContent = "Valore a nosa aplicación";
-  			attr_dev(a, "class", "black-text");
-  			attr_dev(a, "href", "");
-  			add_location(a, file$J, 249, 18, 7913);
-  		},
-  		m: function mount(target, anchor) {
-  			insert_dev(target, a, anchor);
-  		},
-  		d: function destroy(detaching) {
-  			if (detaching) detach_dev(a);
-  		}
-  	};
-
-  	dispatch_dev("SvelteRegisterBlock", {
-  		block,
-  		id: create_default_slot_10.name,
-  		type: "slot",
-  		source: "(250:12) <Text>",
-  		ctx
-  	});
-
-  	return block;
-  }
-
-  // (248:10) <Item href="">
-  function create_default_slot_9(ctx) {
-  	let graphic;
-  	let t;
-  	let text_1;
-  	let current;
-
-  	graphic = new Graphic({
-  			props: {
-  				class: "material-icons",
-  				"aria-hidden": "true",
-  				$$slots: { default: [create_default_slot_11] },
-  				$$scope: { ctx }
-  			},
-  			$$inline: true
-  		});
-
-  	text_1 = new Text({
-  			props: {
-  				$$slots: { default: [create_default_slot_10] },
-  				$$scope: { ctx }
-  			},
-  			$$inline: true
-  		});
-
-  	const block = {
-  		c: function create() {
-  			create_component(graphic.$$.fragment);
-  			t = space();
-  			create_component(text_1.$$.fragment);
-  		},
-  		m: function mount(target, anchor) {
-  			mount_component(graphic, target, anchor);
-  			insert_dev(target, t, anchor);
-  			mount_component(text_1, target, anchor);
-  			current = true;
-  		},
-  		p: function update(ctx, dirty) {
-  			const graphic_changes = {};
-
-  			if (dirty & /*$$scope*/ 1048576) {
-  				graphic_changes.$$scope = { dirty, ctx };
-  			}
-
-  			graphic.$set(graphic_changes);
-  			const text_1_changes = {};
-
-  			if (dirty & /*$$scope*/ 1048576) {
-  				text_1_changes.$$scope = { dirty, ctx };
-  			}
-
-  			text_1.$set(text_1_changes);
-  		},
-  		i: function intro(local) {
-  			if (current) return;
-  			transition_in(graphic.$$.fragment, local);
-  			transition_in(text_1.$$.fragment, local);
-  			current = true;
-  		},
-  		o: function outro(local) {
-  			transition_out(graphic.$$.fragment, local);
-  			transition_out(text_1.$$.fragment, local);
-  			current = false;
-  		},
-  		d: function destroy(detaching) {
-  			destroy_component(graphic, detaching);
-  			if (detaching) detach_dev(t);
-  			destroy_component(text_1, detaching);
-  		}
-  	};
-
-  	dispatch_dev("SvelteRegisterBlock", {
-  		block,
   		id: create_default_slot_9.name,
   		type: "slot",
-  		source: "(248:10) <Item href=\\\"\\\">",
+  		source: "(245:10) <Subheader component={H6}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (253:12) <Graphic class="material-icons" aria-hidden="true">
+  // (258:12) <Graphic class="material-icons" aria-hidden="true">
   function create_default_slot_8(ctx) {
   	let t;
 
@@ -61397,14 +61133,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_8.name,
   		type: "slot",
-  		source: "(253:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
+  		source: "(258:12) <Graphic class=\\\"material-icons\\\" aria-hidden=\\\"true\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (254:12) <Text>
+  // (259:12) <Text>
   function create_default_slot_7(ctx) {
   	let a;
   	let link_action;
@@ -61417,7 +61153,7 @@ var app = (function () {
   			a.textContent = "Información";
   			attr_dev(a, "class", "black-text");
   			attr_dev(a, "href", "/Creditos");
-  			add_location(a, file$J, 253, 18, 8160);
+  			add_location(a, file$J, 258, 18, 8197);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, a, anchor);
@@ -61438,14 +61174,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_7.name,
   		type: "slot",
-  		source: "(254:12) <Text>",
+  		source: "(259:12) <Text>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (252:10) <Item href="/#/Creditos" on:click={() => link}>
+  // (257:10) <Item href="/#/Creditos" on:click={() => link}>
   function create_default_slot_6(ctx) {
   	let graphic;
   	let t;
@@ -61520,14 +61256,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_6.name,
   		type: "slot",
-  		source: "(252:10) <Item href=\\\"/#/Creditos\\\" on:click={() => link}>",
+  		source: "(257:10) <Item href=\\\"/#/Creditos\\\" on:click={() => link}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (194:8) <List class="grey darken-3">
+  // (196:8) <List class="grey darken-3">
   function create_default_slot_5(ctx) {
   	let item0;
   	let t0;
@@ -61550,15 +61286,11 @@ var app = (function () {
   	let subheader;
   	let t9;
   	let item8;
-  	let t10;
-  	let item9;
-  	let t11;
-  	let item10;
   	let current;
 
   	item0 = new Item({
   			props: {
-  				$$slots: { default: [create_default_slot_37] },
+  				$$slots: { default: [create_default_slot_31] },
   				$$scope: { ctx }
   			},
   			$$inline: true
@@ -61567,7 +61299,7 @@ var app = (function () {
   	item1 = new Item({
   			props: {
   				href: "javascript:void(0)",
-  				$$slots: { default: [create_default_slot_34] },
+  				$$slots: { default: [create_default_slot_28] },
   				$$scope: { ctx }
   			},
   			$$inline: true
@@ -61578,7 +61310,7 @@ var app = (function () {
   	item2 = new Item({
   			props: {
   				href: "javascript:void(0)",
-  				$$slots: { default: [create_default_slot_31] },
+  				$$slots: { default: [create_default_slot_25] },
   				$$scope: { ctx }
   			},
   			$$inline: true
@@ -61589,7 +61321,7 @@ var app = (function () {
   	item3 = new Item({
   			props: {
   				href: "javascript:void(0)",
-  				$$slots: { default: [create_default_slot_28] },
+  				$$slots: { default: [create_default_slot_22] },
   				$$scope: { ctx }
   			},
   			$$inline: true
@@ -61600,7 +61332,7 @@ var app = (function () {
   	item4 = new Item({
   			props: {
   				href: "javascript:void(0)",
-  				$$slots: { default: [create_default_slot_25] },
+  				$$slots: { default: [create_default_slot_19] },
   				$$scope: { ctx }
   			},
   			$$inline: true
@@ -61611,7 +61343,7 @@ var app = (function () {
   	item5 = new Item({
   			props: {
   				href: "javascript:void(0)",
-  				$$slots: { default: [create_default_slot_22] },
+  				$$slots: { default: [create_default_slot_16] },
   				$$scope: { ctx }
   			},
   			$$inline: true
@@ -61622,7 +61354,7 @@ var app = (function () {
   	item6 = new Item({
   			props: {
   				href: "javascript:void(0)",
-  				$$slots: { default: [create_default_slot_19] },
+  				$$slots: { default: [create_default_slot_13] },
   				$$scope: { ctx }
   			},
   			$$inline: true
@@ -61633,7 +61365,7 @@ var app = (function () {
   	item7 = new Item({
   			props: {
   				href: "javascript:void(0)",
-  				$$slots: { default: [create_default_slot_16] },
+  				$$slots: { default: [create_default_slot_10] },
   				$$scope: { ctx }
   			},
   			$$inline: true
@@ -61645,31 +61377,13 @@ var app = (function () {
   	subheader = new Subheader({
   			props: {
   				component: H6,
-  				$$slots: { default: [create_default_slot_15] },
-  				$$scope: { ctx }
-  			},
-  			$$inline: true
-  		});
-
-  	item8 = new Item({
-  			props: {
-  				href: "",
-  				$$slots: { default: [create_default_slot_12] },
-  				$$scope: { ctx }
-  			},
-  			$$inline: true
-  		});
-
-  	item9 = new Item({
-  			props: {
-  				href: "",
   				$$slots: { default: [create_default_slot_9] },
   				$$scope: { ctx }
   			},
   			$$inline: true
   		});
 
-  	item10 = new Item({
+  	item8 = new Item({
   			props: {
   				href: "/#/Creditos",
   				$$slots: { default: [create_default_slot_6] },
@@ -61678,7 +61392,7 @@ var app = (function () {
   			$$inline: true
   		});
 
-  	item10.$on("click", /*click_handler_7*/ ctx[16]);
+  	item8.$on("click", /*click_handler_7*/ ctx[16]);
 
   	const block = {
   		c: function create() {
@@ -61703,10 +61417,6 @@ var app = (function () {
   			create_component(subheader.$$.fragment);
   			t9 = space();
   			create_component(item8.$$.fragment);
-  			t10 = space();
-  			create_component(item9.$$.fragment);
-  			t11 = space();
-  			create_component(item10.$$.fragment);
   		},
   		m: function mount(target, anchor) {
   			mount_component(item0, target, anchor);
@@ -61730,10 +61440,6 @@ var app = (function () {
   			mount_component(subheader, target, anchor);
   			insert_dev(target, t9, anchor);
   			mount_component(item8, target, anchor);
-  			insert_dev(target, t10, anchor);
-  			mount_component(item9, target, anchor);
-  			insert_dev(target, t11, anchor);
-  			mount_component(item10, target, anchor);
   			current = true;
   		},
   		p: function update(ctx, dirty) {
@@ -61807,20 +61513,6 @@ var app = (function () {
   			}
 
   			item8.$set(item8_changes);
-  			const item9_changes = {};
-
-  			if (dirty & /*$$scope*/ 1048576) {
-  				item9_changes.$$scope = { dirty, ctx };
-  			}
-
-  			item9.$set(item9_changes);
-  			const item10_changes = {};
-
-  			if (dirty & /*$$scope*/ 1048576) {
-  				item10_changes.$$scope = { dirty, ctx };
-  			}
-
-  			item10.$set(item10_changes);
   		},
   		i: function intro(local) {
   			if (current) return;
@@ -61835,8 +61527,6 @@ var app = (function () {
   			transition_in(separator.$$.fragment, local);
   			transition_in(subheader.$$.fragment, local);
   			transition_in(item8.$$.fragment, local);
-  			transition_in(item9.$$.fragment, local);
-  			transition_in(item10.$$.fragment, local);
   			current = true;
   		},
   		o: function outro(local) {
@@ -61851,8 +61541,6 @@ var app = (function () {
   			transition_out(separator.$$.fragment, local);
   			transition_out(subheader.$$.fragment, local);
   			transition_out(item8.$$.fragment, local);
-  			transition_out(item9.$$.fragment, local);
-  			transition_out(item10.$$.fragment, local);
   			current = false;
   		},
   		d: function destroy(detaching) {
@@ -61877,10 +61565,6 @@ var app = (function () {
   			destroy_component(subheader, detaching);
   			if (detaching) detach_dev(t9);
   			destroy_component(item8, detaching);
-  			if (detaching) detach_dev(t10);
-  			destroy_component(item9, detaching);
-  			if (detaching) detach_dev(t11);
-  			destroy_component(item10, detaching);
   		}
   	};
 
@@ -61888,14 +61572,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_5.name,
   		type: "slot",
-  		source: "(194:8) <List class=\\\"grey darken-3\\\">",
+  		source: "(196:8) <List class=\\\"grey darken-3\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (193:6) <Content>
+  // (195:6) <Content>
   function create_default_slot_4(ctx) {
   	let list;
   	let current;
@@ -61944,14 +61628,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_4.name,
   		type: "slot",
-  		source: "(193:6) <Content>",
+  		source: "(195:6) <Content>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (186:4) <Drawer variant="modal" bind:this={myDrawer2} bind:open={myDrawer2Open}>
+  // (188:4) <Drawer variant="modal" bind:this={myDrawer2} bind:open={myDrawer2Open}>
   function create_default_slot_3(ctx) {
   	let header;
   	let t;
@@ -61961,7 +61645,7 @@ var app = (function () {
   	header = new Header({
   			props: {
   				class: "center",
-  				$$slots: { default: [create_default_slot_39] },
+  				$$slots: { default: [create_default_slot_33] },
   				$$scope: { ctx }
   			},
   			$$inline: true
@@ -62025,14 +61709,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_3.name,
   		type: "slot",
-  		source: "(186:4) <Drawer variant=\\\"modal\\\" bind:this={myDrawer2} bind:open={myDrawer2Open}>",
+  		source: "(188:4) <Drawer variant=\\\"modal\\\" bind:this={myDrawer2} bind:open={myDrawer2Open}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (264:10) <Label>
+  // (269:10) <Label>
   function create_default_slot_2(ctx) {
   	let cidadesbtn;
   	let current;
@@ -62064,14 +61748,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_2.name,
   		type: "slot",
-  		source: "(264:10) <Label>",
+  		source: "(269:10) <Label>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (263:8) <Button on:click={() => myDrawer2Open = !myDrawer2Open}>
+  // (268:8) <Button on:click={() => myDrawer2Open = !myDrawer2Open}>
   function create_default_slot_1(ctx) {
   	let label;
   	let current;
@@ -62119,14 +61803,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_1.name,
   		type: "slot",
-  		source: "(263:8) <Button on:click={() => myDrawer2Open = !myDrawer2Open}>",
+  		source: "(268:8) <Button on:click={() => myDrawer2Open = !myDrawer2Open}>",
   		ctx
   	});
 
   	return block;
   }
 
-  // (261:4) <AppContent class="app-content">
+  // (266:4) <AppContent class="app-content">
   function create_default_slot$2(ctx) {
   	let main;
   	let button;
@@ -62155,11 +61839,11 @@ var app = (function () {
   			t1 = space();
   			div = element("div");
   			div.textContent = " ";
-  			add_location(br, file$J, 272, 8, 8698);
+  			add_location(br, file$J, 272, 8, 8571);
   			set_style(div, "height", "300px");
-  			add_location(div, file$J, 273, 8, 8713);
+  			add_location(div, file$J, 273, 8, 8586);
   			attr_dev(main, "class", "main-content");
-  			add_location(main, file$J, 261, 6, 8356);
+  			add_location(main, file$J, 266, 6, 8393);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, main, anchor);
@@ -62198,7 +61882,7 @@ var app = (function () {
   		block,
   		id: create_default_slot$2.name,
   		type: "slot",
-  		source: "(261:4) <AppContent class=\\\"app-content\\\">",
+  		source: "(266:4) <AppContent class=\\\"app-content\\\">",
   		ctx
   	});
 
@@ -62207,29 +61891,29 @@ var app = (function () {
 
   // (295:4) {:else}
   function create_else_block$b(ctx) {
-  	let ubicacionactual;
+  	let santiago;
   	let current;
-  	ubicacionactual = new UbicacionActual({ $$inline: true });
+  	santiago = new Santiago({ $$inline: true });
 
   	const block = {
   		c: function create() {
-  			create_component(ubicacionactual.$$.fragment);
+  			create_component(santiago.$$.fragment);
   		},
   		m: function mount(target, anchor) {
-  			mount_component(ubicacionactual, target, anchor);
+  			mount_component(santiago, target, anchor);
   			current = true;
   		},
   		i: function intro(local) {
   			if (current) return;
-  			transition_in(ubicacionactual.$$.fragment, local);
+  			transition_in(santiago.$$.fragment, local);
   			current = true;
   		},
   		o: function outro(local) {
-  			transition_out(ubicacionactual.$$.fragment, local);
+  			transition_out(santiago.$$.fragment, local);
   			current = false;
   		},
   		d: function destroy(detaching) {
-  			destroy_component(ubicacionactual, detaching);
+  			destroy_component(santiago, detaching);
   		}
   	};
 
@@ -62598,7 +62282,7 @@ var app = (function () {
   			if_block.c();
   			if_block_anchor = empty();
   			attr_dev(div, "class", "drawer-container");
-  			add_location(div, file$J, 184, 2, 5109);
+  			add_location(div, file$J, 186, 2, 5077);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -62759,7 +62443,6 @@ var app = (function () {
   		Content,
   		Header,
   		Title,
-  		Subtitle,
   		Scrim,
   		Button: Button_1,
   		Label,
@@ -62769,8 +62452,6 @@ var app = (function () {
   		Graphic,
   		Separator,
   		Subheader,
-  		PrimaryText,
-  		SecondaryText,
   		H6,
   		myDrawer2,
   		myDrawer2Open,
@@ -63090,6 +62771,7 @@ var app = (function () {
       [].forEach.call(els, function (el) { return tops.add(el.offsetTop); });
       return tops.size > 1;
   }
+  //# sourceMappingURL=util.js.map
 
   /**
    * @license
@@ -63145,6 +62827,7 @@ var app = (function () {
       DIALOG_ANIMATION_CLOSE_TIME_MS: 75,
       DIALOG_ANIMATION_OPEN_TIME_MS: 150,
   };
+  //# sourceMappingURL=constants.js.map
 
   /**
    * @license
@@ -63398,6 +63081,7 @@ var app = (function () {
       };
       return MDCDialogFoundation;
   }(MDCFoundation));
+  //# sourceMappingURL=foundation.js.map
 
   /**
    * @license
@@ -63575,6 +63259,7 @@ var app = (function () {
       };
       return MDCDialog;
   }(MDCComponent));
+  //# sourceMappingURL=component.js.map
 
   /* node_modules/@smui/dialog/Dialog.svelte generated by Svelte v3.25.0 */
   const file$L = "node_modules/@smui/dialog/Dialog.svelte";
@@ -64459,134 +64144,134 @@ var app = (function () {
   			p23 = element("p");
   			t75 = text(t75_value);
   			t76 = text("°C");
-  			add_location(p0, file$N, 161, 24, 6375);
-  			add_location(p1, file$N, 164, 28, 6471);
+  			add_location(p0, file$N, 159, 24, 6371);
+  			add_location(p1, file$N, 162, 28, 6467);
   			attr_dev(div0, "class", "tit-mes font-mes svelte-1ilbdsc");
-  			add_location(div0, file$N, 163, 24, 6412);
+  			add_location(div0, file$N, 161, 24, 6408);
   			attr_dev(div1, "class", "col s4 tit-diario");
-  			add_location(div1, file$N, 160, 20, 6319);
+  			add_location(div1, file$N, 158, 20, 6315);
   			if (img0.src !== (img0_src_value = "images/icons/" + /*DiconElementManana*/ ctx[2] + ".gif")) attr_dev(img0, "src", img0_src_value);
   			attr_dev(img0, "alt", "");
   			attr_dev(img0, "class", "svelte-1ilbdsc");
-  			add_location(img0, file$N, 168, 24, 6685);
+  			add_location(img0, file$N, 166, 24, 6681);
   			attr_dev(div2, "class", "col s4 weather-icon-manana  weather-icon center svelte-1ilbdsc");
-  			add_location(div2, file$N, 167, 20, 6599);
-  			add_location(p2, file$N, 171, 24, 6868);
+  			add_location(div2, file$N, 165, 20, 6595);
+  			add_location(p2, file$N, 169, 24, 6864);
   			attr_dev(div3, "class", "col s2 tempmaxD tempmax-manana temp_font svelte-1ilbdsc");
-  			add_location(div3, file$N, 170, 20, 6789);
-  			add_location(p3, file$N, 174, 24, 7027);
+  			add_location(div3, file$N, 168, 20, 6785);
+  			add_location(p3, file$N, 172, 24, 7023);
   			attr_dev(div4, "class", "col s2 tempminD tempmin-manana temp_font svelte-1ilbdsc");
-  			add_location(div4, file$N, 173, 20, 6948);
+  			add_location(div4, file$N, 171, 20, 6944);
   			attr_dev(div5, "class", "col s12 mas_una prox_dias centrarItems svelte-1ilbdsc");
-  			add_location(div5, file$N, 159, 16, 6246);
-  			add_location(p4, file$N, 180, 24, 7256);
-  			add_location(p5, file$N, 182, 28, 7380);
+  			add_location(div5, file$N, 157, 16, 6242);
+  			add_location(p4, file$N, 178, 24, 7252);
+  			add_location(p5, file$N, 180, 28, 7376);
   			attr_dev(div6, "class", "tit-mes_pasado font-mes svelte-1ilbdsc");
-  			add_location(div6, file$N, 181, 24, 7314);
+  			add_location(div6, file$N, 179, 24, 7310);
   			attr_dev(div7, "class", "col s4 tit-pasado");
-  			add_location(div7, file$N, 179, 20, 7200);
+  			add_location(div7, file$N, 177, 20, 7196);
   			if (img1.src !== (img1_src_value = "images/icons/" + /*DiconElementPasado*/ ctx[5] + ".gif")) attr_dev(img1, "src", img1_src_value);
   			attr_dev(img1, "alt", "");
   			attr_dev(img1, "class", "svelte-1ilbdsc");
-  			add_location(img1, file$N, 186, 24, 7599);
+  			add_location(img1, file$N, 184, 24, 7595);
   			attr_dev(div8, "class", "col s4 weather-icon-pasado weather-icon center svelte-1ilbdsc");
-  			add_location(div8, file$N, 185, 20, 7514);
-  			add_location(p6, file$N, 189, 24, 7782);
+  			add_location(div8, file$N, 183, 20, 7510);
+  			add_location(p6, file$N, 187, 24, 7778);
   			attr_dev(div9, "class", "col s2 tempmaxD tempmax-pasado temp_font svelte-1ilbdsc");
-  			add_location(div9, file$N, 188, 20, 7703);
-  			add_location(p7, file$N, 192, 24, 7941);
+  			add_location(div9, file$N, 186, 20, 7699);
+  			add_location(p7, file$N, 190, 24, 7937);
   			attr_dev(div10, "class", "col s2 tempminD tempmin-pasado temp_font svelte-1ilbdsc");
-  			add_location(div10, file$N, 191, 20, 7862);
+  			add_location(div10, file$N, 189, 20, 7858);
   			attr_dev(div11, "class", "col s12 mas_dos prox_dias centrarItems svelte-1ilbdsc");
-  			add_location(div11, file$N, 178, 16, 7127);
-  			add_location(p8, file$N, 197, 24, 8175);
-  			add_location(p9, file$N, 199, 28, 8298);
+  			add_location(div11, file$N, 176, 16, 7123);
+  			add_location(p8, file$N, 195, 24, 8171);
+  			add_location(p9, file$N, 197, 28, 8294);
   			attr_dev(div12, "class", "tit-mes_en_dos_dias font-mes svelte-1ilbdsc");
-  			add_location(div12, file$N, 198, 24, 8227);
+  			add_location(div12, file$N, 196, 24, 8223);
   			attr_dev(div13, "class", "col s4 tit-en_dos_dias");
-  			add_location(div13, file$N, 196, 20, 8114);
+  			add_location(div13, file$N, 194, 20, 8110);
   			if (img2.src !== (img2_src_value = "images/icons/" + /*DiconElementEnDosDias*/ ctx[8] + ".gif")) attr_dev(img2, "src", img2_src_value);
   			attr_dev(img2, "alt", "");
   			attr_dev(img2, "class", "svelte-1ilbdsc");
-  			add_location(img2, file$N, 203, 24, 8510);
+  			add_location(img2, file$N, 201, 24, 8506);
   			attr_dev(div14, "class", "col s4 weather-icon-en_dos_dias weather-icon center svelte-1ilbdsc");
-  			add_location(div14, file$N, 202, 20, 8420);
-  			add_location(p10, file$N, 206, 24, 8701);
+  			add_location(div14, file$N, 200, 20, 8416);
+  			add_location(p10, file$N, 204, 24, 8697);
   			attr_dev(div15, "class", "col s2 tempmaxD tempmax-en_dos_dias temp_font svelte-1ilbdsc");
-  			add_location(div15, file$N, 205, 20, 8617);
-  			add_location(p11, file$N, 209, 24, 8873);
+  			add_location(div15, file$N, 203, 20, 8613);
+  			add_location(p11, file$N, 207, 24, 8869);
   			attr_dev(div16, "class", "col s2 tempminD tempmin-en_dos_dias temp_font svelte-1ilbdsc");
-  			add_location(div16, file$N, 208, 20, 8789);
+  			add_location(div16, file$N, 206, 20, 8785);
   			attr_dev(div17, "class", "col s12 mas_tres prox_dias centrarItems svelte-1ilbdsc");
-  			add_location(div17, file$N, 195, 16, 8040);
-  			add_location(p12, file$N, 214, 24, 9118);
-  			add_location(p13, file$N, 216, 28, 9243);
+  			add_location(div17, file$N, 193, 16, 8036);
+  			add_location(p12, file$N, 212, 24, 9114);
+  			add_location(p13, file$N, 214, 28, 9239);
   			attr_dev(div18, "class", "tit-mes_en_tres_dias font-mes svelte-1ilbdsc");
-  			add_location(div18, file$N, 215, 24, 9171);
+  			add_location(div18, file$N, 213, 24, 9167);
   			attr_dev(div19, "class", "col s4 tit-en_tres_dias");
-  			add_location(div19, file$N, 213, 20, 9056);
+  			add_location(div19, file$N, 211, 20, 9052);
   			if (img3.src !== (img3_src_value = "images/icons/" + /*DiconElementEnTresDias*/ ctx[11] + ".gif")) attr_dev(img3, "src", img3_src_value);
   			attr_dev(img3, "alt", "");
   			attr_dev(img3, "class", "svelte-1ilbdsc");
-  			add_location(img3, file$N, 220, 24, 9458);
+  			add_location(img3, file$N, 218, 24, 9454);
   			attr_dev(div20, "class", "col s4 weather-icon-en_tres_dias weather-icon center svelte-1ilbdsc");
-  			add_location(div20, file$N, 219, 20, 9367);
-  			add_location(p14, file$N, 223, 24, 9651);
+  			add_location(div20, file$N, 217, 20, 9363);
+  			add_location(p14, file$N, 221, 24, 9647);
   			attr_dev(div21, "class", "col s2 tempmaxD tempmax-en_tres_dias temp_font svelte-1ilbdsc");
-  			add_location(div21, file$N, 222, 20, 9566);
-  			add_location(p15, file$N, 226, 24, 9825);
+  			add_location(div21, file$N, 220, 20, 9562);
+  			add_location(p15, file$N, 224, 24, 9821);
   			attr_dev(div22, "class", "col s2 tempminD tempmin-en_tres_dias temp_font svelte-1ilbdsc");
-  			add_location(div22, file$N, 225, 20, 9740);
+  			add_location(div22, file$N, 223, 20, 9736);
   			attr_dev(div23, "class", "col s12 mas_cuatro prox_dias centrarItems svelte-1ilbdsc");
-  			add_location(div23, file$N, 212, 16, 8980);
-  			add_location(p16, file$N, 231, 24, 10072);
-  			add_location(p17, file$N, 233, 28, 10201);
+  			add_location(div23, file$N, 210, 16, 8976);
+  			add_location(p16, file$N, 229, 24, 10068);
+  			add_location(p17, file$N, 231, 28, 10197);
   			attr_dev(div24, "class", "tit-mes_en_cuatro_dias font-mes svelte-1ilbdsc");
-  			add_location(div24, file$N, 232, 24, 10127);
+  			add_location(div24, file$N, 230, 24, 10123);
   			attr_dev(div25, "class", "col s4 tit-en_cuatro_dias");
-  			add_location(div25, file$N, 230, 20, 10008);
+  			add_location(div25, file$N, 228, 20, 10004);
   			if (img4.src !== (img4_src_value = "images/icons/" + /*DiconElementEnCuatroDias*/ ctx[14] + ".gif")) attr_dev(img4, "src", img4_src_value);
   			attr_dev(img4, "alt", "");
   			attr_dev(img4, "class", "svelte-1ilbdsc");
-  			add_location(img4, file$N, 237, 24, 10422);
+  			add_location(img4, file$N, 235, 24, 10418);
   			attr_dev(div26, "class", "col s4 weather-icon-en_cuatro_dias weather-icon center svelte-1ilbdsc");
-  			add_location(div26, file$N, 236, 20, 10329);
-  			add_location(p18, file$N, 240, 24, 10619);
+  			add_location(div26, file$N, 234, 20, 10325);
+  			add_location(p18, file$N, 238, 24, 10615);
   			attr_dev(div27, "class", "col s2 tempmaxD tempmax-en_cuatro_dias temp_font svelte-1ilbdsc");
-  			add_location(div27, file$N, 239, 20, 10532);
-  			add_location(p19, file$N, 243, 24, 10797);
+  			add_location(div27, file$N, 237, 20, 10528);
+  			add_location(p19, file$N, 241, 24, 10793);
   			attr_dev(div28, "class", "col s2 tempminD tempmin-en_cuatro_dias temp_font svelte-1ilbdsc");
-  			add_location(div28, file$N, 242, 20, 10710);
+  			add_location(div28, file$N, 240, 20, 10706);
   			attr_dev(div29, "class", "col s12 mas_cinco prox_dias centrarItems svelte-1ilbdsc");
-  			add_location(div29, file$N, 229, 16, 9933);
-  			add_location(p20, file$N, 248, 24, 11044);
-  			add_location(p21, file$N, 250, 28, 11171);
+  			add_location(div29, file$N, 227, 16, 9929);
+  			add_location(p20, file$N, 246, 24, 11040);
+  			add_location(p21, file$N, 248, 28, 11167);
   			attr_dev(div30, "class", "tit-mes_en_cinco_dias font-mes svelte-1ilbdsc");
-  			add_location(div30, file$N, 249, 24, 11098);
+  			add_location(div30, file$N, 247, 24, 11094);
   			attr_dev(div31, "class", "col s4 tit-en_cinco_dias");
-  			add_location(div31, file$N, 247, 20, 10981);
+  			add_location(div31, file$N, 245, 20, 10977);
   			if (img5.src !== (img5_src_value = "images/icons/" + /*DiconElementEnCincoDias*/ ctx[17] + ".gif")) attr_dev(img5, "src", img5_src_value);
   			attr_dev(img5, "alt", "");
   			attr_dev(img5, "class", "svelte-1ilbdsc");
-  			add_location(img5, file$N, 254, 24, 11389);
+  			add_location(img5, file$N, 252, 24, 11385);
   			attr_dev(div32, "class", "col s4 weather-icon-en_cinco_dias weather-icon center svelte-1ilbdsc");
-  			add_location(div32, file$N, 253, 20, 11297);
-  			add_location(p22, file$N, 257, 24, 11584);
+  			add_location(div32, file$N, 251, 20, 11293);
+  			add_location(p22, file$N, 255, 24, 11580);
   			attr_dev(div33, "class", "col s2 tempmaxD tempmax-en_cinco_dias temp_font svelte-1ilbdsc");
-  			add_location(div33, file$N, 256, 20, 11498);
-  			add_location(p23, file$N, 260, 24, 11760);
+  			add_location(div33, file$N, 254, 20, 11494);
+  			add_location(p23, file$N, 258, 24, 11756);
   			attr_dev(div34, "class", "col s2 tempminD tempmin-en_cinco_dias temp_font svelte-1ilbdsc");
-  			add_location(div34, file$N, 259, 20, 11674);
+  			add_location(div34, file$N, 257, 20, 11670);
   			attr_dev(div35, "class", "col s12 mas_seis prox_dias centrarItems svelte-1ilbdsc");
-  			add_location(div35, file$N, 246, 16, 10907);
+  			add_location(div35, file$N, 244, 16, 10903);
   			attr_dev(div36, "class", "row");
-  			add_location(div36, file$N, 157, 12, 6211);
+  			add_location(div36, file$N, 155, 12, 6207);
   			attr_dev(div37, "class", "pronos_dias svelte-1ilbdsc");
-  			add_location(div37, file$N, 156, 8, 6173);
+  			add_location(div37, file$N, 154, 8, 6169);
   			attr_dev(div38, "class", "container");
-  			add_location(div38, file$N, 155, 4, 6141);
+  			add_location(div38, file$N, 153, 4, 6137);
   			attr_dev(div39, "class", "col s12 datosTecnicosCard svelte-1ilbdsc");
-  			add_location(div39, file$N, 153, 0, 6096);
+  			add_location(div39, file$N, 151, 0, 6092);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -64863,85 +64548,6 @@ var app = (function () {
   	let nombresemanadiacinco = "";
   	let diatimesdiacinco = "";
   	let mestimesdiacinco = "";
-
-  	onMount(async () => {
-  		axios$1.get(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=minutely&appid=${KEY$s}&units=metric&lang=gl`).then(data => {
-  			data = data.data;
-  			console.log(data.data);
-  			$$invalidate(0, DtempmaxM = data.daily[1].temp.max);
-  			$$invalidate(1, DtempminM = data.daily[1].temp.min);
-  			$$invalidate(2, DiconElementManana = data.daily[1].weather[0].icon);
-  			$$invalidate(3, DtempmaxP = data.daily[2].temp.max);
-  			$$invalidate(4, DtempminP = data.daily[2].temp.min);
-  			$$invalidate(5, DiconElementPasado = data.daily[2].weather[0].icon);
-  			$$invalidate(6, DtempmaxEnDosDias = data.daily[3].temp.max);
-  			$$invalidate(7, DtempminEnDosDias = data.daily[3].temp.min);
-  			$$invalidate(8, DiconElementEnDosDias = data.daily[3].weather[0].icon);
-  			$$invalidate(9, DtempmaxEnTresDias = data.daily[4].temp.max);
-  			$$invalidate(10, DtempminEnTresDias = data.daily[4].temp.min);
-  			$$invalidate(11, DiconElementEnTresDias = data.daily[4].weather[0].icon);
-  			$$invalidate(12, DtempmaxEnCuatroDias = data.daily[5].temp.max);
-  			$$invalidate(13, DtempminEnCuatroDias = data.daily[5].temp.min);
-  			$$invalidate(14, DiconElementEnCuatroDias = data.daily[5].weather[0].icon);
-  			$$invalidate(15, DtempmaxEnCincoDias = data.daily[6].temp.max);
-  			$$invalidate(16, DtempminEnCincoDias = data.daily[6].temp.min);
-  			$$invalidate(17, DiconElementEnCincoDias = data.daily[6].weather[0].icon);
-
-  			//Convertir en dias de la semana
-  			let DdiaMes = data.daily[1].dt;
-
-  			var eldiaManana = new Date(DdiaMes * 1000);
-  			$$invalidate(18, diatimesdiaManana = eldiaManana.getDate());
-
-  			var meses = [
-  				"Xan.",
-  				"Feb.",
-  				"Mar.",
-  				"Abr.",
-  				"Mai.",
-  				"Xuñ.",
-  				"Xul.",
-  				"Ago.",
-  				"Set.",
-  				"Out.",
-  				"Nov.",
-  				"Dec."
-  			];
-
-  			$$invalidate(19, mestimesdiaManana = meses[eldiaManana.getMonth()]);
-  			let DdiaPasado = data.daily[2].dt;
-  			var eldiadosPasado = new Date(DdiaPasado * 1000);
-  			var days = ["Domingo", "Luns", "Martes", "Mércores", "Xoves", "Venres", "Sábado"];
-  			$$invalidate(20, nombresemanadiadosPasado = days[eldiadosPasado.getDay()]);
-  			$$invalidate(21, diatimesdiadosPasado = eldiadosPasado.getDate());
-  			$$invalidate(22, mestimesdiadosPasado = meses[eldiadosPasado.getMonth()]);
-  			let DdiaEnDosDias = data.daily[3].dt;
-  			var eldiados = new Date(DdiaEnDosDias * 1000);
-  			var daysDos = ["Domingo", "Luns", "Martes", "Mércores", "Xoves", "Venres", "Sábado"];
-  			$$invalidate(23, nombresemanadiados = daysDos[eldiados.getDay()]);
-  			$$invalidate(24, diatimesdiados = eldiados.getDate());
-  			$$invalidate(25, mestimesdiados = meses[eldiados.getMonth()]);
-  			let DdiaEnTresDias = data.daily[4].dt;
-  			var eldiatres = new Date(DdiaEnTresDias * 1000);
-  			var daysTres = ["Domingo", "Luns", "Martes", "Mércores", "Xoves", "Venres", "Sábado"];
-  			$$invalidate(26, nombresemanadiatres = daysTres[eldiatres.getDay()]);
-  			$$invalidate(27, diatimesdiatres = eldiatres.getDate());
-  			$$invalidate(28, mestimesdiatres = meses[eldiatres.getMonth()]);
-  			let DdiaEnCuatroDias = data.daily[5].dt;
-  			var eldiacuatro = new Date(DdiaEnCuatroDias * 1000);
-  			var daysCuatro = ["Domingo", "Luns", "Martes", "Mércores", "Xoves", "Venres", "Sábado"];
-  			$$invalidate(29, nombresemanadiacuatro = daysCuatro[eldiacuatro.getDay()]);
-  			$$invalidate(30, diatimesdiacuatro = eldiacuatro.getDate());
-  			$$invalidate(31, mestimesdiacuatro = meses[eldiacuatro.getMonth()]);
-  			let DdiaEnCincoDias = data.daily[6].dt;
-  			var eldiacinco = new Date(DdiaEnCincoDias * 1000);
-  			var daysCinco = ["Domingo", "Luns", "Martes", "Mércores", "Xoves", "Venres", "Sábado"];
-  			$$invalidate(32, nombresemanadiacinco = daysCinco[eldiacinco.getDay()]);
-  			$$invalidate(33, diatimesdiacinco = eldiacinco.getDate());
-  			$$invalidate(34, mestimesdiacinco = meses[eldiacinco.getMonth()]);
-  		});
-  	});
-
   	const writable_props = ["longitude", "latitude"];
 
   	Object.keys($$props).forEach(key => {
@@ -65040,6 +64646,90 @@ var app = (function () {
   		$$self.$inject_state($$props.$$inject);
   	}
 
+  	$$self.$$.update = () => {
+  		if ($$self.$$.dirty[1] & /*latitude, longitude*/ 48) {
+  			 {
+  				onMount(async () => {
+  					axios$1.get(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=minutely&appid=${KEY$s}&units=metric&lang=gl`).then(data => {
+  						data = data.data;
+  						console.log(data.data);
+  						$$invalidate(0, DtempmaxM = data.daily[1].temp.max);
+  						$$invalidate(1, DtempminM = data.daily[1].temp.min);
+  						$$invalidate(2, DiconElementManana = data.daily[1].weather[0].icon);
+  						$$invalidate(3, DtempmaxP = data.daily[2].temp.max);
+  						$$invalidate(4, DtempminP = data.daily[2].temp.min);
+  						$$invalidate(5, DiconElementPasado = data.daily[2].weather[0].icon);
+  						$$invalidate(6, DtempmaxEnDosDias = data.daily[3].temp.max);
+  						$$invalidate(7, DtempminEnDosDias = data.daily[3].temp.min);
+  						$$invalidate(8, DiconElementEnDosDias = data.daily[3].weather[0].icon);
+  						$$invalidate(9, DtempmaxEnTresDias = data.daily[4].temp.max);
+  						$$invalidate(10, DtempminEnTresDias = data.daily[4].temp.min);
+  						$$invalidate(11, DiconElementEnTresDias = data.daily[4].weather[0].icon);
+  						$$invalidate(12, DtempmaxEnCuatroDias = data.daily[5].temp.max);
+  						$$invalidate(13, DtempminEnCuatroDias = data.daily[5].temp.min);
+  						$$invalidate(14, DiconElementEnCuatroDias = data.daily[5].weather[0].icon);
+  						$$invalidate(15, DtempmaxEnCincoDias = data.daily[6].temp.max);
+  						$$invalidate(16, DtempminEnCincoDias = data.daily[6].temp.min);
+  						$$invalidate(17, DiconElementEnCincoDias = data.daily[6].weather[0].icon);
+
+  						//Convertir en dias de la semana
+  						let DdiaMes = data.daily[1].dt;
+
+  						var eldiaManana = new Date(DdiaMes * 1000);
+  						$$invalidate(18, diatimesdiaManana = eldiaManana.getDate());
+
+  						var meses = [
+  							"Xan.",
+  							"Feb.",
+  							"Mar.",
+  							"Abr.",
+  							"Mai.",
+  							"Xuñ.",
+  							"Xul.",
+  							"Ago.",
+  							"Set.",
+  							"Out.",
+  							"Nov.",
+  							"Dec."
+  						];
+
+  						$$invalidate(19, mestimesdiaManana = meses[eldiaManana.getMonth()]);
+  						let DdiaPasado = data.daily[2].dt;
+  						var eldiadosPasado = new Date(DdiaPasado * 1000);
+  						var days = ["Domingo", "Luns", "Martes", "Mércores", "Xoves", "Venres", "Sábado"];
+  						$$invalidate(20, nombresemanadiadosPasado = days[eldiadosPasado.getDay()]);
+  						$$invalidate(21, diatimesdiadosPasado = eldiadosPasado.getDate());
+  						$$invalidate(22, mestimesdiadosPasado = meses[eldiadosPasado.getMonth()]);
+  						let DdiaEnDosDias = data.daily[3].dt;
+  						var eldiados = new Date(DdiaEnDosDias * 1000);
+  						var daysDos = ["Domingo", "Luns", "Martes", "Mércores", "Xoves", "Venres", "Sábado"];
+  						$$invalidate(23, nombresemanadiados = daysDos[eldiados.getDay()]);
+  						$$invalidate(24, diatimesdiados = eldiados.getDate());
+  						$$invalidate(25, mestimesdiados = meses[eldiados.getMonth()]);
+  						let DdiaEnTresDias = data.daily[4].dt;
+  						var eldiatres = new Date(DdiaEnTresDias * 1000);
+  						var daysTres = ["Domingo", "Luns", "Martes", "Mércores", "Xoves", "Venres", "Sábado"];
+  						$$invalidate(26, nombresemanadiatres = daysTres[eldiatres.getDay()]);
+  						$$invalidate(27, diatimesdiatres = eldiatres.getDate());
+  						$$invalidate(28, mestimesdiatres = meses[eldiatres.getMonth()]);
+  						let DdiaEnCuatroDias = data.daily[5].dt;
+  						var eldiacuatro = new Date(DdiaEnCuatroDias * 1000);
+  						var daysCuatro = ["Domingo", "Luns", "Martes", "Mércores", "Xoves", "Venres", "Sábado"];
+  						$$invalidate(29, nombresemanadiacuatro = daysCuatro[eldiacuatro.getDay()]);
+  						$$invalidate(30, diatimesdiacuatro = eldiacuatro.getDate());
+  						$$invalidate(31, mestimesdiacuatro = meses[eldiacuatro.getMonth()]);
+  						let DdiaEnCincoDias = data.daily[6].dt;
+  						var eldiacinco = new Date(DdiaEnCincoDias * 1000);
+  						var daysCinco = ["Domingo", "Luns", "Martes", "Mércores", "Xoves", "Venres", "Sábado"];
+  						$$invalidate(32, nombresemanadiacinco = daysCinco[eldiacinco.getDay()]);
+  						$$invalidate(33, diatimesdiacinco = eldiacinco.getDate());
+  						$$invalidate(34, mestimesdiacinco = meses[eldiacinco.getMonth()]);
+  					});
+  				});
+  			}
+  		}
+  	};
+
   	return [
   		DtempmaxM,
   		DtempminM,
@@ -65127,7 +64817,7 @@ var app = (function () {
   const { console: console_1$u } = globals;
   const file$O = "src/Componentes/Cardtiempo.svelte";
 
-  // (48:8) {#if datosCard!==null}
+  // (42:8) {#if datosCard!==null}
   function create_if_block$j(ctx) {
   	let div7;
   	let div6;
@@ -65181,27 +64871,27 @@ var app = (function () {
   			t6 = space();
   			create_component(carddias.$$.fragment);
   			attr_dev(p0, "class", "svelte-1buqc46");
-  			add_location(p0, file$O, 53, 24, 1254);
+  			add_location(p0, file$O, 47, 24, 1222);
   			attr_dev(div0, "class", "col s12 location svelte-1buqc46");
-  			add_location(div0, file$O, 52, 20, 1199);
+  			add_location(div0, file$O, 46, 20, 1167);
   			attr_dev(p1, "class", "svelte-1buqc46");
-  			add_location(p1, file$O, 56, 24, 1386);
+  			add_location(p1, file$O, 50, 24, 1354);
   			attr_dev(div1, "class", "col s12 temperature-value center svelte-1buqc46");
-  			add_location(div1, file$O, 55, 20, 1315);
+  			add_location(div1, file$O, 49, 20, 1283);
   			attr_dev(div2, "class", "weather-container svelte-1buqc46");
-  			add_location(div2, file$O, 51, 16, 1147);
+  			add_location(div2, file$O, 45, 16, 1115);
   			attr_dev(p2, "class", "svelte-1buqc46");
-  			add_location(p2, file$O, 61, 24, 1612);
+  			add_location(p2, file$O, 55, 24, 1580);
   			attr_dev(div3, "class", "col s12 temperature-description center svelte-1buqc46");
-  			add_location(div3, file$O, 60, 20, 1535);
+  			add_location(div3, file$O, 54, 20, 1503);
   			attr_dev(div4, "class", "weather-datos svelte-1buqc46");
-  			add_location(div4, file$O, 59, 16, 1487);
+  			add_location(div4, file$O, 53, 16, 1455);
   			attr_dev(div5, "class", "row");
-  			add_location(div5, file$O, 50, 12, 1113);
+  			add_location(div5, file$O, 44, 12, 1081);
   			attr_dev(div6, "class", "container");
-  			add_location(div6, file$O, 49, 8, 1077);
+  			add_location(div6, file$O, 43, 8, 1045);
   			attr_dev(div7, "class", "white-text PanelPrincipal");
-  			add_location(div7, file$O, 48, 4, 1029);
+  			add_location(div7, file$O, 42, 4, 997);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div7, anchor);
@@ -65254,7 +64944,7 @@ var app = (function () {
   		block,
   		id: create_if_block$j.name,
   		type: "if",
-  		source: "(48:8) {#if datosCard!==null}",
+  		source: "(42:8) {#if datosCard!==null}",
   		ctx
   	});
 
@@ -65272,9 +64962,9 @@ var app = (function () {
   			div1 = element("div");
   			div0 = element("div");
   			if (if_block) if_block.c();
-  			add_location(div0, file$O, 46, 4, 988);
+  			add_location(div0, file$O, 40, 4, 956);
   			attr_dev(div1, "class", "center PanelCard svelte-1buqc46");
-  			add_location(div1, file$O, 45, 0, 953);
+  			add_location(div1, file$O, 39, 0, 921);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -65347,19 +65037,6 @@ var app = (function () {
   	let latitude = "";
   	let longitude = "";
   	var datosCard = null;
-
-  	onMount(async () => {
-  		axios$1.get(`http://api.openweathermap.org/data/2.5/weather?q=${name}&appid=${key}&units=metric&lang=gl`).then(data => {
-  			console.log(data);
-  			$$invalidate(5, datosCard = data.data);
-  			$$invalidate(0, city = datosCard.name);
-  			$$invalidate(1, temperature = datosCard.main.temp);
-  			$$invalidate(2, descripcion = datosCard.weather[0].description);
-  			$$invalidate(3, latitude = datosCard.coord.lat);
-  			$$invalidate(4, longitude = datosCard.coord.lon);
-  		});
-  	});
-
   	const writable_props = ["name"];
 
   	Object.keys($$props).forEach(key => {
@@ -65398,6 +65075,24 @@ var app = (function () {
   		$$self.$inject_state($$props.$$inject);
   	}
 
+  	$$self.$$.update = () => {
+  		if ($$self.$$.dirty & /*name, datosCard*/ 96) {
+  			 {
+  				onMount(async () => {
+  					axios$1.get(`https://api.openweathermap.org/data/2.5/weather?q=${name}&appid=${key}&units=metric&lang=gl`).then(data => {
+  						console.log(data);
+  						$$invalidate(5, datosCard = data.data);
+  						$$invalidate(0, city = datosCard.name);
+  						$$invalidate(1, temperature = datosCard.main.temp);
+  						$$invalidate(2, descripcion = datosCard.weather[0].description);
+  						$$invalidate(3, latitude = datosCard.coord.lat);
+  						$$invalidate(4, longitude = datosCard.coord.lon);
+  					});
+  				});
+  			}
+  		}
+  	};
+
   	return [city, temperature, descripcion, latitude, longitude, datosCard, name];
   }
 
@@ -65433,7 +65128,7 @@ var app = (function () {
   /* src/Componentes/Cardbusqueda.svelte generated by Svelte v3.25.0 */
   const file$P = "src/Componentes/Cardbusqueda.svelte";
 
-  // (58:15) <Button style="height:30px!important;border:0px;">
+  // (57:15) <Button style="height:30px!important;border:0px;">
   function create_default_slot_2$1(ctx) {
   	let a;
   	let mounted;
@@ -65444,13 +65139,13 @@ var app = (function () {
   			a = element("a");
   			a.textContent = "X";
   			attr_dev(a, "class", "botonVolver waves-effect waves-light btn");
-  			add_location(a, file$P, 58, 19, 1857);
+  			add_location(a, file$P, 57, 19, 1838);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, a, anchor);
 
   			if (!mounted) {
-  				dispose = listen_dev(a, "click", /*click_handler_2*/ ctx[9], false, false, false);
+  				dispose = listen_dev(a, "click", /*click_handler_2*/ ctx[8], false, false, false);
   				mounted = true;
   			}
   		},
@@ -65466,14 +65161,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_2$1.name,
   		type: "slot",
-  		source: "(58:15) <Button style=\\\"height:30px!important;border:0px;\\\">",
+  		source: "(57:15) <Button style=\\\"height:30px!important;border:0px;\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (57:12) <Actions style="z-index: 99999;line-height: 9px; margin-bottom: 100vh;padding: 0px!important;margin-top: 0px;">
+  // (56:12) <Actions style="z-index: 99999;line-height: 9px; margin-bottom: 100vh;padding: 0px!important;margin-top: 0px;">
   function create_default_slot_1$1(ctx) {
   	let button;
   	let current;
@@ -65498,7 +65193,7 @@ var app = (function () {
   		p: function update(ctx, dirty) {
   			const button_changes = {};
 
-  			if (dirty & /*$$scope, clicked*/ 4112) {
+  			if (dirty & /*$$scope, clicked*/ 2064) {
   				button_changes.$$scope = { dirty, ctx };
   			}
 
@@ -65522,14 +65217,14 @@ var app = (function () {
   		block,
   		id: create_default_slot_1$1.name,
   		type: "slot",
-  		source: "(57:12) <Actions style=\\\"z-index: 99999;line-height: 9px; margin-bottom: 100vh;padding: 0px!important;margin-top: 0px;\\\">",
+  		source: "(56:12) <Actions style=\\\"z-index: 99999;line-height: 9px; margin-bottom: 100vh;padding: 0px!important;margin-top: 0px;\\\">",
   		ctx
   	});
 
   	return block;
   }
 
-  // (52:4) <Dialog bind:this={simpleDialog}>
+  // (51:4) <Dialog bind:this={simpleDialog}>
   function create_default_slot$3(ctx) {
   	let div0;
   	let cardtiempo;
@@ -65559,8 +65254,8 @@ var app = (function () {
   			t = space();
   			div1 = element("div");
   			create_component(actions.$$.fragment);
-  			add_location(div0, file$P, 52, 8, 1574);
-  			add_location(div1, file$P, 55, 8, 1642);
+  			add_location(div0, file$P, 51, 8, 1555);
+  			add_location(div1, file$P, 54, 8, 1623);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div0, anchor);
@@ -65576,7 +65271,7 @@ var app = (function () {
   			cardtiempo.$set(cardtiempo_changes);
   			const actions_changes = {};
 
-  			if (dirty & /*$$scope, clicked*/ 4112) {
+  			if (dirty & /*$$scope, clicked*/ 2064) {
   				actions_changes.$$scope = { dirty, ctx };
   			}
 
@@ -65606,7 +65301,7 @@ var app = (function () {
   		block,
   		id: create_default_slot$3.name,
   		type: "slot",
-  		source: "(52:4) <Dialog bind:this={simpleDialog}>",
+  		source: "(51:4) <Dialog bind:this={simpleDialog}>",
   		ctx
   	});
 
@@ -65650,7 +65345,7 @@ var app = (function () {
   	};
 
   	dialog = new Dialog({ props: dialog_props, $$inline: true });
-  	/*dialog_binding*/ ctx[10](dialog);
+  	/*dialog_binding*/ ctx[9](dialog);
 
   	const block = {
   		c: function create() {
@@ -65683,33 +65378,33 @@ var app = (function () {
   			if (img.src !== (img_src_value = "/images/tarxetas/" + /*icon*/ ctx[1] + ".gif")) attr_dev(img, "src", img_src_value);
   			attr_dev(img, "alt", "icono do tempo");
   			attr_dev(img, "class", "fondo_card svelte-tmmm7l");
-  			add_location(img, file$P, 35, 24, 739);
-  			add_location(br, file$P, 36, 80, 899);
+  			add_location(img, file$P, 34, 24, 720);
+  			add_location(br, file$P, 35, 80, 880);
   			attr_dev(p, "class", "city-name svelte-tmmm7l");
-  			add_location(p, file$P, 37, 28, 932);
+  			add_location(p, file$P, 36, 28, 913);
   			attr_dev(span, "class", "card-title city-temp svelte-tmmm7l");
-  			add_location(span, file$P, 36, 24, 843);
+  			add_location(span, file$P, 35, 24, 824);
   			attr_dev(i0, "class", "material-icons");
-  			add_location(i0, file$P, 40, 45, 1180);
+  			add_location(i0, file$P, 39, 45, 1161);
   			attr_dev(a0, "class", "btn modal-trigger btn-floating halfway-fab waves-effect waves-light\n                            black verTiempo svelte-tmmm7l");
-  			add_location(a0, file$P, 39, 24, 1020);
+  			add_location(a0, file$P, 38, 24, 1001);
   			attr_dev(i1, "class", "material-icons");
-  			add_location(i1, file$P, 42, 35, 1379);
+  			add_location(i1, file$P, 41, 35, 1360);
   			attr_dev(a1, "class", "btn-floating halfway-fab waves-effect waves-light\n                            black");
-  			add_location(a1, file$P, 41, 24, 1249);
+  			add_location(a1, file$P, 40, 24, 1230);
   			attr_dev(div0, "class", "card-image svelte-tmmm7l");
-  			add_location(div0, file$P, 34, 20, 690);
+  			add_location(div0, file$P, 33, 20, 671);
   			attr_dev(div1, "class", "card svelte-tmmm7l");
-  			add_location(div1, file$P, 33, 16, 651);
+  			add_location(div1, file$P, 32, 16, 632);
   			attr_dev(div2, "class", "col s12 m6");
-  			add_location(div2, file$P, 32, 12, 610);
+  			add_location(div2, file$P, 31, 12, 591);
   			attr_dev(div3, "class", "row");
-  			add_location(div3, file$P, 31, 8, 580);
+  			add_location(div3, file$P, 30, 8, 561);
   			attr_dev(div4, "class", "ulwrpper");
-  			add_location(div4, file$P, 30, 4, 549);
+  			add_location(div4, file$P, 29, 4, 530);
   			attr_dev(li, "class", "data");
-  			add_location(li, file$P, 29, 0, 527);
-  			add_location(div5, file$P, 50, 0, 1522);
+  			add_location(li, file$P, 28, 0, 508);
+  			add_location(div5, file$P, 49, 0, 1503);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -65743,8 +65438,8 @@ var app = (function () {
 
   			if (!mounted) {
   				dispose = [
-  					listen_dev(a0, "click", /*click_handler*/ ctx[7], false, false, false),
-  					listen_dev(a1, "click", /*click_handler_1*/ ctx[8], false, false, false)
+  					listen_dev(a0, "click", /*click_handler*/ ctx[6], false, false, false),
+  					listen_dev(a1, "click", /*click_handler_1*/ ctx[7], false, false, false)
   				];
 
   				mounted = true;
@@ -65759,7 +65454,7 @@ var app = (function () {
   			if (!current || dirty & /*name*/ 1) set_data_dev(t4, /*name*/ ctx[0]);
   			const dialog_changes = {};
 
-  			if (dirty & /*$$scope, clicked, name*/ 4113) {
+  			if (dirty & /*$$scope, clicked, name*/ 2065) {
   				dialog_changes.$$scope = { dirty, ctx };
   			}
 
@@ -65778,7 +65473,7 @@ var app = (function () {
   			if (detaching) detach_dev(li);
   			if (detaching) detach_dev(t9);
   			if (detaching) detach_dev(div5);
-  			/*dialog_binding*/ ctx[10](null);
+  			/*dialog_binding*/ ctx[9](null);
   			destroy_component(dialog);
   			mounted = false;
   			run_all(dispose);
@@ -65807,11 +65502,10 @@ var app = (function () {
   		dispatch("removeTiempo", { name });
   	}
 
-  	let { id } = $$props;
   	let { name } = $$props;
   	let { icon } = $$props;
   	let { temp } = $$props;
-  	const writable_props = ["id", "name", "icon", "temp"];
+  	const writable_props = ["name", "icon", "temp"];
 
   	Object.keys($$props).forEach(key => {
   		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<Cardbusqueda> was created with unknown prop '${key}'`);
@@ -65829,7 +65523,6 @@ var app = (function () {
   	}
 
   	$$self.$$set = $$props => {
-  		if ("id" in $$props) $$invalidate(6, id = $$props.id);
   		if ("name" in $$props) $$invalidate(0, name = $$props.name);
   		if ("icon" in $$props) $$invalidate(1, icon = $$props.icon);
   		if ("temp" in $$props) $$invalidate(2, temp = $$props.temp);
@@ -65849,7 +65542,6 @@ var app = (function () {
   		dispatch,
   		removeTiempo,
   		Cardtiempo,
-  		id,
   		name,
   		icon,
   		temp
@@ -65858,7 +65550,6 @@ var app = (function () {
   	$$self.$inject_state = $$props => {
   		if ("simpleDialog" in $$props) $$invalidate(3, simpleDialog = $$props.simpleDialog);
   		if ("clicked" in $$props) $$invalidate(4, clicked = $$props.clicked);
-  		if ("id" in $$props) $$invalidate(6, id = $$props.id);
   		if ("name" in $$props) $$invalidate(0, name = $$props.name);
   		if ("icon" in $$props) $$invalidate(1, icon = $$props.icon);
   		if ("temp" in $$props) $$invalidate(2, temp = $$props.temp);
@@ -65875,7 +65566,6 @@ var app = (function () {
   		simpleDialog,
   		clicked,
   		removeTiempo,
-  		id,
   		click_handler,
   		click_handler_1,
   		click_handler_2,
@@ -65886,7 +65576,7 @@ var app = (function () {
   class Cardbusqueda extends SvelteComponentDev {
   	constructor(options) {
   		super(options);
-  		init(this, options, instance$Z, create_fragment$Z, safe_not_equal, { id: 6, name: 0, icon: 1, temp: 2 });
+  		init(this, options, instance$Z, create_fragment$Z, safe_not_equal, { name: 0, icon: 1, temp: 2 });
 
   		dispatch_dev("SvelteRegisterComponent", {
   			component: this,
@@ -65897,10 +65587,6 @@ var app = (function () {
 
   		const { ctx } = this.$$;
   		const props = options.props || {};
-
-  		if (/*id*/ ctx[6] === undefined && !("id" in props)) {
-  			console.warn("<Cardbusqueda> was created without expected prop 'id'");
-  		}
 
   		if (/*name*/ ctx[0] === undefined && !("name" in props)) {
   			console.warn("<Cardbusqueda> was created without expected prop 'name'");
@@ -65913,14 +65599,6 @@ var app = (function () {
   		if (/*temp*/ ctx[2] === undefined && !("temp" in props)) {
   			console.warn("<Cardbusqueda> was created without expected prop 'temp'");
   		}
-  	}
-
-  	get id() {
-  		throw new Error("<Cardbusqueda>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
-  	}
-
-  	set id(value) {
-  		throw new Error("<Cardbusqueda>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
   	}
 
   	get name() {
@@ -66018,7 +65696,7 @@ var app = (function () {
   	return child_ctx;
   }
 
-  // (93:6) {#if loading}
+  // (114:6) {#if loading}
   function create_if_block_1$9(ctx) {
   	let div;
 
@@ -66026,7 +65704,7 @@ var app = (function () {
   		c: function create() {
   			div = element("div");
   			attr_dev(div, "class", "loader svelte-u26sdc");
-  			add_location(div, file$Q, 93, 12, 2204);
+  			add_location(div, file$Q, 114, 12, 2703);
   		},
   		m: function mount(target, anchor) {
   			insert_dev(target, div, anchor);
@@ -66040,14 +65718,14 @@ var app = (function () {
   		block,
   		id: create_if_block_1$9.name,
   		type: "if",
-  		source: "(93:6) {#if loading}",
+  		source: "(114:6) {#if loading}",
   		ctx
   	});
 
   	return block;
   }
 
-  // (100:8) {#if todos.length}
+  // (121:8) {#if todos.length}
   function create_if_block$k(ctx) {
   	let each_blocks = [];
   	let each_1_lookup = new Map();
@@ -66119,14 +65797,14 @@ var app = (function () {
   		block,
   		id: create_if_block$k.name,
   		type: "if",
-  		source: "(100:8) {#if todos.length}",
+  		source: "(121:8) {#if todos.length}",
   		ctx
   	});
 
   	return block;
   }
 
-  // (101:10) {#each todos as todo, i (todo.name) }
+  // (122:10) {#each todos as todo, i (todo.name) }
   function create_each_block$1(key_2, ctx) {
   	let first;
   	let cardbusqueda;
@@ -66187,7 +65865,7 @@ var app = (function () {
   		block,
   		id: create_each_block$1.name,
   		type: "each",
-  		source: "(101:10) {#each todos as todo, i (todo.name) }",
+  		source: "(122:10) {#each todos as todo, i (todo.name) }",
   		ctx
   	});
 
@@ -66252,32 +65930,32 @@ var app = (function () {
   			attr_dev(input_1, "placeholder", "Busca aquí unha cidade");
   			input_1.required = true;
   			attr_dev(input_1, "class", "svelte-u26sdc");
-  			add_location(input_1, file$Q, 84, 10, 1785);
+  			add_location(input_1, file$Q, 105, 10, 2284);
   			attr_dev(i0, "class", "material-icons");
-  			add_location(i0, file$Q, 86, 49, 1964);
+  			add_location(i0, file$Q, 107, 49, 2463);
   			attr_dev(label, "class", "label-icon");
   			attr_dev(label, "for", "search");
-  			add_location(label, file$Q, 86, 10, 1925);
+  			add_location(label, file$Q, 107, 10, 2424);
   			attr_dev(i1, "class", "material-icons");
-  			add_location(i1, file$Q, 87, 10, 2019);
+  			add_location(i1, file$Q, 108, 10, 2518);
   			attr_dev(span, "class", "msg");
-  			add_location(span, file$Q, 88, 10, 2065);
+  			add_location(span, file$Q, 109, 10, 2564);
   			attr_dev(div0, "class", "input-field");
-  			add_location(div0, file$Q, 83, 8, 1749);
+  			add_location(div0, file$Q, 104, 8, 2248);
   			attr_dev(button, "class", "transparent");
-  			add_location(button, file$Q, 90, 8, 2114);
+  			add_location(button, file$Q, 111, 8, 2613);
   			attr_dev(form, "class", "forminput");
-  			add_location(form, file$Q, 82, 6, 1679);
+  			add_location(form, file$Q, 103, 6, 2178);
   			attr_dev(div1, "class", "nav-wrapper");
-  			add_location(div1, file$Q, 81, 4, 1647);
+  			add_location(div1, file$Q, 102, 4, 2146);
   			attr_dev(nav, "class", "navbar-fixed navbarbaja grey darken-4 svelte-u26sdc");
-  			add_location(nav, file$Q, 80, 2, 1591);
+  			add_location(nav, file$Q, 101, 2, 2090);
   			toggle_class(ul, "list", /*todos*/ ctx[0].length > 0);
-  			add_location(ul, file$Q, 98, 8, 2312);
+  			add_location(ul, file$Q, 119, 8, 2811);
   			attr_dev(section, "class", "ajax-section svelte-u26sdc");
-  			add_location(section, file$Q, 97, 4, 2273);
+  			add_location(section, file$Q, 118, 4, 2772);
   			attr_dev(main, "class", "svelte-u26sdc");
-  			add_location(main, file$Q, 79, 0, 1582);
+  			add_location(main, file$Q, 100, 0, 2081);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -66394,6 +66072,26 @@ var app = (function () {
 
   	let input = "";
 
+  	/*
+  function update () {
+    todos=[]
+    keys().then(ciudades=>{
+            var promises = [];
+            ciudades.forEach(ciudad=>{
+              promises.push(
+                get(ciudad)
+              )
+            })
+            Promise.all(promises).then(ciudades=>{
+              ciudades.forEach(ciudad=>{
+                console.log('ciudad:', ciudad)
+                todos = [...todos, ciudad];
+                console.log(todos)
+              })
+            })
+          })
+      }
+  */
   	function update() {
   		$$invalidate(0, todos = []);
 
@@ -66417,7 +66115,7 @@ var app = (function () {
   	update();
 
   	function addTiempo() {
-  		axios$1.get(`http://api.openweathermap.org/data/2.5/weather?q=${input}&appid=${key$1}&units=metric&lang=gl`).then(data => {
+  		axios$1.get(`https://api.openweathermap.org/data/2.5/weather?q=${input}&appid=${key$1}&units=metric&lang=gl`).then(data => {
   			console.log(data);
   			incomeData = data.data;
   			name = incomeData.name;
@@ -66663,14 +66361,14 @@ var app = (function () {
   			t21 = space();
   			p5 = element("p");
   			strong = element("strong");
-  			strong.textContent = "Actualizacións nas que estamos\n                            traballando";
+  			strong.textContent = "Actualizacións nas que estamos\n                            a traballar";
   			t23 = space();
   			ul = element("ul");
   			li0 = element("li");
   			li0.textContent = "1- Engadir un widget";
   			t25 = space();
   			li1 = element("li");
-  			li1.textContent = "2- Melloras de rendimento xeral da aplicación";
+  			li1.textContent = "2- Melloras xerais da aplicación";
   			t27 = space();
   			li2 = element("li");
   			li2.textContent = "3- Sistema de alertas meterolóxicas";
@@ -66679,7 +66377,7 @@ var app = (function () {
   			li3.textContent = "4- Notificacións Push";
   			t31 = space();
   			li4 = element("li");
-  			li4.textContent = "5- Melloras no diseño";
+  			li4.textContent = "5- Melloras no deseño";
   			t33 = space();
   			br = element("br");
   			t34 = space();
@@ -66797,22 +66495,22 @@ var app = (function () {
   			add_location(p5, file$R, 79, 20, 3830);
   			add_location(li0, file$R, 82, 24, 4046);
   			add_location(li1, file$R, 83, 24, 4100);
-  			add_location(li2, file$R, 84, 24, 4180);
-  			add_location(li3, file$R, 85, 24, 4250);
-  			add_location(li4, file$R, 86, 24, 4306);
+  			add_location(li2, file$R, 84, 24, 4167);
+  			add_location(li3, file$R, 85, 24, 4237);
+  			add_location(li4, file$R, 86, 24, 4293);
   			attr_dev(ul, "class", "white-text left-align");
   			add_location(ul, file$R, 81, 20, 3987);
-  			add_location(br, file$R, 88, 20, 4384);
+  			add_location(br, file$R, 88, 20, 4371);
   			attr_dev(h41, "class", "about-tit svelte-pkboz8");
-  			add_location(h41, file$R, 90, 20, 4410);
+  			add_location(h41, file$R, 90, 20, 4397);
   			attr_dev(p6, "class", "about-version svelte-pkboz8");
-  			add_location(p6, file$R, 92, 20, 4470);
+  			add_location(p6, file$R, 92, 20, 4457);
   			attr_dev(p7, "class", "licencia-txt svelte-pkboz8");
-  			add_location(p7, file$R, 94, 20, 4577);
+  			add_location(p7, file$R, 94, 20, 4564);
   			attr_dev(p8, "class", "licencia-txt svelte-pkboz8");
-  			add_location(p8, file$R, 101, 20, 5179);
+  			add_location(p8, file$R, 101, 20, 5166);
   			attr_dev(p9, "class", "licencia-txt svelte-pkboz8");
-  			add_location(p9, file$R, 105, 20, 5403);
+  			add_location(p9, file$R, 105, 20, 5390);
   			attr_dev(div13, "class", "col s12 center-align");
   			add_location(div13, file$R, 48, 16, 2025);
   			attr_dev(div14, "class", "row");
@@ -67187,6 +66885,10 @@ var app = (function () {
   	let i2;
   	let link_action_1;
   	let t5;
+  	let li2;
+  	let a3;
+  	let i3;
+  	let t7;
   	let router;
   	let current;
   	let mounted;
@@ -67204,33 +66906,43 @@ var app = (function () {
   			li0 = element("li");
   			a1 = element("a");
   			i1 = element("i");
-  			i1.textContent = "home";
+  			i1.textContent = "search";
   			t3 = space();
   			li1 = element("li");
   			a2 = element("a");
   			i2 = element("i");
-  			i2.textContent = "search";
+  			i2.textContent = "home";
   			t5 = space();
+  			li2 = element("li");
+  			a3 = element("a");
+  			i3 = element("i");
+  			i3.textContent = "share";
+  			t7 = space();
   			create_component(router.$$.fragment);
   			attr_dev(i0, "class", "large material-icons black-text");
-  			add_location(i0, file$U, 21, 4, 480);
+  			add_location(i0, file$U, 24, 4, 535);
   			attr_dev(a0, "class", "btn-floating btn-large white");
-  			add_location(a0, file$U, 20, 2, 435);
+  			add_location(a0, file$U, 23, 2, 490);
   			attr_dev(i1, "class", "material-icons black-text");
-  			add_location(i1, file$U, 24, 50, 596);
+  			add_location(i1, file$U, 27, 56, 657);
   			attr_dev(a1, "class", "btn-floating");
-  			attr_dev(a1, "href", "/");
-  			add_location(a1, file$U, 24, 8, 554);
-  			add_location(li0, file$U, 24, 4, 550);
+  			attr_dev(a1, "href", "/Buscar");
+  			add_location(a1, file$U, 27, 8, 609);
+  			add_location(li0, file$U, 27, 4, 605);
   			attr_dev(i2, "class", "material-icons black-text");
-  			add_location(i2, file$U, 25, 56, 707);
+  			add_location(i2, file$U, 28, 50, 764);
   			attr_dev(a2, "class", "btn-floating");
-  			attr_dev(a2, "href", "/Buscar");
-  			add_location(a2, file$U, 25, 8, 659);
-  			add_location(li1, file$U, 25, 4, 655);
-  			add_location(ul, file$U, 23, 2, 541);
+  			attr_dev(a2, "href", "/");
+  			add_location(a2, file$U, 28, 8, 722);
+  			add_location(li1, file$U, 28, 4, 718);
+  			attr_dev(i3, "class", "material-icons black-text");
+  			add_location(i3, file$U, 29, 57, 876);
+  			attr_dev(a3, "class", "btn-floating");
+  			add_location(a3, file$U, 29, 8, 827);
+  			add_location(li2, file$U, 29, 4, 823);
+  			add_location(ul, file$U, 26, 2, 596);
   			attr_dev(div, "class", "fixed-action-btn toolbar");
-  			add_location(div, file$U, 19, 0, 394);
+  			add_location(div, file$U, 22, 0, 449);
   		},
   		l: function claim(nodes) {
   			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -67248,14 +66960,19 @@ var app = (function () {
   			append_dev(ul, li1);
   			append_dev(li1, a2);
   			append_dev(a2, i2);
-  			insert_dev(target, t5, anchor);
+  			append_dev(ul, t5);
+  			append_dev(ul, li2);
+  			append_dev(li2, a3);
+  			append_dev(a3, i3);
+  			insert_dev(target, t7, anchor);
   			mount_component(router, target, anchor);
   			current = true;
 
   			if (!mounted) {
   				dispose = [
   					action_destroyer(link_action = link.call(null, a1)),
-  					action_destroyer(link_action_1 = link.call(null, a2))
+  					action_destroyer(link_action_1 = link.call(null, a2)),
+  					listen_dev(a3, "click", /*click_handler*/ ctx[0], false, false, false)
   				];
 
   				mounted = true;
@@ -67273,7 +66990,7 @@ var app = (function () {
   		},
   		d: function destroy(detaching) {
   			if (detaching) detach_dev(div);
-  			if (detaching) detach_dev(t5);
+  			if (detaching) detach_dev(t7);
   			destroy_component(router, detaching);
   			mounted = false;
   			run_all(dispose);
@@ -67291,6 +67008,10 @@ var app = (function () {
   	return block;
   }
 
+  function share() {
+  	Website2APK.shareIntent();
+  }
+
   function instance$12($$self, $$props, $$invalidate) {
   	let { $$slots: slots = {}, $$scope } = $$props;
   	validate_slots("App", slots, []);
@@ -67306,8 +67027,9 @@ var app = (function () {
   		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<App> was created with unknown prop '${key}'`);
   	});
 
-  	$$self.$capture_state = () => ({ Router, link, routes });
-  	return [];
+  	const click_handler = () => share();
+  	$$self.$capture_state = () => ({ Router, link, routes, share });
+  	return [click_handler];
   }
 
   class App extends SvelteComponentDev {

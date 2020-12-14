@@ -12,9 +12,10 @@ import CidadesBtn from '../Componentes/CidadesBtn.svelte'
 
 import {  link  } from 'svelte-spa-router'
 
-import Drawer, {AppContent, Content, Header, Title, Subtitle, Scrim} from '@smui/drawer';
+import Drawer, {AppContent, Content, Header, Title,  Scrim} from '@smui/drawer';
   import Button, {Label} from '@smui/button';
-  import List, {Item, Text, Graphic, Separator, Subheader,PrimaryText, SecondaryText} from '@smui/list';
+  import List, {Item, Text, Graphic, Separator, Subheader} from '@smui/list';
+  
   //import IconButton, {Icon} from '@smui/icon-button';
 
 
@@ -179,6 +180,7 @@ $:if(fondoCoruna){
 
 fondoCoruna =  JSON.parse(localStorage.getItem("Coruna"))
 
+
 </script>
 
 
@@ -241,14 +243,17 @@ fondoCoruna =  JSON.parse(localStorage.getItem("Coruna"))
           </Item>
           <Separator nav />
           <Subheader component={H6}>Outros</Subheader>
+          <!-- 
           <Item href="">
             <Graphic class="material-icons" aria-hidden="true">share</Graphic>
-            <Text><a class="black-text" href=""> Compartir</a></Text>
+            <Text><a class="black-text" on:click={()=>share()} > Convidar amizades</a></Text>
           </Item>
           <Item href="">
             <Graphic class="material-icons" aria-hidden="true">star</Graphic>
-            <Text><a class="black-text" href=""> Valore a nosa aplicación</a></Text>
+            <Text><a class="black-text" on:click={()=>rate()}> Valore a nosa aplicación</a></Text>
           </Item>
+          -->
+
           <Item href="/#/Creditos" on:click={() => link}>
             <Graphic class="material-icons" aria-hidden="true">info_outline</Graphic>
             <Text><a class="black-text" href="/Creditos" use:link > Información</a></Text>
@@ -262,11 +267,6 @@ fondoCoruna =  JSON.parse(localStorage.getItem("Coruna"))
       <main class="main-content">
         <Button on:click={() => myDrawer2Open = !myDrawer2Open}>
           <Label>
-        <!--  <IconButton>
-          <Icon class="material-icons white-text transparent menu">location_city
-            </Icon>  
-        </IconButton>
-        -->
         <CidadesBtn/>
           </Label>
         </Button>
@@ -293,7 +293,7 @@ fondoCoruna =  JSON.parse(localStorage.getItem("Coruna"))
     {:else if fondoUbicacionGPS}
     <UbicacionActual/>
     {:else}
-    <UbicacionActual/>
+    <Santiago/>
     {/if}
 
     <style>

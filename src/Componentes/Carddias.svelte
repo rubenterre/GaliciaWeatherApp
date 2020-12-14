@@ -1,9 +1,7 @@
 <script>
         import axios from "axios";
 
-    import {
-        onMount
-    } from 'svelte';
+    import { onMount } from 'svelte';
 
     export let longitude;
     export let latitude;
@@ -56,7 +54,7 @@
     const KEY = "3e867330616c39fa60d18a1af5d82f16";
 
     
-        onMount(async () => {
+        $:{onMount(async () => {
 
             axios.get(
                     `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=minutely&appid=${KEY}&units=metric&lang=gl`
@@ -148,7 +146,7 @@
 
                     })
         });
-    
+        }
 </script>
 
 <div class="col s12 datosTecnicosCard">

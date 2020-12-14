@@ -78,13 +78,13 @@
 
 
                     <p class="about-textoDos"><strong class="white-text">Actualizacións nas que estamos
-                            traballando</strong></p>
+                            a traballar</strong></p>
                     <ul class="white-text left-align">
                         <li>1- Engadir un widget</li>
-                        <li> 2- Melloras de rendimento xeral da aplicación</li>
+                        <li> 2- Melloras xerais da aplicación</li>
                         <li> 3- Sistema de alertas meterolóxicas</li>
                         <li> 4- Notificacións Push</li>
-                        <li> 5- Melloras no diseño</li>
+                        <li> 5- Melloras no deseño</li>
                     </ul>
                     <br>
 

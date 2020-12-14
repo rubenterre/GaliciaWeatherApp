@@ -21,6 +21,7 @@
   let todos = [];
   let input = "";
 
+  /*
   function update () {
     todos=[]
     keys().then(ciudades=>{
@@ -39,8 +40,28 @@
             })
           })
       }
+*/
 
-  update()
+function update () {
+    todos=[]
+    keys().then(ciudades=>{
+            var promises = [];
+            ciudades.forEach(ciudad=>{
+              promises.push(
+                get(ciudad)
+              )
+            })
+            Promise.all(promises).then(ciudades=>{
+              ciudades.forEach(ciudad=>{
+                console.log('ciudad:', ciudad)
+                todos = [...todos, ciudad];
+                console.log(todos)
+              })
+            })
+          })
+      }
+
+update()
 
 
 

@@ -14,6 +14,9 @@
     });
   });
 
+  function share(){
+    Website2APK.shareIntent();
+  }
  
 </script>
 
@@ -22,8 +25,9 @@
     <i class="large material-icons black-text">menu</i>
   </a>
   <ul>
-    <li><a class="btn-floating" href="/" use:link><i class="material-icons black-text">home</i></a></li>
     <li><a class="btn-floating" href="/Buscar" use:link><i class="material-icons black-text">search</i></a></li>
+    <li><a class="btn-floating" href="/" use:link><i class="material-icons black-text">home</i></a></li>
+    <li><a on:click={() => share()} class="btn-floating"><i class="material-icons black-text">share</i></a></li>
   </ul>
 </div>
 

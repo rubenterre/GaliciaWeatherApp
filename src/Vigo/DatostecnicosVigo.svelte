@@ -56,7 +56,7 @@
 
 
 
-                    //Amancer e Solpor
+                    //Amencer e Solpor
                     let DatosSunrise = document.querySelector('.sunrise p');
                     let sunrise = [datosGlobal.current.sunrise];
                     let dateSunrise = new Date(sunrise * 1000);
@@ -170,9 +170,9 @@
                     </div>
                 </div>
                 <div class="col s6 DatosEsenciales">
-                    <img src="images/sunrise.png" width="20%" alt="Amancer">
+                    <img src="images/sunrise.png" width="20%" alt="Amencer">
                     <p class="tit_icon">
-                        Amancer
+                        Amencer
                     </p>
                     <div class="chip sunrise">
                         <p></p>

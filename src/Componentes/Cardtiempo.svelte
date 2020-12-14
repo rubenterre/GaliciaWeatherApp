@@ -20,11 +20,7 @@
     var datosCard = null;
 
 
-    onMount(async () => {
-
-        axios.get(
-                `https://api.openweathermap.org/data/2.5/weather?q=${name}&appid=${key}&units=metric&lang=gl`
-            )
+    $:{onMount(async () => { axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${name}&appid=${key}&units=metric&lang=gl`)
             .then(data => {
                 console.log(data)
                 datosCard = data.data;
@@ -33,13 +29,11 @@
                 descripcion = datosCard.weather[0].description;
                 latitude = datosCard.coord.lat;
                 longitude = datosCard.coord.lon;
-
-
             })
 
     }
     );
-
+    }
 
 </script>
 
